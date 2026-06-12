@@ -1,0 +1,192 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_dimens.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/router/app_routes.dart';
+import '../../../../core/theme/app_text_styles.dart';
+import '../../../shell/presentation/cubit/nav_cubit.dart';
+import '../widgets/profile_menu_item.dart';
+
+/// Profile tab: rider header + grouped settings menu.
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _ProfileHeader(),
+          Padding(
+            padding:
+                const EdgeInsets.fromLTRB(20, 18, 20, AppDimens.bottomNavSafe),
+            child: Column(
+              children: [
+                _MenuGroup(
+                  children: [
+                    const ProfileMenuItem(
+                      icon: Icons.person_outline_rounded,
+                      label: AppStrings.personalInfo,
+                    ),
+                    ProfileMenuItem(
+                      icon: Icons.location_on_outlined,
+                      label: AppStrings.savedLocations,
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.search),
+                    ),
+                    ProfileMenuItem(
+                      icon: Icons.account_balance_wallet_outlined,
+                      label: AppStrings.paymentMethods,
+                      onTap: () => context.read<NavCubit>().go(2),
+                    ),
+                    const ProfileMenuItem(
+                      icon: Icons.language_rounded,
+                      label: AppStrings.language,
+                      trailingValue: AppStrings.languageValue,
+                      showChevron: false,
+                      showDivider: false,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                _MenuGroup(
+                  children: [
+                    const ProfileMenuItem(
+                      icon: Icons.help_outline_rounded,
+                      label: AppStrings.helpSupport,
+                      iconBg: AppColors.background,
+                      iconColor: AppColors.textSecondary,
+                    ),
+                    ProfileMenuItem(
+                      icon: Icons.logout_rounded,
+                      label: AppStrings.logout,
+                      iconBg: AppColors.dangerBg,
+                      iconColor: AppColors.danger,
+                      destructive: true,
+                      showDivider: false,
+                      onTap: () => Navigator.pushNamedAndRemoveUntil(
+                          context, AppRoutes.welcome, (route) => false),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Text(AppStrings.appVersion,
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.disabled, fontSize: 12)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(26)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.3),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+            spreadRadius: -22,
+          ),
+        ],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(22, 12, 22, 22),
+          child: Row(
+            children: [
+              Container(
+                width: 66,
+                height: 66,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.primary, AppColors.primaryLight],
+                  ),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Text('LM',
+                    style: AppTextStyles.h3
+                        .copyWith(color: Colors.white, fontSize: 24)),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AppStrings.riderName,
+                        style: AppTextStyles.titleSm.copyWith(fontSize: 19)),
+                    Text(AppStrings.riderPhone,
+                        style: AppTextStyles.bodySm
+                            .copyWith(color: AppColors.textTertiary, fontSize: 13)),
+                    const SizedBox(height: 5),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 9, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.peachAmber,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star_rounded,
+                              size: 12, color: AppColors.gold),
+                          const SizedBox(width: 4),
+                          Text(AppStrings.riderTag,
+                              style: AppTextStyles.micro.copyWith(
+                                  color: AppColors.goldText, fontSize: 11.5)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MenuGroup extends StatelessWidget {
+  const _MenuGroup({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.3),
+            blurRadius: 26,
+            offset: const Offset(0, 10),
+            spreadRadius: -20,
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+}
