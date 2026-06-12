@@ -7,7 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/section_label.dart';
 import '../../domain/entities/app_notification.dart';
-import '../cubit/notifications_cubit.dart';
+import '../bloc/notifications_bloc.dart';
 import '../widgets/notification_tile.dart';
 
 /// Notifications tab: items grouped into "Today" and "Earlier".
@@ -18,8 +18,9 @@ class NotificationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<NotificationsCubit, List<AppNotification>>(
-        builder: (context, items) {
+      body: BlocBuilder<NotificationsBloc, NotificationsState>(
+        builder: (context, state) {
+          final items = state.items;
           final today = items
               .where((n) => n.section == NotificationSection.today)
               .toList();

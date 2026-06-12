@@ -9,7 +9,7 @@ import '../../../../core/widgets/gradient_avatar.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/rating.dart';
 import '../../domain/entities/driver.dart';
-import '../cubit/booking_cubit.dart';
+import '../bloc/booking_bloc.dart';
 import '../utils/driver_presentation.dart';
 
 /// Trip summary + rating + tip screen shown after the ride completes.
@@ -22,7 +22,7 @@ class TripCompletedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<BookingCubit, BookingState>(
+      body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
           final driver = state.selectedDriver;
           if (driver == null) return const SizedBox.shrink();
@@ -88,7 +88,7 @@ class TripCompletedPage extends StatelessWidget {
                               value: _tips[i],
                               selected: state.tip == _tips[i],
                               onTap: () =>
-                                  context.read<BookingCubit>().setTip(_tips[i]),
+                                  context.read<BookingBloc>().add(BookingTipChanged(_tips[i])),
                             ),
                             if (i != _tips.length - 1) const SizedBox(width: 9),
                           ],
@@ -121,7 +121,7 @@ class TripCompletedPage extends StatelessWidget {
                       PrimaryButton(
                         label: AppStrings.submitDone,
                         onPressed: () {
-                          context.read<BookingCubit>().resetTrip();
+                          context.read<BookingBloc>().add(const BookingTripReset());
                           Navigator.popUntil(
                               context, ModalRoute.withName(AppRoutes.main));
                         },
@@ -227,11 +227,11 @@ class _RateCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(AppStrings.howWasTrip, style: AppTextStyles.bodySm),
           const SizedBox(height: 14),
-          BlocBuilder<BookingCubit, BookingState>(
+          BlocBuilder<BookingBloc, BookingState>(
             buildWhen: (a, b) => a.rating != b.rating,
             builder: (context, state) => StarRating(
               value: state.rating,
-              onChanged: (v) => context.read<BookingCubit>().setRating(v),
+              onChanged: (v) => context.read<BookingBloc>().add(BookingRatingChanged(v)),
             ),
           ),
         ],

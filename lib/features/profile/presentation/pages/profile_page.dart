@@ -6,7 +6,7 @@ import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../shell/presentation/cubit/nav_cubit.dart';
+import '../../../shell/presentation/bloc/nav_bloc.dart';
 import '../widgets/profile_menu_item.dart';
 
 /// Profile tab: rider header + grouped settings menu.
@@ -41,7 +41,7 @@ class ProfilePage extends StatelessWidget {
                     ProfileMenuItem(
                       icon: Icons.account_balance_wallet_outlined,
                       label: AppStrings.paymentMethods,
-                      onTap: () => context.read<NavCubit>().go(2),
+                      onTap: () => context.read<NavBloc>().add(const NavTabSelected(2)),
                     ),
                     const ProfileMenuItem(
                       icon: Icons.language_rounded,

@@ -11,7 +11,7 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
 import '../../../../core/widgets/route_timeline.dart';
 import '../../domain/entities/fare_line.dart';
-import '../cubit/booking_cubit.dart';
+import '../bloc/booking_bloc.dart';
 import '../utils/driver_presentation.dart';
 import '../widgets/fare_row.dart';
 import '../widgets/payment_option_tile.dart';
@@ -26,7 +26,7 @@ class ConfirmRidePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<BookingCubit, BookingState>(
+      body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
           final driver = state.selectedDriver;
           if (driver == null) return const SizedBox.shrink();
@@ -93,7 +93,7 @@ class ConfirmRidePage extends StatelessWidget {
                             method: m,
                             selected: m.id == state.selectedPaymentId,
                             onTap: () =>
-                                context.read<BookingCubit>().setPayment(m.id),
+                                context.read<BookingBloc>().add(BookingPaymentChanged(m.id)),
                           ),
                         ),
                       ),

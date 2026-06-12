@@ -8,8 +8,9 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_shadows.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/round_icon_button.dart';
-import '../../../booking/presentation/cubit/booking_cubit.dart';
-import '../../../shell/presentation/cubit/nav_cubit.dart';
+import '../../../booking/domain/entities/driver.dart';
+import '../../../booking/presentation/bloc/booking_bloc.dart';
+import '../../../shell/presentation/bloc/nav_bloc.dart';
 import '../widgets/driver_mini_card.dart';
 import '../widgets/quick_place_card.dart';
 
@@ -22,7 +23,9 @@ class HomePage extends StatelessWidget {
       Navigator.pushNamed(context, AppRoutes.search);
 
   void _openDrivers(BuildContext context, {int? select}) {
-    if (select != null) context.read<BookingCubit>().selectDriver(select);
+    if (select != null) {
+      context.read<BookingBloc>().add(BookingDriverSelected(select));
+    }
     Navigator.pushNamed(context, AppRoutes.drivers);
   }
 
@@ -50,7 +53,8 @@ class HomePage extends StatelessWidget {
                       size: 48,
                       radius: 16,
                       shadow: true,
-                      onPressed: () => context.read<NavCubit>().go(4),
+                      onPressed: () =>
+                          context.read<NavBloc>().add(const NavTabSelected(4)),
                     ),
                     const SizedBox(width: 12),
                     Expanded(child: _LocationPill()),
@@ -118,8 +122,13 @@ class _BookingSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final drivers = context.select((BookingCubit c) => c.state.drivers);
+    return BlocSelector<BookingBloc, BookingState, List<Driver>>(
+      selector: (state) => state.drivers,
+      builder: (context, drivers) => _buildSheet(context, drivers),
+    );
+  }
 
+  Widget _buildSheet(BuildContext context, List<Driver> drivers) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(

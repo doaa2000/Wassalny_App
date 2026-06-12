@@ -5,8 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../domain/entities/wallet_data.dart';
-import '../cubit/wallet_cubit.dart';
+import '../bloc/wallet_bloc.dart';
 import '../widgets/wallet_tiles.dart';
 
 /// Wallet tab: balance card, payment methods and recent transactions.
@@ -17,8 +16,9 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<WalletCubit, WalletData?>(
-        builder: (context, wallet) {
+      body: BlocBuilder<WalletBloc, WalletState>(
+        builder: (context, state) {
+          final wallet = state.wallet;
           if (wallet == null) {
             return const Center(child: CircularProgressIndicator());
           }

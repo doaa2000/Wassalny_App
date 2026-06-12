@@ -7,7 +7,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/round_icon_button.dart';
 import '../../../../core/widgets/tags.dart';
-import '../cubit/booking_cubit.dart';
+import '../bloc/booking_bloc.dart';
 import '../widgets/driver_card.dart';
 
 /// "Choose your driver": filter chips + the list of available drivers.
@@ -22,7 +22,7 @@ class DriverSelectPage extends StatelessWidget {
         children: [
           _Header(onBack: () => Navigator.pop(context)),
           Expanded(
-            child: BlocBuilder<BookingCubit, BookingState>(
+            child: BlocBuilder<BookingBloc, BookingState>(
               builder: (context, state) {
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(18, 14, 18, 24),
@@ -34,7 +34,7 @@ class DriverSelectPage extends StatelessWidget {
                       driver: driver,
                       selected: i == state.selectedDriverIndex,
                       onSelect: () {
-                        context.read<BookingCubit>().selectDriver(i);
+                        context.read<BookingBloc>().add(BookingDriverSelected(i));
                         Navigator.pushNamed(context, AppRoutes.confirm);
                       },
                     );
@@ -88,7 +88,7 @@ class _Header extends StatelessWidget {
               const SizedBox(height: 14),
               SizedBox(
                 height: 34,
-                child: BlocBuilder<BookingCubit, BookingState>(
+                child: BlocBuilder<BookingBloc, BookingState>(
                   buildWhen: (a, b) => a.filter != b.filter,
                   builder: (context, state) {
                     return ListView.separated(
@@ -101,7 +101,7 @@ class _Header extends StatelessWidget {
                           label: filter.label,
                           selected: state.filter == filter,
                           onTap: () =>
-                              context.read<BookingCubit>().setFilter(filter),
+                              context.read<BookingBloc>().add(BookingFilterChanged(filter)),
                         );
                       },
                     );

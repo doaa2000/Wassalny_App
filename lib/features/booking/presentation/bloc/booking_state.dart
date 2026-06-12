@@ -1,4 +1,4 @@
-part of 'booking_cubit.dart';
+part of 'booking_bloc.dart';
 
 /// Ride sorting/filter options shown as chips on the driver-select screen.
 enum RideFilter {
@@ -12,7 +12,7 @@ enum RideFilter {
 }
 
 /// Immutable state for the whole booking flow (driver-select → confirm →
-/// tracking → rate). A single cubit owns it so the selection persists as the
+/// tracking → rate). A single bloc owns it so the selection persists as the
 /// rider moves between screens.
 class BookingState extends Equatable {
   const BookingState({

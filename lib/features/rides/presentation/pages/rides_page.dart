@@ -7,7 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/tags.dart';
-import '../cubit/rides_cubit.dart';
+import '../bloc/rides_bloc.dart';
 import '../widgets/ride_history_card.dart';
 
 /// Ride-history tab: filter tabs + the list of past trips.
@@ -24,7 +24,7 @@ class RidesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<RidesCubit, RidesState>(
+      body: BlocBuilder<RidesBloc, RidesState>(
         builder: (context, state) {
           final rides = state.visibleRides;
           return CustomScrollView(
@@ -52,7 +52,7 @@ class RidesPage extends StatelessWidget {
                             selected: state.filter == entry.key,
                             restingColor: AppColors.surface,
                             onTap: () =>
-                                context.read<RidesCubit>().setFilter(entry.key),
+                                context.read<RidesBloc>().add(RidesFilterChanged(entry.key)),
                           ),
                           const SizedBox(width: 8),
                         ],

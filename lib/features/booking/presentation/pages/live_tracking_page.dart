@@ -9,7 +9,7 @@ import '../../../../core/widgets/gradient_avatar.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
-import '../cubit/booking_cubit.dart';
+import '../bloc/booking_bloc.dart';
 import '../utils/driver_presentation.dart';
 import '../widgets/sheet_handle.dart';
 
@@ -22,7 +22,7 @@ class LiveTrackingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE8ECEF),
-      body: BlocBuilder<BookingCubit, BookingState>(
+      body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
           final driver = state.selectedDriver;
           if (driver == null) return const SizedBox.shrink();

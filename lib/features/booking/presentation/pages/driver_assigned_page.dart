@@ -10,7 +10,7 @@ import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/painters/car_side_illustration.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/rating.dart';
-import '../cubit/booking_cubit.dart';
+import '../bloc/booking_bloc.dart';
 import '../utils/driver_presentation.dart';
 import '../widgets/contact_action_button.dart';
 import '../widgets/sheet_handle.dart';
@@ -23,7 +23,7 @@ class DriverAssignedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<BookingCubit, BookingState>(
+      body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
           final driver = state.selectedDriver;
           if (driver == null) return const SizedBox.shrink();

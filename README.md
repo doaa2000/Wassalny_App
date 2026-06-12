@@ -54,12 +54,24 @@ Each data-backed feature follows:
   abstractions. No Flutter imports; colours are stored as ARGB ints and mapped
   to `Color`/`Gradient` in the presentation layer.
 - **data** — models, in-memory data sources and repository implementations.
-- **presentation** — `Cubit`/state (`flutter_bloc`), pages and widgets.
+- **presentation** — `Bloc` (`flutter_bloc`), pages and widgets.
 
 ### State management
 
-`flutter_bloc` (Cubits). The booking flow shares a single `BookingCubit` so the
-selected driver / payment / tip / rating persist across the multi-screen flow.
+Event-driven **`flutter_bloc` Blocs**. Every feature's bloc lives under
+`presentation/bloc/` with three separate files:
+
+```
+bloc/
+├── <feature>_bloc.dart     # Bloc + on<Event> handlers
+├── <feature>_event.dart    # sealed Event classes (Equatable)
+└── <feature>_state.dart    # State class (Equatable)
+```
+
+The UI dispatches events (`context.read<XBloc>().add(...)`) and rebuilds via
+`BlocProvider` / `BlocBuilder` / `BlocSelector`. The booking flow shares a single
+`BookingBloc` so the selected driver / payment / tip / rating persist across the
+multi-screen flow. Events & states use `Equatable`.
 
 ### Design system
 

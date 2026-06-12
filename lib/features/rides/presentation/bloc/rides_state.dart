@@ -1,12 +1,9 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../domain/entities/ride_history.dart';
-import '../../domain/repositories/rides_repository.dart';
+part of 'rides_bloc.dart';
 
 /// Tabs on the ride-history screen.
 enum RidesFilter { all, completed, cancelled }
 
+/// Ride-history screen state: the full list plus the active filter.
 class RidesState extends Equatable {
   const RidesState({this.rides = const [], this.filter = RidesFilter.all});
 
@@ -30,14 +27,4 @@ class RidesState extends Equatable {
 
   @override
   List<Object?> get props => [rides, filter];
-}
-
-class RidesCubit extends Cubit<RidesState> {
-  RidesCubit(this._repository) : super(const RidesState()) {
-    emit(state.copyWith(rides: _repository.getRides()));
-  }
-
-  final RidesRepository _repository;
-
-  void setFilter(RidesFilter filter) => emit(state.copyWith(filter: filter));
 }
