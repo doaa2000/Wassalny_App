@@ -2,9 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../features/booking/data/datasources/booking_local_data_source.dart';
+import '../../features/booking/data/datasources/trip_remote_data_source.dart';
 import '../../features/booking/data/repositories/booking_repository_impl.dart';
 import '../../features/booking/domain/repositories/booking_repository.dart';
 import '../../features/booking/presentation/bloc/booking_bloc.dart';
+import '../services/supabase_service.dart';
 import '../../features/notifications/data/repositories/notifications_repository_impl.dart';
 import '../../features/notifications/presentation/bloc/notifications_bloc.dart';
 import '../../features/rides/data/repositories/rides_repository_impl.dart';
@@ -29,8 +31,12 @@ class AppDependencies extends StatefulWidget {
 }
 
 class _AppDependenciesState extends State<AppDependencies> {
+  late final TripRemoteDataSource _tripRemote =
+      SupabaseService.instance.isConfigured
+          ? TripSupabaseDataSource(SupabaseService.instance)
+          : const TripNoopDataSource();
   late final BookingRepository _bookingRepo =
-      BookingRepositoryImpl(BookingLocalDataSource());
+      BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote);
   late final _walletRepo = WalletRepositoryImpl();
   late final _ridesRepo = RidesRepositoryImpl();
   late final _notificationsRepo = NotificationsRepositoryImpl();

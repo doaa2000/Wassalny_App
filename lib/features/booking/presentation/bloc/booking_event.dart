@@ -67,3 +67,31 @@ final class BookingRatingChanged extends BookingEvent {
 final class BookingTripReset extends BookingEvent {
   const BookingTripReset();
 }
+
+/// The rider confirmed the ride — create the trip request in the backend so the
+/// Captain app receives it.
+final class BookingRideRequested extends BookingEvent {
+  const BookingRideRequested({
+    required this.pickupAddress,
+    required this.dropoffAddress,
+    required this.pickupLat,
+    required this.pickupLng,
+    required this.dropoffLat,
+    required this.dropoffLng,
+    required this.paymentMethod,
+    this.price,
+  });
+
+  final String pickupAddress;
+  final String dropoffAddress;
+  final double pickupLat;
+  final double pickupLng;
+  final double dropoffLat;
+  final double dropoffLng;
+  final String paymentMethod;
+  final num? price;
+
+  @override
+  List<Object?> get props =>
+      [pickupAddress, dropoffAddress, pickupLat, pickupLng, dropoffLat, dropoffLng, paymentMethod, price];
+}

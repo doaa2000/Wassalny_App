@@ -8,4 +8,17 @@ abstract class BookingRepository {
   List<Driver> getNearbyDrivers();
   List<PaymentMethod> getPaymentMethods();
   List<FareLine> getFareBreakdown();
+
+  /// Creates a ride request in the backend and returns the new trip id
+  /// (null when running without a backend). The Captain app receives it live.
+  Future<String?> requestTrip({
+    required String pickupAddress,
+    required String dropoffAddress,
+    required double pickupLat,
+    required double pickupLng,
+    required double dropoffLat,
+    required double dropoffLng,
+    required String paymentMethod,
+    num? price,
+  });
 }

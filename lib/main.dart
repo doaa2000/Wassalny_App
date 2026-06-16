@@ -5,10 +5,12 @@ import 'core/constants/app_strings.dart';
 import 'core/di/app_dependencies.dart';
 import 'core/router/app_router.dart';
 import 'core/router/app_routes.dart';
+import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SupabaseService.instance.initialize();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

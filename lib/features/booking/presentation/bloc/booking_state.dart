@@ -24,6 +24,8 @@ class BookingState extends Equatable {
     this.selectedPaymentId = 'wallet',
     this.tip = 0,
     this.rating = 0,
+    this.requesting = false,
+    this.tripId,
   });
 
   final List<Driver> drivers;
@@ -34,6 +36,12 @@ class BookingState extends Equatable {
   final String selectedPaymentId;
   final int tip;
   final int rating;
+
+  /// True while a ride request is being sent to the backend.
+  final bool requesting;
+
+  /// Id of the trip created in the backend (null until requested).
+  final String? tripId;
 
   /// The currently chosen driver (safe even before data loads).
   Driver? get selectedDriver =>
@@ -48,6 +56,8 @@ class BookingState extends Equatable {
     String? selectedPaymentId,
     int? tip,
     int? rating,
+    bool? requesting,
+    String? tripId,
   }) {
     return BookingState(
       drivers: drivers ?? this.drivers,
@@ -58,6 +68,8 @@ class BookingState extends Equatable {
       selectedPaymentId: selectedPaymentId ?? this.selectedPaymentId,
       tip: tip ?? this.tip,
       rating: rating ?? this.rating,
+      requesting: requesting ?? this.requesting,
+      tripId: tripId ?? this.tripId,
     );
   }
 
@@ -71,5 +83,7 @@ class BookingState extends Equatable {
         selectedPaymentId,
         tip,
         rating,
+        requesting,
+        tripId,
       ];
 }

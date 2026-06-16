@@ -112,8 +112,30 @@ class ConfirmRidePage extends StatelessWidget {
                       PrimaryButton(
                         label:
                             '${AppStrings.confirmRideAction} · ${driver.price}',
-                        onPressed: () =>
-                            Navigator.pushNamed(context, AppRoutes.finding),
+                        onPressed: () {
+                          final String pid = state.selectedPaymentId;
+                          final String method =
+                              (pid == 'cash' || pid == 'wallet' || pid == 'card')
+                                  ? pid
+                                  : 'cash';
+                          // Create the ride request in Supabase (the Captain app
+                          // receives it live). Placeholder coordinates are used
+                          // until the map picker feeds real lat/lng.
+                          context.read<BookingBloc>().add(
+                                BookingRideRequested(
+                                  pickupAddress: 'Current location',
+                                  dropoffAddress: 'Destination',
+                                  pickupLat: 30.0444,
+                                  pickupLng: 31.2357,
+                                  dropoffLat: 30.0566,
+                                  dropoffLng: 31.3300,
+                                  paymentMethod: method,
+                                  price: num.tryParse(
+                                      driver.price.replaceAll(RegExp(r'[^0-9.]'), '')),
+                                ),
+                              );
+                          Navigator.pushNamed(context, AppRoutes.finding);
+                        },
                       ),
                     ],
                   ),

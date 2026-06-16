@@ -23,6 +23,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingTipChanged>(_onTipChanged);
     on<BookingRatingChanged>(_onRatingChanged);
     on<BookingTripReset>(_onTripReset);
+    on<BookingRideRequested>(_onRideRequested);
   }
 
   final BookingRepository _repository;
@@ -61,5 +62,26 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
   void _onTripReset(BookingTripReset event, Emitter<BookingState> emit) {
     emit(state.copyWith(tip: 0, rating: 0));
+  }
+
+  Future<void> _onRideRequested(
+      BookingRideRequested event, Emitter<BookingState> emit) async {
+    emit(state.copyWith(requesting: true));
+    try {
+      final String? id = await _repository.requestTrip(
+        pickupAddress: event.pickupAddress,
+        dropoffAddress: event.dropoffAddress,
+        pickupLat: event.pickupLat,
+        pickupLng: event.pickupLng,
+        dropoffLat: event.dropoffLat,
+        dropoffLng: event.dropoffLng,
+        paymentMethod: event.paymentMethod,
+        price: event.price,
+      );
+      emit(state.copyWith(requesting: false, tripId: id));
+    } catch (_) {
+      // Keep the flow going even if the backend call fails (UI-only fallback).
+      emit(state.copyWith(requesting: false));
+    }
   }
 }
