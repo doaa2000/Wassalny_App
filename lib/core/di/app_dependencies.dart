@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../features/auth/data/datasources/auth_remote_data_source.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/booking/data/datasources/booking_local_data_source.dart';
 import '../../features/booking/data/datasources/trip_remote_data_source.dart';
 import '../../features/booking/data/repositories/booking_repository_impl.dart';
@@ -37,6 +40,8 @@ class _AppDependenciesState extends State<AppDependencies> {
           : const TripNoopDataSource();
   late final BookingRepository _bookingRepo =
       BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote);
+  late final _authRepo =
+      AuthRepositoryImpl(AuthRemoteDataSource(SupabaseService.instance));
   late final _walletRepo = WalletRepositoryImpl();
   late final _ridesRepo = RidesRepositoryImpl();
   late final _notificationsRepo = NotificationsRepositoryImpl();
@@ -45,6 +50,7 @@ class _AppDependenciesState extends State<AppDependencies> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => AuthBloc(_authRepo)),
         BlocProvider(
           create: (_) => BookingBloc(_bookingRepo)..add(const BookingStarted()),
         ),

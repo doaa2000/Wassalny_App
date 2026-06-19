@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
@@ -14,7 +15,12 @@ import '../../features/booking/presentation/pages/trip_completed_page.dart';
 import '../../features/onboarding/presentation/pages/location_permission_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_intro_page.dart';
 import '../../features/onboarding/presentation/pages/welcome_page.dart';
+import '../../features/places/data/datasources/places_remote_data_source.dart';
+import '../../features/places/data/repositories/places_repository_impl.dart';
+import '../../features/places/presentation/bloc/places_bloc.dart';
+import '../../features/places/presentation/pages/saved_places_page.dart';
 import '../../features/shell/presentation/main_shell.dart';
+import '../services/supabase_service.dart';
 import 'app_routes.dart';
 
 /// Maps route names to pages. A single generator keeps navigation declarative
@@ -57,6 +63,15 @@ class AppRouter {
         return (_) => const LiveTrackingPage();
       case AppRoutes.completed:
         return (_) => const TripCompletedPage();
+      case AppRoutes.savedPlaces:
+        return (_) => BlocProvider(
+              create: (_) => PlacesBloc(
+                PlacesRepositoryImpl(
+                  PlacesRemoteDataSource(SupabaseService.instance),
+                ),
+              )..add(const PlacesLoaded()),
+              child: const SavedPlacesPage(),
+            );
       case AppRoutes.welcome:
       default:
         return (_) => const WelcomePage();

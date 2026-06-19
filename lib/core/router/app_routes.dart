@@ -22,4 +22,7 @@ class AppRoutes {
   static const String assigned = '/assigned';
   static const String tracking = '/tracking';
   static const String completed = '/completed';
+
+  // Saved places (CRUD example).
+  static const String savedPlaces = '/saved-places';
 }

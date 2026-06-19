@@ -6,6 +6,7 @@ import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../shell/presentation/bloc/nav_bloc.dart';
 import '../widgets/profile_menu_item.dart';
 
@@ -36,7 +37,7 @@ class ProfilePage extends StatelessWidget {
                       icon: Icons.location_on_outlined,
                       label: AppStrings.savedLocations,
                       onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.search),
+                          Navigator.pushNamed(context, AppRoutes.savedPlaces),
                     ),
                     ProfileMenuItem(
                       icon: Icons.account_balance_wallet_outlined,
@@ -68,8 +69,11 @@ class ProfilePage extends StatelessWidget {
                       iconColor: AppColors.danger,
                       destructive: true,
                       showDivider: false,
-                      onTap: () => Navigator.pushNamedAndRemoveUntil(
-                          context, AppRoutes.welcome, (route) => false),
+                      onTap: () {
+                        context.read<AuthBloc>().add(const AuthLogoutRequested());
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, AppRoutes.welcome, (route) => false);
+                      },
                     ),
                   ],
                 ),
