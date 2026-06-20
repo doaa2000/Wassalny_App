@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
+import 'map_style.dart';
 
 /// Display modes for [MapView], mirroring the design component variants.
 enum MapVariant {
@@ -61,11 +62,26 @@ class _MapViewState extends State<MapView> {
   Set<Polyline> _buildPolylines() {
     if (!_showRoute) return const {};
     return {
+      // Soft shadow line under the main route for a little depth.
+      Polyline(
+        polylineId: const PolylineId('route_shadow'),
+        points: const [_pickup, _dropoff],
+        color: Colors.black.withOpacity(0.12),
+        width: 11,
+        geodesic: true,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        jointType: JointType.round,
+      ),
       const Polyline(
         polylineId: PolylineId('route'),
         points: [_pickup, _dropoff],
         color: AppColors.primary,
-        width: 5,
+        width: 6,
+        geodesic: true,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        jointType: JointType.round,
       ),
     };
   }
@@ -107,6 +123,7 @@ class _MapViewState extends State<MapView> {
     return GoogleMap(
       initialCameraPosition: _initialCamera,
       onMapCreated: _onMapCreated,
+      style: wassalnyMapStyle,
       markers: _buildMarkers(),
       polylines: _buildPolylines(),
       // Kept off until a location-permission flow is wired in; flip to true
