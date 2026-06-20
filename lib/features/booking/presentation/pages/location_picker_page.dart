@@ -76,6 +76,13 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
     _center = pos.target;
   }
 
+  /// Tapping anywhere on the map drops the pin there (inDrive-style). The
+  /// camera animation triggers [_onCameraIdle], which resolves the address.
+  Future<void> _onMapTap(LatLng p) async {
+    _center = p;
+    await _controller?.animateCamera(CameraUpdate.newLatLng(p));
+  }
+
   void _onCameraIdle() {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 350), () {
@@ -120,6 +127,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                 onMapCreated: (c) => _controller = c,
                 onCameraMove: _onCameraMove,
                 onCameraIdle: _onCameraIdle,
+                onTap: _onMapTap,
                 myLocationButtonEnabled: false,
                 zoomControlsEnabled: false,
                 compassEnabled: false,
@@ -219,6 +227,11 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      'Move the map or tap to choose the spot',
+                      style: AppTextStyles.caption,
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         const Icon(Icons.place_rounded,
