@@ -44,4 +44,7 @@ class BookingRepositoryImpl implements BookingRepository {
       price: price,
     );
   }
+
+  @override
+  Stream<String> watchTrip(String tripId) => _tripRemote.watchTrip(tripId);
 }

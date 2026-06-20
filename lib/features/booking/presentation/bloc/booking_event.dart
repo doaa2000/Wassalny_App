@@ -95,3 +95,13 @@ final class BookingRideRequested extends BookingEvent {
   List<Object?> get props =>
       [pickupAddress, dropoffAddress, pickupLat, pickupLng, dropoffLat, dropoffLng, paymentMethod, price];
 }
+
+/// Internal: the tracked trip's status changed (from the Realtime stream).
+final class _BookingTripStatusChanged extends BookingEvent {
+  const _BookingTripStatusChanged(this.status);
+
+  final String status;
+
+  @override
+  List<Object?> get props => [status];
+}

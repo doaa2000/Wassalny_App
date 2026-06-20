@@ -20,7 +20,14 @@ class LiveTrackingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<BookingBloc, BookingState>(
+      listenWhen: (prev, curr) => prev.tripStatus != curr.tripStatus,
+      listener: (context, state) {
+        if (state.tripStatus == 'completed') {
+          Navigator.pushReplacementNamed(context, AppRoutes.completed);
+        }
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFFE8ECEF),
       body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
@@ -131,6 +138,7 @@ class LiveTrackingPage extends StatelessWidget {
             ],
           );
         },
+      ),
       ),
     );
   }

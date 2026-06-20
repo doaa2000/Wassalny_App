@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -8,6 +9,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/bobbing.dart';
 import '../../../../core/widgets/painters/car_mark_icon.dart';
+import '../bloc/booking_bloc.dart';
 
 /// "Finding your driver": a radar animation that automatically advances to the
 /// assigned screen, matching the design's timed prototype.
@@ -24,13 +26,16 @@ class _FindingDriverPageState extends State<FindingDriverPage>
     vsync: this,
     duration: const Duration(milliseconds: 2600),
   )..repeat();
-  Timer? _advance;
+  StreamSubscription<BookingState>? _statusSub;
 
   @override
   void initState() {
     super.initState();
-    _advance = Timer(const Duration(milliseconds: 3600), () {
-      if (mounted) {
+    // Advance to "Driver assigned" the moment a captain accepts the trip
+    // (real status from Supabase Realtime; simulated in UI-only mode).
+    _statusSub = context.read<BookingBloc>().stream.listen((state) {
+      if (mounted && state.tripStatus.isNotEmpty && state.tripStatus != 'requested') {
+        _statusSub?.cancel();
         Navigator.pushReplacementNamed(context, AppRoutes.assigned);
       }
     });
@@ -38,7 +43,7 @@ class _FindingDriverPageState extends State<FindingDriverPage>
 
   @override
   void dispose() {
-    _advance?.cancel();
+    _statusSub?.cancel();
     _radar.dispose();
     super.dispose();
   }

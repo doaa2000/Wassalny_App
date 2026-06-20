@@ -13,6 +13,10 @@ abstract class TripRemoteDataSource {
     required String paymentMethod,
     num? price,
   });
+
+  /// Live stream of the trip's status (requested → accepted → arrived →
+  /// in_progress → completed). Drives the rider's tracking screens.
+  Stream<String> watchTrip(String tripId);
 }
 
 /// Supabase implementation: inserts a `requested` trip for the signed-in rider.
@@ -55,9 +59,20 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
         .single();
     return row['id']?.toString();
   }
+
+  @override
+  Stream<String> watchTrip(String tripId) {
+    return _service.client
+        .from('trips')
+        .stream(primaryKey: ['id'])
+        .eq('id', tripId)
+        .map((rows) =>
+            rows.isEmpty ? 'requested' : (rows.first['status'] as String? ?? 'requested'));
+  }
 }
 
-/// Used in UI-only mode (no Supabase credentials): does nothing.
+/// UI-only mode (no Supabase): returns a fake id and simulates a trip
+/// progressing through its statuses so the flow is demoable offline.
 class TripNoopDataSource implements TripRemoteDataSource {
   const TripNoopDataSource();
 
@@ -72,5 +87,17 @@ class TripNoopDataSource implements TripRemoteDataSource {
     required String paymentMethod,
     num? price,
   }) async =>
-      null;
+      'mock-${DateTime.now().millisecondsSinceEpoch}';
+
+  @override
+  Stream<String> watchTrip(String tripId) async* {
+    await Future<void>.delayed(const Duration(seconds: 3));
+    yield 'accepted';
+    await Future<void>.delayed(const Duration(seconds: 3));
+    yield 'arrived';
+    await Future<void>.delayed(const Duration(seconds: 3));
+    yield 'in_progress';
+    await Future<void>.delayed(const Duration(seconds: 5));
+    yield 'completed';
+  }
 }

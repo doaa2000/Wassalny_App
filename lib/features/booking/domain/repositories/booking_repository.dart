@@ -21,4 +21,7 @@ abstract class BookingRepository {
     required String paymentMethod,
     num? price,
   });
+
+  /// Live stream of a trip's status (for the rider's tracking screens).
+  Stream<String> watchTrip(String tripId);
 }

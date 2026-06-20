@@ -21,7 +21,14 @@ class DriverAssignedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<BookingBloc, BookingState>(
+      listenWhen: (prev, curr) => prev.tripStatus != curr.tripStatus,
+      listener: (context, state) {
+        if (state.tripStatus == 'in_progress' || state.tripStatus == 'completed') {
+          Navigator.pushReplacementNamed(context, AppRoutes.tracking);
+        }
+      },
+      child: Scaffold(
       backgroundColor: AppColors.background,
       body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
@@ -190,6 +197,7 @@ class DriverAssignedPage extends StatelessWidget {
             ],
           );
         },
+      ),
       ),
     );
   }

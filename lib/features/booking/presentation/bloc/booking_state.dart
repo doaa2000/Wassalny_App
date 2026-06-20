@@ -26,6 +26,7 @@ class BookingState extends Equatable {
     this.rating = 0,
     this.requesting = false,
     this.tripId,
+    this.tripStatus = '',
   });
 
   final List<Driver> drivers;
@@ -43,6 +44,10 @@ class BookingState extends Equatable {
   /// Id of the trip created in the backend (null until requested).
   final String? tripId;
 
+  /// Live status of the tracked trip: requested → accepted → arrived →
+  /// in_progress → completed.
+  final String tripStatus;
+
   /// The currently chosen driver (safe even before data loads).
   Driver? get selectedDriver =>
       drivers.isEmpty ? null : drivers[selectedDriverIndex];
@@ -58,6 +63,7 @@ class BookingState extends Equatable {
     int? rating,
     bool? requesting,
     String? tripId,
+    String? tripStatus,
   }) {
     return BookingState(
       drivers: drivers ?? this.drivers,
@@ -70,6 +76,7 @@ class BookingState extends Equatable {
       rating: rating ?? this.rating,
       requesting: requesting ?? this.requesting,
       tripId: tripId ?? this.tripId,
+      tripStatus: tripStatus ?? this.tripStatus,
     );
   }
 
@@ -85,5 +92,6 @@ class BookingState extends Equatable {
         rating,
         requesting,
         tripId,
+        tripStatus,
       ];
 }

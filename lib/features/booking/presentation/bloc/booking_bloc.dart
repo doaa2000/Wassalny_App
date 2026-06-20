@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,9 +26,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingRatingChanged>(_onRatingChanged);
     on<BookingTripReset>(_onTripReset);
     on<BookingRideRequested>(_onRideRequested);
+    on<_BookingTripStatusChanged>(_onTripStatusChanged);
   }
 
   final BookingRepository _repository;
+  StreamSubscription<String>? _tripSub;
 
   void _onStarted(BookingStarted event, Emitter<BookingState> emit) {
     emit(state.copyWith(
@@ -78,10 +82,31 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         paymentMethod: event.paymentMethod,
         price: event.price,
       );
-      emit(state.copyWith(requesting: false, tripId: id));
+      emit(state.copyWith(requesting: false, tripId: id, tripStatus: 'requested'));
+
+      // Follow the trip's status live so the rider's screens advance when the
+      // captain accepts / starts / completes.
+      if (id != null) {
+        _tripSub?.cancel();
+        _tripSub = _repository.watchTrip(id).listen(
+          (status) => add(_BookingTripStatusChanged(status)),
+          onError: (_) {},
+        );
+      }
     } catch (_) {
       // Keep the flow going even if the backend call fails (UI-only fallback).
       emit(state.copyWith(requesting: false));
     }
+  }
+
+  void _onTripStatusChanged(
+      _BookingTripStatusChanged event, Emitter<BookingState> emit) {
+    emit(state.copyWith(tripStatus: event.status));
+  }
+
+  @override
+  Future<void> close() {
+    _tripSub?.cancel();
+    return super.close();
   }
 }
