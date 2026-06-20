@@ -11,8 +11,21 @@ import '../bloc/booking_bloc.dart';
 import '../widgets/driver_card.dart';
 
 /// "Choose your driver": filter chips + the list of available drivers.
-class DriverSelectPage extends StatelessWidget {
+class DriverSelectPage extends StatefulWidget {
   const DriverSelectPage({super.key});
+
+  @override
+  State<DriverSelectPage> createState() => _DriverSelectPageState();
+}
+
+class _DriverSelectPageState extends State<DriverSelectPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the live driver list each time this screen opens, so a captain
+    // who just came online appears without restarting the app.
+    context.read<BookingBloc>().add(const BookingStarted());
+  }
 
   @override
   Widget build(BuildContext context) {
