@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../domain/entities/driver.dart';
 import '../../domain/entities/fare_line.dart';
@@ -25,6 +26,8 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingTipChanged>(_onTipChanged);
     on<BookingRatingChanged>(_onRatingChanged);
     on<BookingTripReset>(_onTripReset);
+    on<BookingPickupSet>(_onPickupSet);
+    on<BookingDestinationSet>(_onDestinationSet);
     on<BookingRideRequested>(_onRideRequested);
     on<_BookingTripStatusChanged>(_onTripStatusChanged);
   }
@@ -67,6 +70,16 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
   void _onTripReset(BookingTripReset event, Emitter<BookingState> emit) {
     emit(state.copyWith(tip: 0, rating: 0));
+  }
+
+  void _onPickupSet(BookingPickupSet event, Emitter<BookingState> emit) {
+    emit(state.copyWith(pickup: event.latLng, pickupAddress: event.address));
+  }
+
+  void _onDestinationSet(
+      BookingDestinationSet event, Emitter<BookingState> emit) {
+    emit(state.copyWith(
+        destination: event.latLng, destinationAddress: event.address));
   }
 
   Future<void> _onRideRequested(

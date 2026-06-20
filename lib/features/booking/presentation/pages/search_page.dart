@@ -1,108 +1,107 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_shadows.dart';
+import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
 import '../../../../core/widgets/route_timeline.dart';
-import '../../../../core/widgets/section_label.dart';
-import '../../../home/presentation/widgets/quick_place_card.dart';
-import '../widgets/place_list_tile.dart';
+import '../bloc/booking_bloc.dart';
+import 'location_picker_page.dart';
 
-/// "Plan your ride": choose pickup and destination from saved/recent places.
+/// "Plan your ride": pick pickup and destination on the map, then continue to
+/// the driver list. Both points feed the real trip request.
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
 
-  void _goDrivers(BuildContext context) =>
-      Navigator.pushReplacementNamed(context, AppRoutes.drivers);
+  Future<void> _pickPickup(BuildContext context) async {
+    final bloc = context.read<BookingBloc>();
+    final PickedPlace? place = await Navigator.push<PickedPlace>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(
+          title: AppStrings.pickup,
+          initial: bloc.state.pickup,
+        ),
+      ),
+    );
+    if (place != null) {
+      bloc.add(BookingPickupSet(place.latLng, place.address));
+    }
+  }
+
+  Future<void> _pickDestination(BuildContext context) async {
+    final bloc = context.read<BookingBloc>();
+    final PickedPlace? place = await Navigator.push<PickedPlace>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(
+          title: AppStrings.dropoff,
+          // Start where the rider already is (destination, then pickup) so they
+          // pan a short distance to where they're going — not from GPS.
+          initial: bloc.state.destination ?? bloc.state.pickup,
+          useCurrentLocation: false,
+        ),
+      ),
+    );
+    if (place != null) {
+      bloc.add(BookingDestinationSet(place.latLng, place.address));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      body: Column(
-        children: [
-          _Header(onBack: () => Navigator.pop(context)),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 6, 20, 24),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: QuickPlaceCard(
-                          icon: Icons.home_rounded,
-                          title: 'Home',
-                          subtitle: 'Maadi, Rd 9',
-                          onTap: () => _goDrivers(context),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: QuickPlaceCard(
-                          icon: Icons.work_outline_rounded,
-                          title: 'Work',
-                          subtitle: 'Smart Village',
-                          onTap: () => _goDrivers(context),
-                        ),
-                      ),
-                    ],
-                  ),
+      body: BlocBuilder<BookingBloc, BookingState>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              _Header(
+                onBack: () => Navigator.pop(context),
+                pickup: state.pickupAddress,
+                destination: state.destinationAddress,
+                onTapPickup: () => _pickPickup(context),
+                onTapDestination: () => _pickDestination(context),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+                child: PrimaryButton(
+                  label: state.hasRoute
+                      ? AppStrings.findDriver
+                      : AppStrings.setDropoffFirst,
+                  onPressed: state.hasRoute
+                      ? () => Navigator.pushReplacementNamed(
+                          context, AppRoutes.drivers)
+                      : () => _pickDestination(context),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 4),
-                  child: SectionLabel(AppStrings.recent),
-                ),
-                PlaceListTile(
-                  icon: Icons.access_time_rounded,
-                  title: 'Cairo Festival City',
-                  subtitle: 'New Cairo · 14.2 km',
-                  onTap: () => _goDrivers(context),
-                ),
-                PlaceListTile(
-                  icon: Icons.access_time_rounded,
-                  title: 'Cairo University',
-                  subtitle: 'Giza · 6.8 km',
-                  onTap: () => _goDrivers(context),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 18, bottom: 4),
-                  child: SectionLabel(AppStrings.savedPlaces),
-                ),
-                PlaceListTile(
-                  icon: Icons.star_rounded,
-                  iconColor: AppColors.primary,
-                  iconBg: AppColors.peach,
-                  title: 'The Gym — Zamalek',
-                  subtitle: '26 July St · 9.1 km',
-                  onTap: () => _goDrivers(context),
-                ),
-                PlaceListTile(
-                  icon: Icons.star_rounded,
-                  iconColor: AppColors.primary,
-                  iconBg: AppColors.peach,
-                  title: "Mom's House — Heliopolis",
-                  subtitle: 'El-Higaz St · 11.7 km',
-                  showDivider: false,
-                  onTap: () => _goDrivers(context),
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.onBack});
+  const _Header({
+    required this.onBack,
+    required this.pickup,
+    required this.destination,
+    required this.onTapPickup,
+    required this.onTapDestination,
+  });
 
   final VoidCallback onBack;
+  final String? pickup;
+  final String? destination;
+  final VoidCallback onTapPickup;
+  final VoidCallback onTapDestination;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +113,7 @@ class _Header extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
           child: Column(
             children: [
               Row(
@@ -125,26 +124,30 @@ class _Header extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              const IntrinsicHeight(
+              IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(top: 18, bottom: 18),
                       child: RouteTimeline(dotSize: 11),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         children: [
                           _FieldBox(
-                            value: 'Tahrir Square, Cairo',
+                            value: pickup,
+                            hint: AppStrings.pickup,
                             highlighted: false,
+                            onTap: onTapPickup,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           _FieldBox(
-                            value: 'Cairo Festival City',
+                            value: destination,
+                            hint: AppStrings.whereToShort,
                             highlighted: true,
+                            onTap: onTapDestination,
                           ),
                         ],
                       ),
@@ -161,29 +164,50 @@ class _Header extends StatelessWidget {
 }
 
 class _FieldBox extends StatelessWidget {
-  const _FieldBox({required this.value, required this.highlighted});
+  const _FieldBox({
+    required this.value,
+    required this.hint,
+    required this.highlighted,
+    required this.onTap,
+  });
 
-  final String value;
+  final String? value;
+  final String hint;
   final bool highlighted;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      alignment: Alignment.centerLeft,
-      decoration: BoxDecoration(
-        color: highlighted ? AppColors.peach : AppColors.background,
-        borderRadius: BorderRadius.circular(14),
-        border: highlighted
-            ? Border.all(color: AppColors.primary, width: 1.5)
-            : null,
-      ),
-      child: Text(
-        value,
-        style: AppTextStyles.input.copyWith(
-          fontSize: 14.5,
-          fontWeight: highlighted ? FontWeight.w700 : FontWeight.w600,
+    final bool empty = value == null || value!.trim().isEmpty;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 50,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        alignment: Alignment.centerLeft,
+        decoration: BoxDecoration(
+          color: highlighted ? AppColors.peach : AppColors.background,
+          borderRadius: BorderRadius.circular(14),
+          border: highlighted
+              ? Border.all(color: AppColors.primary, width: 1.5)
+              : null,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                empty ? hint : value!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.input.copyWith(
+                  fontSize: 14.5,
+                  fontWeight: highlighted ? FontWeight.w700 : FontWeight.w600,
+                  color: empty ? AppColors.textTertiary : AppColors.ink,
+                ),
+              ),
+            ),
+            const Icon(Icons.map_outlined, size: 18, color: AppColors.primary),
+          ],
         ),
       ),
     );

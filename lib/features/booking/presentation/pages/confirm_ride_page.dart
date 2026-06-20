@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -33,12 +34,16 @@ class ConfirmRidePage extends StatelessWidget {
 
           return Stack(
             children: [
-              const Positioned(
+              Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
                 height: 240,
-                child: MapView(variant: MapVariant.route),
+                child: MapView(
+                  variant: MapVariant.route,
+                  pickup: state.pickup,
+                  dropoff: state.destination,
+                ),
               ),
               Positioned(
                 top: 0,
@@ -73,7 +78,10 @@ class ConfirmRidePage extends StatelessWidget {
                       const SheetHandle(),
                       Text(AppStrings.confirmRide, style: AppTextStyles.title),
                       const SizedBox(height: 14),
-                      const _RouteSummary(),
+                      _RouteSummary(
+                        pickup: state.pickupAddress ?? AppStrings.currentLocation,
+                        dropoff: state.destinationAddress ?? AppStrings.dropoffPlace,
+                      ),
                       const SizedBox(height: 16),
                       _ChosenDriverRow(
                         initials: driver.initials,
@@ -119,16 +127,21 @@ class ConfirmRidePage extends StatelessWidget {
                                   ? pid
                                   : 'cash';
                           // Create the ride request in Supabase (the Captain app
-                          // receives it live). Placeholder coordinates are used
-                          // until the map picker feeds real lat/lng.
+                          // receives it live), using the map-picked points.
+                          final pickup = state.pickup ??
+                              const LatLng(30.0444, 31.2357);
+                          final dropoff = state.destination ??
+                              const LatLng(30.0566, 31.3300);
                           context.read<BookingBloc>().add(
                                 BookingRideRequested(
-                                  pickupAddress: 'Current location',
-                                  dropoffAddress: 'Destination',
-                                  pickupLat: 30.0444,
-                                  pickupLng: 31.2357,
-                                  dropoffLat: 30.0566,
-                                  dropoffLng: 31.3300,
+                                  pickupAddress:
+                                      state.pickupAddress ?? 'Current location',
+                                  dropoffAddress:
+                                      state.destinationAddress ?? 'Destination',
+                                  pickupLat: pickup.latitude,
+                                  pickupLng: pickup.longitude,
+                                  dropoffLat: dropoff.latitude,
+                                  dropoffLng: dropoff.longitude,
                                   paymentMethod: method,
                                   price: num.tryParse(
                                       driver.price.replaceAll(RegExp(r'[^0-9.]'), '')),
@@ -153,7 +166,10 @@ class ConfirmRidePage extends StatelessWidget {
 }
 
 class _RouteSummary extends StatelessWidget {
-  const _RouteSummary();
+  const _RouteSummary({required this.pickup, required this.dropoff});
+
+  final String pickup;
+  final String dropoff;
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +192,9 @@ class _RouteSummary extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _point(AppStrings.pickup, AppStrings.currentLocation),
+                  _point(AppStrings.pickup, pickup),
                   const SizedBox(height: 12),
-                  _point(AppStrings.dropoff, AppStrings.dropoffPlace),
+                  _point(AppStrings.dropoff, dropoff),
                 ],
               ),
             ),

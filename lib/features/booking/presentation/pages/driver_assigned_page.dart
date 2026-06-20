@@ -37,12 +37,16 @@ class DriverAssignedPage extends StatelessWidget {
 
           return Stack(
             children: [
-              const Positioned(
+              Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
                 height: 300,
-                child: MapView(variant: MapVariant.route),
+                child: MapView(
+                  variant: MapVariant.route,
+                  pickup: state.pickup,
+                  dropoff: state.destination,
+                ),
               ),
               Positioned(
                 top: 0,

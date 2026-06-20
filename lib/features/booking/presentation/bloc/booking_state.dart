@@ -27,6 +27,10 @@ class BookingState extends Equatable {
     this.requesting = false,
     this.tripId,
     this.tripStatus = '',
+    this.pickup,
+    this.pickupAddress,
+    this.destination,
+    this.destinationAddress,
   });
 
   final List<Driver> drivers;
@@ -48,6 +52,17 @@ class BookingState extends Equatable {
   /// in_progress → completed.
   final String tripStatus;
 
+  /// Rider-chosen pickup point and its readable address (null until picked).
+  final LatLng? pickup;
+  final String? pickupAddress;
+
+  /// Rider-chosen destination and its readable address (null until picked).
+  final LatLng? destination;
+  final String? destinationAddress;
+
+  /// True once both ends of the trip have been chosen on the map.
+  bool get hasRoute => pickup != null && destination != null;
+
   /// The currently chosen driver (safe even before data loads).
   Driver? get selectedDriver =>
       drivers.isEmpty ? null : drivers[selectedDriverIndex];
@@ -64,6 +79,10 @@ class BookingState extends Equatable {
     bool? requesting,
     String? tripId,
     String? tripStatus,
+    LatLng? pickup,
+    String? pickupAddress,
+    LatLng? destination,
+    String? destinationAddress,
   }) {
     return BookingState(
       drivers: drivers ?? this.drivers,
@@ -77,6 +96,10 @@ class BookingState extends Equatable {
       requesting: requesting ?? this.requesting,
       tripId: tripId ?? this.tripId,
       tripStatus: tripStatus ?? this.tripStatus,
+      pickup: pickup ?? this.pickup,
+      pickupAddress: pickupAddress ?? this.pickupAddress,
+      destination: destination ?? this.destination,
+      destinationAddress: destinationAddress ?? this.destinationAddress,
     );
   }
 
@@ -93,5 +116,9 @@ class BookingState extends Equatable {
         requesting,
         tripId,
         tripStatus,
+        pickup,
+        pickupAddress,
+        destination,
+        destinationAddress,
       ];
 }

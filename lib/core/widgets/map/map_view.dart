@@ -22,9 +22,19 @@ enum MapVariant {
 /// (`MapView({variant})`) so every screen that used the old stylized map keeps
 /// working without edits.
 class MapView extends StatefulWidget {
-  const MapView({super.key, this.variant = MapVariant.idle});
+  const MapView({
+    super.key,
+    this.variant = MapVariant.idle,
+    this.pickup,
+    this.dropoff,
+  });
 
   final MapVariant variant;
+
+  /// Real trip endpoints. When null, sample Cairo points are used so the map
+  /// still renders a preview.
+  final LatLng? pickup;
+  final LatLng? dropoff;
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -32,10 +42,13 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   // Sample Cairo coordinates used until live trip geometry is wired in.
-  static const LatLng _pickup = LatLng(30.0444, 31.2357); // Downtown Cairo
-  static const LatLng _dropoff = LatLng(30.0626, 31.2497); // Zamalek-ish
+  static const LatLng _defaultPickup = LatLng(30.0444, 31.2357); // Downtown
+  static const LatLng _defaultDropoff = LatLng(30.0626, 31.2497); // Zamalek-ish
 
   static const LatLng _cairoCenter = LatLng(30.0500, 31.2400);
+
+  LatLng get _pickup => widget.pickup ?? _defaultPickup;
+  LatLng get _dropoff => widget.dropoff ?? _defaultDropoff;
 
   GoogleMapController? _controller;
 
@@ -65,7 +78,7 @@ class _MapViewState extends State<MapView> {
       // Soft shadow line under the main route for a little depth.
       Polyline(
         polylineId: const PolylineId('route_shadow'),
-        points: const [_pickup, _dropoff],
+        points: [_pickup, _dropoff],
         color: Colors.black.withOpacity(0.12),
         width: 11,
         geodesic: true,
@@ -73,8 +86,8 @@ class _MapViewState extends State<MapView> {
         endCap: Cap.roundCap,
         jointType: JointType.round,
       ),
-      const Polyline(
-        polylineId: PolylineId('route'),
+      Polyline(
+        polylineId: const PolylineId('route'),
         points: [_pickup, _dropoff],
         color: AppColors.primary,
         width: 6,
@@ -88,7 +101,7 @@ class _MapViewState extends State<MapView> {
 
   CameraPosition get _initialCamera {
     if (_showRoute) {
-      return const CameraPosition(target: _pickup, zoom: 13.5);
+      return CameraPosition(target: _pickup, zoom: 13.5);
     }
     return const CameraPosition(target: _cairoCenter, zoom: 13);
   }

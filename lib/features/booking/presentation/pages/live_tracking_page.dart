@@ -36,8 +36,12 @@ class LiveTrackingPage extends StatelessWidget {
 
           return Stack(
             children: [
-              const Positioned.fill(
-                child: MapView(variant: MapVariant.tracking),
+              Positioned.fill(
+                child: MapView(
+                  variant: MapVariant.tracking,
+                  pickup: state.pickup,
+                  dropoff: state.destination,
+                ),
               ),
               Positioned(
                 top: 0,

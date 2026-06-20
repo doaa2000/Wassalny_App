@@ -77,6 +77,8 @@ class AppStrings {
   static const String planYourRide = 'Plan your ride';
   static const String recent = 'Recent';
   static const String savedPlaces = 'Saved places';
+  static const String findDriver = 'Find a driver';
+  static const String setDropoffFirst = 'Set your destination';
 
   // Driver select
   static const String chooseDriver = 'Choose your driver';
