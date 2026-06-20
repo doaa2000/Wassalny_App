@@ -63,6 +63,43 @@ class DriversRemoteDataSource {
     );
   }
 
+  /// Maps a `trip_driver` RPC row (the captain who accepted) into a [DriverModel]
+  /// for the tracking screens. Has no distance, so ETA/price are left neutral.
+  DriverModel fromAssignedRow(Map<String, dynamic> r) {
+    final String name = (r['full_name'] as String?)?.trim().isNotEmpty == true
+        ? r['full_name'] as String
+        : 'Driver';
+    final num rating = (r['rating'] as num?) ?? 0;
+    final int trips = (r['total_trips'] as num?)?.toInt() ?? 0;
+    final String model = (r['vehicle_model'] as String?)?.trim().isNotEmpty == true
+        ? r['vehicle_model'] as String
+        : _tier(r['vehicle_type'] as String?);
+    final String plate = (r['plate_number'] as String?)?.trim().isNotEmpty == true
+        ? r['plate_number'] as String
+        : '—';
+    final List<int> colors = _palette[0];
+
+    return DriverModel(
+      id: 0,
+      profileId: r['profile_id']?.toString(),
+      name: name,
+      firstName: name.split(' ').first,
+      initials: _initials(name),
+      rating: rating.toStringAsFixed(2),
+      rides: trips.toString(),
+      car: model,
+      plate: plate,
+      tier: 'Wassalny ${_tierShort(r['vehicle_type'] as String?)}',
+      tag: '',
+      etaMinutes: 3,
+      price: '—',
+      carColorValue: colors[0],
+      avatarStartValue: colors[1],
+      avatarEndValue: colors[2],
+      recommended: false,
+    );
+  }
+
   String _tier(String? vt) => switch (vt) {
         'comfort' => 'Comfort sedan',
         'suv' => 'SUV',

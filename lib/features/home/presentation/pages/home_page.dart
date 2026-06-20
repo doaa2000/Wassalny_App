@@ -22,11 +22,11 @@ class HomePage extends StatelessWidget {
   void _openSearch(BuildContext context) =>
       Navigator.pushNamed(context, AppRoutes.search);
 
+  // Drivers shown on the home sheet are a live preview only. Tapping any of
+  // them (or "compare all") starts the booking flow — the ride is broadcast to
+  // all online captains, not assigned to one upfront.
   void _openDrivers(BuildContext context, {int? select}) {
-    if (select != null) {
-      context.read<BookingBloc>().add(BookingDriverSelected(select));
-    }
-    Navigator.pushNamed(context, AppRoutes.drivers);
+    Navigator.pushNamed(context, AppRoutes.search);
   }
 
   @override

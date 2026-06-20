@@ -29,4 +29,7 @@ abstract class BookingRepository {
 
   /// Live stream of a trip's status (for the rider's tracking screens).
   Stream<String> watchTrip(String tripId);
+
+  /// The driver who accepted the trip (null while unassigned or offline).
+  Future<Driver?> fetchAssignedDriver(String tripId);
 }

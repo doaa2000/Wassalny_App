@@ -84,7 +84,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
   Future<void> _onRideRequested(
       BookingRideRequested event, Emitter<BookingState> emit) async {
-    emit(state.copyWith(requesting: true));
+    emit(state.copyWith(requesting: true, resetAssignedDriver: true));
     try {
       final String? id = await _repository.requestTrip(
         pickupAddress: event.pickupAddress,
@@ -114,9 +114,25 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     }
   }
 
-  void _onTripStatusChanged(
-      _BookingTripStatusChanged event, Emitter<BookingState> emit) {
+  static const Set<String> _assignedStatuses = {
+    'accepted',
+    'arrived',
+    'in_progress',
+    'completed',
+  };
+
+  Future<void> _onTripStatusChanged(
+      _BookingTripStatusChanged event, Emitter<BookingState> emit) async {
     emit(state.copyWith(tripStatus: event.status));
+
+    // Once a captain accepts the broadcast, load who actually took the trip so
+    // the tracking screens show the real driver (not a previewed/demo one).
+    if (state.assignedDriver == null &&
+        state.tripId != null &&
+        _assignedStatuses.contains(event.status)) {
+      final Driver? driver = await _repository.fetchAssignedDriver(state.tripId!);
+      if (driver != null) emit(state.copyWith(assignedDriver: driver));
+    }
   }
 
   @override

@@ -31,6 +31,7 @@ class BookingState extends Equatable {
     this.pickupAddress,
     this.destination,
     this.destinationAddress,
+    this.assignedDriver,
   });
 
   final List<Driver> drivers;
@@ -63,9 +64,16 @@ class BookingState extends Equatable {
   /// True once both ends of the trip have been chosen on the map.
   bool get hasRoute => pickup != null && destination != null;
 
-  /// The currently chosen driver (safe even before data loads).
+  /// The real driver who accepted the broadcast request (null until accepted).
+  final Driver? assignedDriver;
+
+  /// The currently chosen driver from the demo/preview list.
   Driver? get selectedDriver =>
       drivers.isEmpty ? null : drivers[selectedDriverIndex];
+
+  /// The driver to show on the tracking screens: the captain who actually
+  /// accepted, falling back to the previewed/demo driver.
+  Driver? get activeDriver => assignedDriver ?? selectedDriver;
 
   BookingState copyWith({
     List<Driver>? drivers,
@@ -83,6 +91,8 @@ class BookingState extends Equatable {
     String? pickupAddress,
     LatLng? destination,
     String? destinationAddress,
+    Driver? assignedDriver,
+    bool resetAssignedDriver = false,
   }) {
     return BookingState(
       drivers: drivers ?? this.drivers,
@@ -100,6 +110,8 @@ class BookingState extends Equatable {
       pickupAddress: pickupAddress ?? this.pickupAddress,
       destination: destination ?? this.destination,
       destinationAddress: destinationAddress ?? this.destinationAddress,
+      assignedDriver:
+          resetAssignedDriver ? null : (assignedDriver ?? this.assignedDriver),
     );
   }
 
@@ -120,5 +132,6 @@ class BookingState extends Equatable {
         pickupAddress,
         destination,
         destinationAddress,
+        assignedDriver,
       ];
 }

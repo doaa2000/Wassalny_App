@@ -24,7 +24,7 @@ class TripCompletedPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
-          final driver = state.selectedDriver;
+          final driver = state.activeDriver;
           if (driver == null) return const SizedBox.shrink();
 
           return SingleChildScrollView(

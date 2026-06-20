@@ -90,6 +90,7 @@ class AppStrings {
   // Confirm
   static const String confirmRide = 'Confirm your ride';
   static const String confirmRideAction = 'Confirm ride';
+  static const String requestRide = 'Request ride';
   static const String pickup = 'PICKUP';
   static const String dropoff = 'DROP-OFF';
   static const String dropoffPlace = 'Cairo Festival City';

@@ -76,7 +76,7 @@ class SearchPage extends StatelessWidget {
                       : AppStrings.setDropoffFirst,
                   onPressed: state.hasRoute
                       ? () => Navigator.pushReplacementNamed(
-                          context, AppRoutes.drivers)
+                          context, AppRoutes.confirm)
                       : () => _pickDestination(context),
                 ),
               ),

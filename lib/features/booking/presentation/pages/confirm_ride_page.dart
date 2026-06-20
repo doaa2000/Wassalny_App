@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/widgets/gradient_avatar.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
 import '../../../../core/widgets/route_timeline.dart';
 import '../../domain/entities/fare_line.dart';
 import '../bloc/booking_bloc.dart';
-import '../utils/driver_presentation.dart';
 import '../widgets/fare_row.dart';
 import '../widgets/payment_option_tile.dart';
 import '../widgets/sheet_handle.dart';
@@ -29,8 +28,8 @@ class ConfirmRidePage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
-          final driver = state.selectedDriver;
-          if (driver == null) return const SizedBox.shrink();
+          final int fare = _estimateFare(state.pickup, state.destination);
+          final String fareText = 'EGP $fare';
 
           return Stack(
             children: [
@@ -82,14 +81,6 @@ class ConfirmRidePage extends StatelessWidget {
                         pickup: state.pickupAddress ?? AppStrings.currentLocation,
                         dropoff: state.destinationAddress ?? AppStrings.dropoffPlace,
                       ),
-                      const SizedBox(height: 16),
-                      _ChosenDriverRow(
-                        initials: driver.initials,
-                        gradient: driver.avatarGradient,
-                        name: driver.name,
-                        subtitle: '${driver.tier} · ${driver.car}',
-                        onChange: () => Navigator.pop(context),
-                      ),
                       const SizedBox(height: 20),
                       Text(AppStrings.paymentMethod,
                           style: AppTextStyles.label.copyWith(fontSize: 13)),
@@ -106,28 +97,28 @@ class ConfirmRidePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 11),
-                      Text(AppStrings.fareBreakdown,
-                          style: AppTextStyles.label.copyWith(fontSize: 13)),
-                      const SizedBox(height: 4),
-                      ...state.fareLines.map((l) => FareRow(line: l)),
                       FareRow(
                         line: FareLine(
-                            label: 'Total',
-                            amount: driver.price,
+                            label: 'Estimated total',
+                            amount: fareText,
                             isTotal: true),
+                      ),
+                      Text(
+                        'A nearby captain will accept your request. Final fare may vary with the route.',
+                        style: AppTextStyles.caption,
                       ),
                       const SizedBox(height: 16),
                       PrimaryButton(
-                        label:
-                            '${AppStrings.confirmRideAction} · ${driver.price}',
+                        label: '${AppStrings.requestRide} · $fareText',
                         onPressed: () {
                           final String pid = state.selectedPaymentId;
                           final String method =
                               (pid == 'cash' || pid == 'wallet' || pid == 'card')
                                   ? pid
                                   : 'cash';
-                          // Create the ride request in Supabase (the Captain app
-                          // receives it live), using the map-picked points.
+                          // Broadcast the request (no driver_id) so every online
+                          // captain receives it live and the first to accept
+                          // takes the trip — inDrive-style.
                           final pickup = state.pickup ??
                               const LatLng(30.0444, 31.2357);
                           final dropoff = state.destination ??
@@ -143,11 +134,8 @@ class ConfirmRidePage extends StatelessWidget {
                                   dropoffLat: dropoff.latitude,
                                   dropoffLng: dropoff.longitude,
                                   paymentMethod: method,
-                                  price: num.tryParse(
-                                      driver.price.replaceAll(RegExp(r'[^0-9.]'), '')),
-                                  // Assign the chosen real driver (null for a
-                                  // demo driver → broadcast request).
-                                  driverId: driver.profileId,
+                                  price: fare,
+                                  driverId: null, // broadcast to all online drivers
                                 ),
                               );
                           Navigator.pushNamed(context, AppRoutes.finding);
@@ -163,6 +151,21 @@ class ConfirmRidePage extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Rough fare estimate from the straight-line distance between the two points:
+/// a base fare plus a per-km rate, with a sensible minimum. Tunable later.
+int _estimateFare(LatLng? pickup, LatLng? dropoff) {
+  if (pickup == null || dropoff == null) return 25;
+  final double meters = Geolocator.distanceBetween(
+    pickup.latitude,
+    pickup.longitude,
+    dropoff.latitude,
+    dropoff.longitude,
+  );
+  final double km = meters / 1000;
+  final double fare = 15 + km * 7; // EGP 15 base + 7/km
+  return fare.clamp(20, 100000).round();
 }
 
 class _RouteSummary extends StatelessWidget {
@@ -219,66 +222,4 @@ class _RouteSummary extends StatelessWidget {
               style: AppTextStyles.listTitle.copyWith(fontSize: 14)),
         ],
       );
-}
-
-class _ChosenDriverRow extends StatelessWidget {
-  const _ChosenDriverRow({
-    required this.initials,
-    required this.gradient,
-    required this.name,
-    required this.subtitle,
-    required this.onChange,
-  });
-
-  final String initials;
-  final Gradient gradient;
-  final String name;
-  final String subtitle;
-  final VoidCallback onChange;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          GradientAvatar(
-            initials: initials,
-            gradient: gradient,
-            size: 50,
-            radius: 16,
-            fontSize: 18,
-          ),
-          const SizedBox(width: 13),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name,
-                    style: AppTextStyles.listTitle.copyWith(fontSize: 15)),
-                Text(subtitle, style: AppTextStyles.caption),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: onChange,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.peach,
-                borderRadius: BorderRadius.circular(11),
-              ),
-              child: Text(AppStrings.change,
-                  style: AppTextStyles.micro.copyWith(
-                      color: AppColors.primaryDark, fontSize: 12.5)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

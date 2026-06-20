@@ -32,8 +32,10 @@ class DriverAssignedPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
-          final driver = state.selectedDriver;
-          if (driver == null) return const SizedBox.shrink();
+          final driver = state.activeDriver;
+          if (driver == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
           return Stack(
             children: [

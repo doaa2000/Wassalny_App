@@ -65,4 +65,18 @@ class BookingRepositoryImpl implements BookingRepository {
 
   @override
   Stream<String> watchTrip(String tripId) => _tripRemote.watchTrip(tripId);
+
+  @override
+  Future<Driver?> fetchAssignedDriver(String tripId) async {
+    final DriversRemoteDataSource? remote = _driversRemote;
+    if (remote == null) return null;
+    try {
+      final Map<String, dynamic>? row =
+          await _tripRemote.assignedDriverRow(tripId);
+      if (row == null) return null;
+      return remote.fromAssignedRow(row);
+    } catch (_) {
+      return null;
+    }
+  }
 }
