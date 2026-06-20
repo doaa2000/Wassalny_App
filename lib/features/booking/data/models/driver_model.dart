@@ -20,6 +20,7 @@ class DriverModel extends Driver {
     required super.avatarStartValue,
     required super.avatarEndValue,
     required super.recommended,
+    super.profileId,
   });
 
   factory DriverModel.fromMap(Map<String, dynamic> map) => DriverModel(

@@ -23,7 +23,12 @@ class Driver extends Equatable {
     required this.avatarStartValue,
     required this.avatarEndValue,
     required this.recommended,
+    this.profileId,
   });
+
+  /// Backend driver id (Supabase `drivers.profile_id`) when this is a real,
+  /// online driver. Null for the demo catalogue (then the trip is broadcast).
+  final String? profileId;
 
   final int id;
   final String name;

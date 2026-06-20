@@ -80,6 +80,7 @@ final class BookingRideRequested extends BookingEvent {
     required this.dropoffLng,
     required this.paymentMethod,
     this.price,
+    this.driverId,
   });
 
   final String pickupAddress;
@@ -91,9 +92,12 @@ final class BookingRideRequested extends BookingEvent {
   final String paymentMethod;
   final num? price;
 
+  /// Assigned driver's backend id (null = broadcast to all nearby drivers).
+  final String? driverId;
+
   @override
   List<Object?> get props =>
-      [pickupAddress, dropoffAddress, pickupLat, pickupLng, dropoffLat, dropoffLng, paymentMethod, price];
+      [pickupAddress, dropoffAddress, pickupLat, pickupLng, dropoffLat, dropoffLng, paymentMethod, price, driverId];
 }
 
 /// Internal: the tracked trip's status changed (from the Realtime stream).

@@ -32,12 +32,13 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   final BookingRepository _repository;
   StreamSubscription<String>? _tripSub;
 
-  void _onStarted(BookingStarted event, Emitter<BookingState> emit) {
+  Future<void> _onStarted(BookingStarted event, Emitter<BookingState> emit) async {
     emit(state.copyWith(
-      drivers: _repository.getNearbyDrivers(),
       paymentMethods: _repository.getPaymentMethods(),
       fareLines: _repository.getFareBreakdown(),
     ));
+    final List<Driver> drivers = await _repository.fetchNearbyDrivers();
+    emit(state.copyWith(drivers: drivers));
   }
 
   void _onDriverSelected(
@@ -81,6 +82,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         dropoffLng: event.dropoffLng,
         paymentMethod: event.paymentMethod,
         price: event.price,
+        driverId: event.driverId,
       );
       emit(state.copyWith(requesting: false, tripId: id, tripStatus: 'requested'));
 

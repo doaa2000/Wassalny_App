@@ -3,18 +3,34 @@ import '../../domain/entities/fare_line.dart';
 import '../../domain/entities/payment_method.dart';
 import '../../domain/repositories/booking_repository.dart';
 import '../datasources/booking_local_data_source.dart';
+import '../datasources/drivers_remote_data_source.dart';
 import '../datasources/trip_remote_data_source.dart';
 
-/// Concrete [BookingRepository]: catalogue data comes from the in-memory source,
-/// while ride requests are sent to the backend trip data source.
+/// Concrete [BookingRepository]: payment/fare data comes from the in-memory
+/// source; drivers come from `nearby_drivers` (with a demo fallback); ride
+/// requests are sent to the backend trip data source.
 class BookingRepositoryImpl implements BookingRepository {
-  BookingRepositoryImpl(this._local, this._tripRemote);
+  BookingRepositoryImpl(this._local, this._tripRemote, [this._driversRemote]);
 
   final BookingLocalDataSource _local;
   final TripRemoteDataSource _tripRemote;
+  final DriversRemoteDataSource? _driversRemote;
 
   @override
-  List<Driver> getNearbyDrivers() => _local.nearbyDrivers();
+  Future<List<Driver>> fetchNearbyDrivers() async {
+    // Real online drivers near central Cairo (placeholder coords until the map
+    // picker feeds real lat/lng).
+    final DriversRemoteDataSource? remote = _driversRemote;
+    if (remote != null) {
+      try {
+        final List<Driver> real = await remote.nearbyDrivers(lat: 30.0444, lng: 31.2357);
+        if (real.isNotEmpty) return real;
+      } catch (_) {
+        // fall through to the demo catalogue
+      }
+    }
+    return _local.nearbyDrivers();
+  }
 
   @override
   List<PaymentMethod> getPaymentMethods() => _local.paymentMethods();
@@ -32,6 +48,7 @@ class BookingRepositoryImpl implements BookingRepository {
     required double dropoffLng,
     required String paymentMethod,
     num? price,
+    String? driverId,
   }) {
     return _tripRemote.requestTrip(
       pickupAddress: pickupAddress,
@@ -42,6 +59,7 @@ class BookingRepositoryImpl implements BookingRepository {
       dropoffLng: dropoffLng,
       paymentMethod: paymentMethod,
       price: price,
+      driverId: driverId,
     );
   }
 

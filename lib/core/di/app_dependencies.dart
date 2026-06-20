@@ -5,6 +5,7 @@ import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/booking/data/datasources/booking_local_data_source.dart';
+import '../../features/booking/data/datasources/drivers_remote_data_source.dart';
 import '../../features/booking/data/datasources/trip_remote_data_source.dart';
 import '../../features/booking/data/repositories/booking_repository_impl.dart';
 import '../../features/booking/domain/repositories/booking_repository.dart';
@@ -38,8 +39,12 @@ class _AppDependenciesState extends State<AppDependencies> {
       SupabaseService.instance.isConfigured
           ? TripSupabaseDataSource(SupabaseService.instance)
           : const TripNoopDataSource();
+  late final DriversRemoteDataSource? _driversRemote =
+      SupabaseService.instance.isConfigured
+          ? DriversRemoteDataSource(SupabaseService.instance)
+          : null;
   late final BookingRepository _bookingRepo =
-      BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote);
+      BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote, _driversRemote);
   late final _authRepo =
       AuthRepositoryImpl(AuthRemoteDataSource(SupabaseService.instance));
   late final _walletRepo = WalletRepositoryImpl();

@@ -132,6 +132,9 @@ class ConfirmRidePage extends StatelessWidget {
                                   paymentMethod: method,
                                   price: num.tryParse(
                                       driver.price.replaceAll(RegExp(r'[^0-9.]'), '')),
+                                  // Assign the chosen real driver (null for a
+                                  // demo driver → broadcast request).
+                                  driverId: driver.profileId,
                                 ),
                               );
                           Navigator.pushNamed(context, AppRoutes.finding);

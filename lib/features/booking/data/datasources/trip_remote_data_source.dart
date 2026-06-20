@@ -12,6 +12,7 @@ abstract class TripRemoteDataSource {
     required double dropoffLng,
     required String paymentMethod,
     num? price,
+    String? driverId,
   });
 
   /// Live stream of the trip's status (requested → accepted → arrived →
@@ -36,6 +37,7 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
     required double dropoffLng,
     required String paymentMethod,
     num? price,
+    String? driverId,
   }) async {
     final String? passengerId = _service.currentUserId;
     if (passengerId == null) {
@@ -45,6 +47,7 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
         .from('trips')
         .insert({
           'passenger_id': passengerId,
+          'driver_id': driverId, // null = broadcast; set = assigned to a driver
           'pickup_address': pickupAddress,
           'destination_address': dropoffAddress,
           'pickup_latitude': pickupLat,
@@ -86,6 +89,7 @@ class TripNoopDataSource implements TripRemoteDataSource {
     required double dropoffLng,
     required String paymentMethod,
     num? price,
+    String? driverId,
   }) async =>
       'mock-${DateTime.now().millisecondsSinceEpoch}';
 
