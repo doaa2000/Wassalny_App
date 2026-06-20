@@ -37,8 +37,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // Injected into AndroidManifest.xml as ${MAPS_API_KEY}.
-        manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
+        // Injected into AndroidManifest.xml as ${MAPS_API_KEY}. Use index
+        // assignment so we don't clobber Flutter's own placeholders (e.g.
+        // applicationName).
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
