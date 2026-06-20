@@ -54,6 +54,8 @@ class AuthRemoteDataSource {
   AppUser? currentUser() {
     if (!_service.isConfigured) return null;
     final User? u = _service.client.auth.currentUser;
-    return u == null ? null : _map(u);
+    // An anonymous session is not a "real" login — keep the login screen for it.
+    if (u == null || u.isAnonymous) return null;
+    return _map(u);
   }
 }

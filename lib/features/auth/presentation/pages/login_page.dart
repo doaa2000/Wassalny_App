@@ -24,6 +24,24 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
+  /// True while skipping the login screen because there's already a session.
+  bool _redirecting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // If the rider is already signed in, don't show the login form at all —
+    // go straight to home (covers landing here from onboarding).
+    if (context.read<AuthBloc>().state.status == AuthStatus.authenticated) {
+      _redirecting = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.main, (_) => false);
+        }
+      });
+    }
+  }
+
   @override
   void dispose() {
     _email.dispose();
@@ -39,6 +57,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Avoid flashing the login form while redirecting an authenticated rider.
+    if (_redirecting) {
+      return const Scaffold(backgroundColor: AppColors.surface);
+    }
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: BlocListener<AuthBloc, AuthState>(
