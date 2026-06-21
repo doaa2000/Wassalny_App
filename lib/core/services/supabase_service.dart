@@ -28,6 +28,14 @@ class SupabaseService {
   /// satisfy the RLS policy on the `trips` table.
   String? get currentUserId => _client?.auth.currentUser?.id;
 
+  /// True when a real (non-anonymous) user is signed in. An anonymous session
+  /// (used so a guest can create trips) does NOT count — onboarding/login is
+  /// only skipped for a genuine email login/signup.
+  bool get hasRealSession {
+    final User? u = _client?.auth.currentUser;
+    return u != null && !u.isAnonymous;
+  }
+
   /// Initializes the client and ensures a passenger session exists. Uses an
   /// anonymous sign-in so a rider can create trips without a full login flow
   /// (enable "Anonymous sign-ins" in Supabase → Authentication → Providers).
