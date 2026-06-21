@@ -158,6 +158,8 @@ class AppStrings {
   static const String language = 'Language';
   static const String languageValue = 'English';
   static const String helpSupport = 'Help & support';
+  static const String rateApp = 'Rate the app';
+  static const String aboutUs = 'About us';
   static const String logout = 'Log out';
 
   // Bottom nav

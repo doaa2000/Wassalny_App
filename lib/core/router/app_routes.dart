@@ -28,4 +28,7 @@ class AppRoutes {
 
   // Debug log viewer.
   static const String logs = '/logs';
+
+  // About us.
+  static const String about = '/about';
 }

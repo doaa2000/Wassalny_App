@@ -7,8 +7,8 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../shell/presentation/bloc/nav_bloc.dart';
 import '../widgets/profile_menu_item.dart';
+import '../widgets/rate_app_sheet.dart';
 
 /// Profile tab: rider header + grouped settings menu.
 class ProfilePage extends StatelessWidget {
@@ -39,11 +39,6 @@ class ProfilePage extends StatelessWidget {
                       onTap: () =>
                           Navigator.pushNamed(context, AppRoutes.savedPlaces),
                     ),
-                    ProfileMenuItem(
-                      icon: Icons.account_balance_wallet_outlined,
-                      label: AppStrings.paymentMethods,
-                      onTap: () => context.read<NavBloc>().add(const NavTabSelected(2)),
-                    ),
                     const ProfileMenuItem(
                       icon: Icons.language_rounded,
                       label: AppStrings.language,
@@ -61,6 +56,17 @@ class ProfilePage extends StatelessWidget {
                       label: AppStrings.helpSupport,
                       iconBg: AppColors.background,
                       iconColor: AppColors.textSecondary,
+                    ),
+                    ProfileMenuItem(
+                      icon: Icons.star_outline_rounded,
+                      label: AppStrings.rateApp,
+                      onTap: () => showRateAppSheet(context),
+                    ),
+                    ProfileMenuItem(
+                      icon: Icons.info_outline_rounded,
+                      label: AppStrings.aboutUs,
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.about),
                     ),
                     ProfileMenuItem(
                       icon: Icons.logout_rounded,

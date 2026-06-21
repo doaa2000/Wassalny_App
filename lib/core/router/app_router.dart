@@ -14,6 +14,7 @@ import '../../features/booking/presentation/pages/search_page.dart';
 import '../../features/booking/presentation/pages/trip_completed_page.dart';
 import '../logging/presentation/log_viewer_page.dart';
 import '../../features/onboarding/presentation/pages/location_permission_page.dart';
+import '../../features/profile/presentation/pages/about_us_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_intro_page.dart';
 import '../../features/onboarding/presentation/pages/welcome_page.dart';
 import '../../features/places/data/datasources/places_remote_data_source.dart';
@@ -66,6 +67,8 @@ class AppRouter {
         return (_) => const TripCompletedPage();
       case AppRoutes.logs:
         return (_) => const LogViewerPage();
+      case AppRoutes.about:
+        return (_) => const AboutUsPage();
       case AppRoutes.savedPlaces:
         return (_) => BlocProvider(
               create: (_) => PlacesBloc(
