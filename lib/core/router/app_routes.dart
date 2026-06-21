@@ -25,4 +25,7 @@ class AppRoutes {
 
   // Saved places (CRUD example).
   static const String savedPlaces = '/saved-places';
+
+  // Debug log viewer.
+  static const String logs = '/logs';
 }

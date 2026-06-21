@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/logging/logging.dart';
 import '../../domain/entities/driver.dart';
 import '../../domain/entities/fare_line.dart';
 import '../../domain/entities/payment_method.dart';
@@ -105,11 +106,15 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
         _tripSub?.cancel();
         _tripSub = _repository.watchTrip(id).listen(
           (status) => add(_BookingTripStatusChanged(status)),
-          onError: (_) {},
+          onError: (Object e, StackTrace s) =>
+              appLogger.logError('watchTrip stream error',
+                  feature: 'Booking', error: e, stackTrace: s),
         );
       }
-    } catch (_) {
+    } catch (e, s) {
       // Keep the flow going even if the backend call fails (UI-only fallback).
+      appLogger.logError('requestTrip failed',
+          feature: 'Booking', error: e, stackTrace: s);
       emit(state.copyWith(requesting: false));
     }
   }

@@ -1,3 +1,4 @@
+import '../../../../core/logging/logging.dart';
 import '../../domain/entities/driver.dart';
 import '../../domain/entities/fare_line.dart';
 import '../../domain/entities/payment_method.dart';
@@ -25,8 +26,9 @@ class BookingRepositoryImpl implements BookingRepository {
       try {
         final List<Driver> real = await remote.nearbyDrivers(lat: 30.0444, lng: 31.2357);
         if (real.isNotEmpty) return real;
-      } catch (_) {
-        // fall through to the demo catalogue
+      } catch (e, s) {
+        appLogger.logWarning('nearby_drivers failed; using demo catalogue',
+            feature: 'Booking', error: e, stackTrace: s);
       }
     }
     return _local.nearbyDrivers();
@@ -75,7 +77,9 @@ class BookingRepositoryImpl implements BookingRepository {
           await _tripRemote.assignedDriverRow(tripId);
       if (row == null) return null;
       return remote.fromAssignedRow(row);
-    } catch (_) {
+    } catch (e, s) {
+      appLogger.logError('fetchAssignedDriver failed',
+          feature: 'Booking', error: e, stackTrace: s);
       return null;
     }
   }
