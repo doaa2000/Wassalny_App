@@ -90,9 +90,15 @@ final class BookingPickupPicked extends BookingEvent {
   List<Object?> get props => [latLng];
 }
 
-/// Request the device GPS and use it as the initial pickup (home screen).
+/// Request the device GPS and use it as the pickup (home screen). [force]
+/// re-fetches even if a pickup is already set (the "my location" button).
 final class BookingCurrentPickupRequested extends BookingEvent {
-  const BookingCurrentPickupRequested();
+  const BookingCurrentPickupRequested({this.force = false});
+
+  final bool force;
+
+  @override
+  List<Object?> get props => [force];
 }
 
 /// The rider confirmed their destination on the map.

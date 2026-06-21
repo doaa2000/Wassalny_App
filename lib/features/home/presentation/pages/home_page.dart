@@ -83,6 +83,18 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(child: _LocationPill()),
+                    const SizedBox(width: 10),
+                    RoundIconButton(
+                      icon: Icons.my_location_rounded,
+                      iconColor: AppColors.primary,
+                      background: AppColors.surface,
+                      size: 48,
+                      radius: 16,
+                      shadow: true,
+                      onPressed: () => context
+                          .read<BookingBloc>()
+                          .add(const BookingCurrentPickupRequested(force: true)),
+                    ),
                   ],
                 ),
               ),

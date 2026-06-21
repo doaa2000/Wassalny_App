@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
@@ -62,10 +63,6 @@ class _MapViewState extends State<MapView> {
 
   GoogleMapController? _controller;
 
-  /// Whether we've already recentred on the first resolved pickup (so we don't
-  /// fight the rider's panning afterwards).
-  bool _centeredOnPickup = false;
-
   /// Last camera centre, and whether the latest move came from a user gesture
   /// (so we only commit a pickup the rider actually chose, not initial/animated
   /// settles).
@@ -87,13 +84,25 @@ class _MapViewState extends State<MapView> {
     }
   }
 
+  /// Moves the camera to [target] and treats it as the current centre.
+  Future<void> _moveTo(LatLng target, {double zoom = 16}) async {
+    _cameraTarget = target;
+    await _controller?.animateCamera(CameraUpdate.newLatLngZoom(target, zoom));
+  }
+
   @override
   void didUpdateWidget(covariant MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Recentre once when the pickup first resolves (e.g. GPS comes back).
-    if (_interactivePickup && !_centeredOnPickup && widget.pickup != null) {
-      _centeredOnPickup = true;
-      _controller?.animateCamera(CameraUpdate.newLatLng(widget.pickup!));
+    // Recentre when the pickup jumps to a new place from *outside* the map
+    // (GPS first fix, or the "my location" button). Small changes that came
+    // from the rider's own panning leave the camera where it is.
+    if (_interactivePickup && widget.pickup != null && _controller != null) {
+      final LatLng current = _cameraTarget ?? const LatLng(0, 0);
+      final double moved = Geolocator.distanceBetween(
+        current.latitude, current.longitude,
+        widget.pickup!.latitude, widget.pickup!.longitude,
+      );
+      if (moved > 50) _moveTo(widget.pickup!);
     }
   }
 
@@ -157,6 +166,14 @@ class _MapViewState extends State<MapView> {
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     _controller = controller;
+
+    // If GPS resolved the pickup before the map finished creating, snap to it
+    // now (initialCameraPosition was already locked in at build time).
+    if (_interactivePickup && widget.pickup != null) {
+      await _moveTo(widget.pickup!);
+      return;
+    }
+
     // Frame both points when a route is shown.
     if (_showRoute) {
       final bounds = LatLngBounds(

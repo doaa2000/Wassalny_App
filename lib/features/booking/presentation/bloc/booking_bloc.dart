@@ -97,8 +97,9 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
   Future<void> _onCurrentPickupRequested(
       BookingCurrentPickupRequested event, Emitter<BookingState> emit) async {
-    // Don't override a pickup the rider already chose.
-    if (state.pickup != null) return;
+    // Don't override a pickup the rider already chose — unless they explicitly
+    // tapped "my location" (force).
+    if (!event.force && state.pickup != null) return;
     final LatLng? here = await _location.currentLatLng();
     if (here == null) return;
     emit(state.copyWith(pickup: here, pickupAddress: 'Locating…'));
