@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
               selector: (state) => state.pickup,
               builder: (context, pickup) => MapView(
                 variant: MapVariant.idle,
-                draggablePickup: true,
+                interactivePickup: true,
                 pickup: pickup,
                 onPickupMoved: (p) =>
                     context.read<BookingBloc>().add(BookingPickupPicked(p)),

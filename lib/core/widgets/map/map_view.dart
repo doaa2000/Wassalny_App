@@ -27,7 +27,7 @@ class MapView extends StatefulWidget {
     this.variant = MapVariant.idle,
     this.pickup,
     this.dropoff,
-    this.draggablePickup = false,
+    this.interactivePickup = false,
     this.onPickupMoved,
   });
 
@@ -38,12 +38,12 @@ class MapView extends StatefulWidget {
   final LatLng? pickup;
   final LatLng? dropoff;
 
-  /// In [MapVariant.idle], show a draggable pickup pin the rider can drag (or
-  /// tap the map) to set their pickup — inDrive-style.
-  final bool draggablePickup;
+  /// In [MapVariant.idle], show a fixed centre pin and let the rider move the
+  /// map under it to set their pickup — inDrive-style.
+  final bool interactivePickup;
 
-  /// Fires with the new pickup position when the rider drags the pin or taps
-  /// the map (only when [draggablePickup] is on).
+  /// Fires with the map's centre when the rider stops panning (only when
+  /// [interactivePickup] is on).
   final ValueChanged<LatLng>? onPickupMoved;
 
   @override
@@ -63,12 +63,29 @@ class _MapViewState extends State<MapView> {
   GoogleMapController? _controller;
 
   /// Whether we've already recentred on the first resolved pickup (so we don't
-  /// fight the rider's drags afterwards).
+  /// fight the rider's panning afterwards).
   bool _centeredOnPickup = false;
+
+  /// Last camera centre, and whether the latest move came from a user gesture
+  /// (so we only commit a pickup the rider actually chose, not initial/animated
+  /// settles).
+  LatLng? _cameraTarget;
+  bool _userMoved = false;
 
   bool get _showRoute => widget.variant != MapVariant.idle;
   bool get _interactivePickup =>
-      widget.variant == MapVariant.idle && widget.draggablePickup;
+      widget.variant == MapVariant.idle && widget.interactivePickup;
+
+  void _onCameraMoveStarted() => _userMoved = true;
+
+  void _onCameraMove(CameraPosition position) => _cameraTarget = position.target;
+
+  void _onCameraIdle() {
+    if (_userMoved && _cameraTarget != null) {
+      _userMoved = false;
+      widget.onPickupMoved?.call(_cameraTarget!);
+    }
+  }
 
   @override
   void didUpdateWidget(covariant MapView oldWidget) {
@@ -81,18 +98,9 @@ class _MapViewState extends State<MapView> {
   }
 
   Set<Marker> _buildMarkers() {
-    if (_interactivePickup) {
-      return {
-        Marker(
-          markerId: const MarkerId('pickup_drag'),
-          position: _pickup,
-          draggable: true,
-          onDragEnd: (pos) => widget.onPickupMoved?.call(pos),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          infoWindow: const InfoWindow(title: 'Pickup', snippet: 'Drag or tap the map to move'),
-        ),
-      };
-    }
+    // Interactive pickup uses a fixed Flutter overlay pin (see build), not a
+    // Google marker, so the map slides freely beneath it.
+    if (_interactivePickup) return const {};
     if (!_showRoute) return const {};
     return {
       Marker(
@@ -174,10 +182,15 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
+    // Push the camera focus up over the home booking sheet so the centre pin
+    // lands in the visible area; elsewhere just clear Google's attribution.
+    const double bottomInset = 300;
+    final GoogleMap map = GoogleMap(
       initialCameraPosition: _initialCamera,
       onMapCreated: _onMapCreated,
-      onTap: _interactivePickup ? widget.onPickupMoved : null,
+      onCameraMoveStarted: _interactivePickup ? _onCameraMoveStarted : null,
+      onCameraMove: _interactivePickup ? _onCameraMove : null,
+      onCameraIdle: _interactivePickup ? _onCameraIdle : null,
       style: wassalnyMapStyle,
       markers: _buildMarkers(),
       polylines: _buildPolylines(),
@@ -188,10 +201,71 @@ class _MapViewState extends State<MapView> {
       zoomControlsEnabled: false,
       compassEnabled: false,
       mapToolbarEnabled: false,
-      // The home booking sheet covers the lower half, so push the camera focus
-      // (and the centred pickup pin) up into the visible area there; elsewhere
-      // just keep Google's attribution clear of the sheets.
-      padding: EdgeInsets.only(bottom: _interactivePickup ? 300 : 24),
+      padding: EdgeInsets.only(bottom: _interactivePickup ? bottomInset : 24),
+    );
+
+    if (!_interactivePickup) return map;
+
+    // Fixed centre pin overlaid at the camera's focal point (centre of the
+    // area above [bottomInset]). IgnorePointer so it never blocks panning.
+    return Stack(
+      children: [
+        map,
+        const Positioned.fill(
+          child: IgnorePointer(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: bottomInset),
+              child: Align(
+                alignment: Alignment.center,
+                child: _CenterPin(),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Fixed map pin: a teardrop whose tip points at the exact map centre.
+class _CenterPin extends StatelessWidget {
+  const _CenterPin();
+
+  @override
+  Widget build(BuildContext context) {
+    // Pin content (circle + stem + dot) is ~62px tall with the tip at the
+    // bottom. Padding the same amount below pushes the tip to the widget's
+    // vertical centre, which Align then places on the exact map centre.
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 62),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.my_location_rounded, color: Colors.white, size: 20),
+          ),
+          Container(width: 2.5, height: 14, color: AppColors.primary),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+          ),
+        ],
+      ),
     );
   }
 }
