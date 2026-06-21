@@ -44,12 +44,24 @@ class LocationService {
           await placemarkFromCoordinates(p.latitude, p.longitude);
       if (marks.isNotEmpty) {
         final Placemark m = marks.first;
+        // Build the most descriptive name available, most-specific first:
+        // a POI/landmark name or street, then the district and the city.
+        // De-duplicate (a field is often repeated as `name` and `street`).
+        final seen = <String>{};
         final parts = <String?>[
-          m.street,
+          m.name,
+          m.thoroughfare,
           m.subLocality,
           m.locality,
-        ].where((s) => s != null && s.trim().isNotEmpty).toList();
-        if (parts.isNotEmpty) return parts.join('، ');
+          m.administrativeArea,
+        ]
+            .where((s) => s != null && s.trim().isNotEmpty)
+            .map((s) => s!.trim())
+            // Drop entries that are just a number (e.g. a bare house number).
+            .where((s) => !RegExp(r'^[0-9\s-]+$').hasMatch(s))
+            .where((s) => seen.add(s.toLowerCase()))
+            .toList();
+        if (parts.isNotEmpty) return parts.take(3).join('، ');
       }
     } catch (_) {
       // Geocoding unavailable (e.g. no network) — fall through.

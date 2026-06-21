@@ -131,16 +131,35 @@ class _LocationPill extends StatelessWidget {
           const Icon(Icons.trip_origin, size: 15, color: AppColors.success),
           const SizedBox(width: 8),
           Expanded(
-            child: BlocSelector<BookingBloc, BookingState, String?>(
-              selector: (state) => state.pickupAddress,
-              builder: (context, address) => Text(
-                address?.isNotEmpty == true ? address! : 'Locating your pickup…',
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.bodySm.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 13.5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'PICKUP',
+                  style: AppTextStyles.micro.copyWith(
+                    color: AppColors.textTertiary,
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.4,
+                  ),
                 ),
-              ),
+                BlocSelector<BookingBloc, BookingState, String?>(
+                  selector: (state) => state.pickupAddress,
+                  builder: (context, address) => Text(
+                    address?.isNotEmpty == true
+                        ? address!
+                        : 'Move the map to set pickup…',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodySm.copyWith(
+                      color: AppColors.ink,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
