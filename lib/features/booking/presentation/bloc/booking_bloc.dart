@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/logging/logging.dart';
+import '../../../../core/services/location_service.dart';
 import '../../domain/entities/driver.dart';
 import '../../domain/entities/fare_line.dart';
 import '../../domain/entities/payment_method.dart';
@@ -29,11 +30,14 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingTripReset>(_onTripReset);
     on<BookingPickupSet>(_onPickupSet);
     on<BookingDestinationSet>(_onDestinationSet);
+    on<BookingPickupPicked>(_onPickupPicked);
+    on<BookingCurrentPickupRequested>(_onCurrentPickupRequested);
     on<BookingRideRequested>(_onRideRequested);
     on<_BookingTripStatusChanged>(_onTripStatusChanged);
   }
 
   final BookingRepository _repository;
+  final LocationService _location = LocationService.instance;
   StreamSubscription<String>? _tripSub;
 
   Future<void> _onStarted(BookingStarted event, Emitter<BookingState> emit) async {
@@ -81,6 +85,25 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       BookingDestinationSet event, Emitter<BookingState> emit) {
     emit(state.copyWith(
         destination: event.latLng, destinationAddress: event.address));
+  }
+
+  Future<void> _onPickupPicked(
+      BookingPickupPicked event, Emitter<BookingState> emit) async {
+    // Move the pin immediately; resolve the address in the background.
+    emit(state.copyWith(pickup: event.latLng, pickupAddress: 'Locating…'));
+    final String address = await _location.addressOf(event.latLng);
+    emit(state.copyWith(pickup: event.latLng, pickupAddress: address));
+  }
+
+  Future<void> _onCurrentPickupRequested(
+      BookingCurrentPickupRequested event, Emitter<BookingState> emit) async {
+    // Don't override a pickup the rider already chose.
+    if (state.pickup != null) return;
+    final LatLng? here = await _location.currentLatLng();
+    if (here == null) return;
+    emit(state.copyWith(pickup: here, pickupAddress: 'Locating…'));
+    final String address = await _location.addressOf(here);
+    emit(state.copyWith(pickup: here, pickupAddress: address));
   }
 
   Future<void> _onRideRequested(

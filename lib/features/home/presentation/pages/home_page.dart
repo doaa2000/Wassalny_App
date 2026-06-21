@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -15,9 +16,22 @@ import '../widgets/driver_mini_card.dart';
 import '../widgets/quick_place_card.dart';
 
 /// Home tab: live map with a booking sheet (greeting, search entry, saved
-/// places and nearby drivers).
-class HomePage extends StatelessWidget {
+/// places and nearby drivers). The map carries a draggable pickup pin
+/// (inDrive-style) the rider can move to set their pickup.
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Centre the pickup pin on the rider's current location when home opens.
+    context.read<BookingBloc>().add(const BookingCurrentPickupRequested());
+  }
 
   void _openSearch(BuildContext context) =>
       Navigator.pushNamed(context, AppRoutes.search);
@@ -34,7 +48,18 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const Positioned.fill(child: MapView(variant: MapVariant.idle)),
+          Positioned.fill(
+            child: BlocSelector<BookingBloc, BookingState, LatLng?>(
+              selector: (state) => state.pickup,
+              builder: (context, pickup) => MapView(
+                variant: MapVariant.idle,
+                draggablePickup: true,
+                pickup: pickup,
+                onPickupMoved: (p) =>
+                    context.read<BookingBloc>().add(BookingPickupPicked(p)),
+              ),
+            ),
+          ),
           // Top bar.
           Positioned(
             top: 0,
@@ -94,12 +119,15 @@ class _LocationPill extends StatelessWidget {
           const Icon(Icons.trip_origin, size: 15, color: AppColors.success),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              AppStrings.currentLocation,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.bodySm.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: 13.5,
+            child: BlocSelector<BookingBloc, BookingState, String?>(
+              selector: (state) => state.pickupAddress,
+              builder: (context, address) => Text(
+                address?.isNotEmpty == true ? address! : 'Locating your pickup…',
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.bodySm.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 13.5,
+                ),
               ),
             ),
           ),

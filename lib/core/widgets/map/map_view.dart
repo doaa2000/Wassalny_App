@@ -27,6 +27,8 @@ class MapView extends StatefulWidget {
     this.variant = MapVariant.idle,
     this.pickup,
     this.dropoff,
+    this.draggablePickup = false,
+    this.onPickupMoved,
   });
 
   final MapVariant variant;
@@ -35,6 +37,14 @@ class MapView extends StatefulWidget {
   /// still renders a preview.
   final LatLng? pickup;
   final LatLng? dropoff;
+
+  /// In [MapVariant.idle], show a draggable pickup pin the rider can drag (or
+  /// tap the map) to set their pickup — inDrive-style.
+  final bool draggablePickup;
+
+  /// Fires with the new pickup position when the rider drags the pin or taps
+  /// the map (only when [draggablePickup] is on).
+  final ValueChanged<LatLng>? onPickupMoved;
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -52,9 +62,37 @@ class _MapViewState extends State<MapView> {
 
   GoogleMapController? _controller;
 
+  /// Whether we've already recentred on the first resolved pickup (so we don't
+  /// fight the rider's drags afterwards).
+  bool _centeredOnPickup = false;
+
   bool get _showRoute => widget.variant != MapVariant.idle;
+  bool get _interactivePickup =>
+      widget.variant == MapVariant.idle && widget.draggablePickup;
+
+  @override
+  void didUpdateWidget(covariant MapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Recentre once when the pickup first resolves (e.g. GPS comes back).
+    if (_interactivePickup && !_centeredOnPickup && widget.pickup != null) {
+      _centeredOnPickup = true;
+      _controller?.animateCamera(CameraUpdate.newLatLng(widget.pickup!));
+    }
+  }
 
   Set<Marker> _buildMarkers() {
+    if (_interactivePickup) {
+      return {
+        Marker(
+          markerId: const MarkerId('pickup_drag'),
+          position: _pickup,
+          draggable: true,
+          onDragEnd: (pos) => widget.onPickupMoved?.call(pos),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          infoWindow: const InfoWindow(title: 'Pickup', snippet: 'Drag or tap the map to move'),
+        ),
+      };
+    }
     if (!_showRoute) return const {};
     return {
       Marker(
@@ -103,6 +141,9 @@ class _MapViewState extends State<MapView> {
     if (_showRoute) {
       return CameraPosition(target: _pickup, zoom: 13.5);
     }
+    if (_interactivePickup && widget.pickup != null) {
+      return CameraPosition(target: widget.pickup!, zoom: 16);
+    }
     return const CameraPosition(target: _cairoCenter, zoom: 13);
   }
 
@@ -136,6 +177,7 @@ class _MapViewState extends State<MapView> {
     return GoogleMap(
       initialCameraPosition: _initialCamera,
       onMapCreated: _onMapCreated,
+      onTap: _interactivePickup ? widget.onPickupMoved : null,
       style: wassalnyMapStyle,
       markers: _buildMarkers(),
       polylines: _buildPolylines(),
@@ -146,9 +188,10 @@ class _MapViewState extends State<MapView> {
       zoomControlsEnabled: false,
       compassEnabled: false,
       mapToolbarEnabled: false,
-      // The booking sheets sit on top of the map; padding keeps Google's
-      // attribution visible above them.
-      padding: const EdgeInsets.only(bottom: 24),
+      // The home booking sheet covers the lower half, so push the camera focus
+      // (and the centred pickup pin) up into the visible area there; elsewhere
+      // just keep Google's attribution clear of the sheets.
+      padding: EdgeInsets.only(bottom: _interactivePickup ? 300 : 24),
     );
   }
 }

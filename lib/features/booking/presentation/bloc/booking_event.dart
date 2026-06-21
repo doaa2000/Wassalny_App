@@ -79,6 +79,22 @@ final class BookingPickupSet extends BookingEvent {
   List<Object?> get props => [latLng, address];
 }
 
+/// The rider dragged the pickup pin (or tapped the home map) to a new point;
+/// the bloc reverse-geocodes it into an address.
+final class BookingPickupPicked extends BookingEvent {
+  const BookingPickupPicked(this.latLng);
+
+  final LatLng latLng;
+
+  @override
+  List<Object?> get props => [latLng];
+}
+
+/// Request the device GPS and use it as the initial pickup (home screen).
+final class BookingCurrentPickupRequested extends BookingEvent {
+  const BookingCurrentPickupRequested();
+}
+
 /// The rider confirmed their destination on the map.
 final class BookingDestinationSet extends BookingEvent {
   const BookingDestinationSet(this.latLng, this.address);
