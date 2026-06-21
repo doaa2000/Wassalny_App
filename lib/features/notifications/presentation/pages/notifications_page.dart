@@ -57,11 +57,11 @@ class NotificationsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionLabel(AppStrings.today),
+                    SectionLabel(AppStrings.today),
                     const SizedBox(height: 8),
                     _GroupCard(items: today),
                     const SizedBox(height: 20),
-                    const SectionLabel(AppStrings.earlier),
+                    SectionLabel(AppStrings.earlier),
                     const SizedBox(height: 8),
                     _GroupCard(items: earlier),
                   ],

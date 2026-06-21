@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/constants/app_strings.dart';
 import 'core/di/app_dependencies.dart';
+import 'core/localization/app_locale.dart';
 import 'core/logging/logging.dart';
 import 'core/router/app_router.dart';
 import 'core/router/app_routes.dart';
@@ -16,6 +18,9 @@ void main() => runGuarded(() async {
       // startup) is captured to file and console.
       await bootstrapLogging();
       appLogger.logInfo('App starting', feature: 'Bootstrap');
+
+      // Restore the saved language before the first frame.
+      await AppLocale.load();
 
       try {
         await SupabaseService.instance.initialize();
@@ -48,12 +53,24 @@ class WassalnyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppDependencies(
-      child: MaterialApp(
-        title: AppStrings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        initialRoute: initialRoute,
-        onGenerateRoute: AppRouter.onGenerateRoute,
+      // Rebuild the whole app (and flip RTL for Arabic) whenever the language
+      // changes. Strings follow AppLocale via AppStrings getters.
+      child: ValueListenableBuilder<Locale>(
+        valueListenable: AppLocale.notifier,
+        builder: (context, locale, _) => MaterialApp(
+          title: AppStrings.appName,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          locale: locale,
+          supportedLocales: AppLocale.supported,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          initialRoute: initialRoute,
+          onGenerateRoute: AppRouter.onGenerateRoute,
+        ),
       ),
     );
   }

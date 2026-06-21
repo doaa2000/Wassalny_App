@@ -1,171 +1,171 @@
-/// All user-facing copy, kept in one place so the UI layer stays free of
-/// hard-coded literals and future localization is straightforward.
+import '../localization/app_translations.dart';
+
+/// All user-facing copy. Each member is now a locale-aware getter backed by
+/// [AppTranslations], so the existing `AppStrings.x` call sites keep working
+/// while the value follows the app's current language (en / ar / es).
 class AppStrings {
   AppStrings._();
 
-  static const String appName = 'Wassalny';
-  static const String appVersion = 'Wassalny · v1.0.0';
+  static String _t(String key) => AppTranslations.get(key);
+
+  static String get appName => _t('appName');
+  static String get appVersion => _t('appVersion');
 
   // Welcome
-  static const String welcomeTitle = 'Your ride,\none tap away.';
-  static const String welcomeSubtitle =
-      'Compare nearby drivers, see real prices, and book the perfect ride across Cairo in seconds.';
-  static const String getStarted = 'Get started';
-  static const String haveAccount = 'I already have an account';
+  static String get welcomeTitle => _t('welcomeTitle');
+  static String get welcomeSubtitle => _t('welcomeSubtitle');
+  static String get getStarted => _t('getStarted');
+  static String get haveAccount => _t('haveAccount');
 
   // Onboarding
-  static const String skip = 'Skip';
-  static const String onboardingTitle = 'Compare drivers,\npick your perfect ride.';
-  static const String onboardingSubtitle =
-      'See real ratings, arrival times and prices side by side — then book in a single tap.';
-  static const String continueLabel = 'Continue';
+  static String get skip => _t('skip');
+  static String get onboardingTitle => _t('onboardingTitle');
+  static String get onboardingSubtitle => _t('onboardingSubtitle');
+  static String get continueLabel => _t('continueLabel');
 
   // Location permission
-  static const String enableLocationTitle = 'Enable your location';
-  static const String enableLocationSubtitle =
-      'We use your location to find nearby drivers and set your pickup point accurately across Cairo.';
-  static const String allowLocation = 'Allow location access';
-  static const String enterManually = 'Enter location manually';
+  static String get enableLocationTitle => _t('enableLocationTitle');
+  static String get enableLocationSubtitle => _t('enableLocationSubtitle');
+  static String get allowLocation => _t('allowLocation');
+  static String get enterManually => _t('enterManually');
 
   // Auth
-  static const String welcomeBack = 'Welcome back';
-  static const String loginSubtitle = 'Log in to book your next ride.';
-  static const String emailOrPhone = 'Email or phone';
-  static const String password = 'Password';
-  static const String forgotPassword = 'Forgot password?';
-  static const String login = 'Log in';
-  static const String orContinueWith = 'or continue with';
-  static const String google = 'Google';
-  static const String apple = 'Apple';
-  static const String newToWassalny = 'New to Wassalny? ';
-  static const String createAccount = 'Create account';
-  static const String signupSubtitle = 'Join Wassalny in under a minute.';
-  static const String fullName = 'Full name';
-  static const String phoneNumber = 'Phone number';
-  static const String agreePrefix = "I agree to Wassalny's ";
-  static const String termsOfService = 'Terms of Service';
-  static const String and = ' and ';
-  static const String privacyPolicy = 'Privacy Policy';
-  static const String alreadyHaveAccount = 'Already have an account? ';
+  static String get welcomeBack => _t('welcomeBack');
+  static String get loginSubtitle => _t('loginSubtitle');
+  static String get emailOrPhone => _t('emailOrPhone');
+  static String get password => _t('password');
+  static String get forgotPassword => _t('forgotPassword');
+  static String get login => _t('login');
+  static String get orContinueWith => _t('orContinueWith');
+  static String get google => _t('google');
+  static String get apple => _t('apple');
+  static String get newToWassalny => _t('newToWassalny');
+  static String get createAccount => _t('createAccount');
+  static String get signupSubtitle => _t('signupSubtitle');
+  static String get fullName => _t('fullName');
+  static String get phoneNumber => _t('phoneNumber');
+  static String get agreePrefix => _t('agreePrefix');
+  static String get termsOfService => _t('termsOfService');
+  static String get and => _t('and');
+  static String get privacyPolicy => _t('privacyPolicy');
+  static String get alreadyHaveAccount => _t('alreadyHaveAccount');
 
   // OTP
-  static const String verifyNumberTitle = 'Verify your number';
-  static const String verifyNumberSubtitle = 'Enter the 4-digit code we sent to';
-  static const String demoPhone = '+20 100 234 5678';
-  static const String didntGetCode = "Didn't get a code? ";
-  static const String resendIn = 'Resend in 0:28';
-  static const String verify = 'Verify';
+  static String get verifyNumberTitle => _t('verifyNumberTitle');
+  static String get verifyNumberSubtitle => _t('verifyNumberSubtitle');
+  static String get demoPhone => _t('demoPhone');
+  static String get didntGetCode => _t('didntGetCode');
+  static String get resendIn => _t('resendIn');
+  static String get verify => _t('verify');
 
   // Forgot
-  static const String forgotTitle = 'Forgot password?';
-  static const String forgotSubtitle =
-      "No worries. Enter your email and we'll send you a reset code.";
-  static const String emailAddress = 'Email address';
-  static const String sendResetCode = 'Send reset code';
-  static const String backToLogin = 'Back to login';
+  static String get forgotTitle => _t('forgotTitle');
+  static String get forgotSubtitle => _t('forgotSubtitle');
+  static String get emailAddress => _t('emailAddress');
+  static String get sendResetCode => _t('sendResetCode');
+  static String get backToLogin => _t('backToLogin');
 
   // Home
-  static const String currentLocation = 'Tahrir Square, Cairo';
-  static const String greeting = 'Good evening, Layla';
-  static const String whereTo = 'Where would you like to go?';
-  static const String whereToShort = 'Where to?';
-  static const String setOnMap = 'Set on map';
-  static const String driversNearYou = 'Drivers near you';
-  static const String compareAll = 'Compare all';
+  static String get currentLocation => _t('currentLocation');
+  static String get greeting => _t('greeting');
+  static String get whereTo => _t('whereTo');
+  static String get whereToShort => _t('whereToShort');
+  static String get setOnMap => _t('setOnMap');
+  static String get driversNearYou => _t('driversNearYou');
+  static String get compareAll => _t('compareAll');
 
   // Search
-  static const String planYourRide = 'Plan your ride';
-  static const String recent = 'Recent';
-  static const String savedPlaces = 'Saved places';
-  static const String findDriver = 'Find a driver';
-  static const String setDropoffFirst = 'Set your destination';
+  static String get planYourRide => _t('planYourRide');
+  static String get recent => _t('recent');
+  static String get savedPlaces => _t('savedPlaces');
+  static String get findDriver => _t('findDriver');
+  static String get setDropoffFirst => _t('setDropoffFirst');
 
   // Driver select
-  static const String chooseDriver = 'Choose your driver';
-  static const String tripRoute = 'Tahrir Square → Cairo Festival City';
-  static const String arrives = 'Arrives';
-  static const String plate = 'Plate';
-  static const String estFare = 'Est. fare';
+  static String get chooseDriver => _t('chooseDriver');
+  static String get tripRoute => _t('tripRoute');
+  static String get arrives => _t('arrives');
+  static String get plate => _t('plate');
+  static String get estFare => _t('estFare');
 
   // Confirm
-  static const String confirmRide = 'Confirm your ride';
-  static const String confirmRideAction = 'Confirm ride';
-  static const String requestRide = 'Request ride';
-  static const String pickup = 'PICKUP';
-  static const String dropoff = 'DROP-OFF';
-  static const String dropoffPlace = 'Cairo Festival City';
-  static const String change = 'Change';
-  static const String paymentMethod = 'Payment method';
-  static const String fareBreakdown = 'Fare breakdown';
+  static String get confirmRide => _t('confirmRide');
+  static String get confirmRideAction => _t('confirmRideAction');
+  static String get requestRide => _t('requestRide');
+  static String get pickup => _t('pickup');
+  static String get dropoff => _t('dropoff');
+  static String get dropoffPlace => _t('dropoffPlace');
+  static String get change => _t('change');
+  static String get paymentMethod => _t('paymentMethod');
+  static String get fareBreakdown => _t('fareBreakdown');
 
   // Finding
-  static const String findingDriver = 'Finding your driver';
-  static const String findingSubtitle =
-      'Matching you with the best nearby driver\nfor your trip to Cairo Festival City';
-  static const String cancel = 'Cancel';
+  static String get findingDriver => _t('findingDriver');
+  static String get findingSubtitle => _t('findingSubtitle');
+  static String get cancel => _t('cancel');
 
   // Assigned
-  static const String trackYourRide = 'Track your ride';
-  static const String cancelRide = 'Cancel ride';
-  static const String call = 'Call';
-  static const String chat = 'Chat';
-  static const String share = 'Share';
+  static String get trackYourRide => _t('trackYourRide');
+  static String get cancelRide => _t('cancelRide');
+  static String get call => _t('call');
+  static String get chat => _t('chat');
+  static String get share => _t('share');
 
   // Tracking
-  static const String arrivingIn = 'Arriving in';
-  static const String arrivingValue = '11 min · 6.4 km';
-  static const String sos = 'SOS';
-  static const String completeTripDemo = 'Complete trip (demo)';
+  static String get arrivingIn => _t('arrivingIn');
+  static String get arrivingValue => _t('arrivingValue');
+  static String get sos => _t('sos');
+  static String get completeTripDemo => _t('completeTripDemo');
 
   // Completed
-  static const String arrivedTitle = "You've arrived!";
-  static const String arrivedSubtitle = 'Hope you enjoyed your ride with Ahmed.';
-  static const String addTip = 'Add a tip';
-  static const String leaveReview = 'Leave a review (optional)';
-  static const String submitDone = 'Submit & done';
-  static const String howWasTrip = 'How was your trip?';
+  static String get arrivedTitle => _t('arrivedTitle');
+  static String get arrivedSubtitle => _t('arrivedSubtitle');
+  static String get addTip => _t('addTip');
+  static String get leaveReview => _t('leaveReview');
+  static String get submitDone => _t('submitDone');
+  static String get howWasTrip => _t('howWasTrip');
 
   // Wallet
-  static const String wallet = 'Wallet';
-  static const String availableBalance = 'Available balance';
-  static const String balance = 'EGP 340.00';
-  static const String addFunds = 'Add funds';
-  static const String send = 'Send';
-  static const String paymentMethods = 'Payment methods';
-  static const String addNewCard = 'Add a new card';
-  static const String recentTransactions = 'Recent transactions';
+  static String get wallet => _t('wallet');
+  static String get availableBalance => _t('availableBalance');
+  static String get balance => _t('balance');
+  static String get addFunds => _t('addFunds');
+  static String get send => _t('send');
+  static String get paymentMethods => _t('paymentMethods');
+  static String get addNewCard => _t('addNewCard');
+  static String get recentTransactions => _t('recentTransactions');
 
   // History
-  static const String yourRides = 'Your rides';
-  static const String all = 'All';
-  static const String completed = 'Completed';
-  static const String cancelled = 'Cancelled';
-  static const String rebook = 'Rebook';
-  static const String getReceipt = 'Get receipt';
+  static String get yourRides => _t('yourRides');
+  static String get all => _t('all');
+  static String get completed => _t('completed');
+  static String get cancelled => _t('cancelled');
+  static String get rebook => _t('rebook');
+  static String get getReceipt => _t('getReceipt');
 
   // Notifications
-  static const String notifications = 'Notifications';
-  static const String markAllRead = 'Mark all read';
-  static const String today = 'Today';
-  static const String earlier = 'Earlier';
+  static String get notifications => _t('notifications');
+  static String get markAllRead => _t('markAllRead');
+  static String get today => _t('today');
+  static String get earlier => _t('earlier');
 
   // Profile
-  static const String riderName = 'Layla Mansour';
-  static const String riderPhone = '+20 100 234 5678';
-  static const String riderTag = '4.9 · Rider';
-  static const String personalInfo = 'Personal information';
-  static const String savedLocations = 'Saved locations';
-  static const String language = 'Language';
-  static const String languageValue = 'English';
-  static const String helpSupport = 'Help & support';
-  static const String rateApp = 'Rate the app';
-  static const String aboutUs = 'About us';
-  static const String logout = 'Log out';
+  static String get riderName => _t('riderName');
+  static String get riderPhone => _t('riderPhone');
+  static String get riderTag => _t('riderTag');
+  static String get personalInfo => _t('personalInfo');
+  static String get savedLocations => _t('savedLocations');
+  static String get language => _t('language');
+  static String get languageValue => _t('languageValue');
+  static String get helpSupport => _t('helpSupport');
+  static String get rateApp => _t('rateApp');
+  static String get aboutUs => _t('aboutUs');
+  static String get logout => _t('logout');
 
   // Bottom nav
-  static const String navHome = 'Home';
-  static const String navRides = 'Rides';
-  static const String navWallet = 'Wallet';
-  static const String navAlerts = 'Alerts';
-  static const String navProfile = 'Profile';
+  static String get navHome => _t('navHome');
+  static String get navRides => _t('navRides');
+  static String get navWallet => _t('navWallet');
+  static String get navAlerts => _t('navAlerts');
+  static String get navProfile => _t('navProfile');
 }

@@ -40,7 +40,7 @@ class ForgotPasswordPage extends StatelessWidget {
               const SizedBox(height: 8),
               Text(AppStrings.forgotSubtitle, style: AppTextStyles.body),
               const SizedBox(height: 26),
-              const AppTextField(
+              AppTextField(
                 label: AppStrings.emailAddress,
                 icon: Icon(Icons.mail_outline_rounded,
                     size: 19, color: AppColors.textFaint),

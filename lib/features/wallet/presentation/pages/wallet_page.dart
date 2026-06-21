@@ -139,7 +139,7 @@ class _BalanceCard extends StatelessWidget {
               style: AppTextStyles.display.copyWith(
                   color: Colors.white, fontSize: 36, letterSpacing: -1)),
           const SizedBox(height: 18),
-          const Row(
+          Row(
             children: [
               Expanded(
                 child: _BalanceAction(

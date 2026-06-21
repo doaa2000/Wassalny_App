@@ -29,7 +29,7 @@ class ProfilePage extends StatelessWidget {
               children: [
                 _MenuGroup(
                   children: [
-                    const ProfileMenuItem(
+                    ProfileMenuItem(
                       icon: Icons.person_outline_rounded,
                       label: AppStrings.personalInfo,
                     ),
@@ -39,19 +39,19 @@ class ProfilePage extends StatelessWidget {
                       onTap: () =>
                           Navigator.pushNamed(context, AppRoutes.savedPlaces),
                     ),
-                    const ProfileMenuItem(
+                    ProfileMenuItem(
                       icon: Icons.language_rounded,
                       label: AppStrings.language,
                       trailingValue: AppStrings.languageValue,
-                      showChevron: false,
                       showDivider: false,
+                      onTap: () => showLanguageSheet(context),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
                 _MenuGroup(
                   children: [
-                    const ProfileMenuItem(
+                    ProfileMenuItem(
                       icon: Icons.help_outline_rounded,
                       label: AppStrings.helpSupport,
                       iconBg: AppColors.background,

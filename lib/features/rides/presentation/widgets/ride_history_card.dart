@@ -31,8 +31,8 @@ class RideHistoryCard extends StatelessWidget {
               Text(ride.dateTime,
                   style: AppTextStyles.caption.copyWith(fontSize: 12)),
               _completed
-                  ? const StatusTag.completed(AppStrings.completed)
-                  : const StatusTag.cancelled(AppStrings.cancelled),
+                  ? StatusTag.completed(AppStrings.completed)
+                  : StatusTag.cancelled(AppStrings.cancelled),
             ],
           ),
           const SizedBox(height: 12),

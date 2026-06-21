@@ -139,7 +139,7 @@ class _TermsRow extends StatelessWidget {
               ),
               children: [
                 _link(AppStrings.termsOfService),
-                const TextSpan(text: AppStrings.and),
+                TextSpan(text: AppStrings.and),
                 _link(AppStrings.privacyPolicy),
                 const TextSpan(text: '.'),
               ],

@@ -155,7 +155,7 @@ class DriverAssignedPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Row(
+                      Row(
                         children: [
                           ContactActionButton(
                             icon: Icons.call_rounded,
