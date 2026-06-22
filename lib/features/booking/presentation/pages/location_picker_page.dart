@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/map/map_style.dart';
@@ -228,7 +229,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Move the map or tap to choose the spot',
+                      AppStrings.pickerHint,
                       style: AppTextStyles.caption,
                     ),
                     const SizedBox(height: 8),
@@ -239,7 +240,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            _resolving ? 'Locating…' : _address,
+                            _resolving ? AppStrings.locating : _address,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.listTitle.copyWith(fontSize: 14.5),
@@ -249,7 +250,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                     ),
                     const SizedBox(height: 14),
                     PrimaryButton(
-                      label: 'Confirm',
+                      label: AppStrings.confirm,
                       onPressed: () => Navigator.pop(
                         context,
                         PickedPlace(_center, _address),

@@ -55,10 +55,7 @@ class AboutUsPage extends StatelessWidget {
             const SizedBox(height: 26),
             _Card(
               child: Text(
-                'Wassalny is a ride-hailing app that connects riders with nearby '
-                'captains across Cairo. Set your pickup on the map, request a '
-                'ride, and a nearby captain accepts and drives you to your '
-                'destination — simply and affordably.',
+                AppStrings.aboutDescription,
                 style: AppTextStyles.body.copyWith(height: 1.6),
               ),
             ),
@@ -77,7 +74,7 @@ class AboutUsPage extends StatelessWidget {
             ),
             const SizedBox(height: 22),
             Center(
-              child: Text('© 2026 Wassalny. All rights reserved.',
+              child: Text(AppStrings.aboutRights,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.disabled, fontSize: 12)),
             ),

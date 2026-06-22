@@ -136,7 +136,7 @@ class _LocationPill extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'PICKUP',
+                  AppStrings.pickup,
                   style: AppTextStyles.micro.copyWith(
                     color: AppColors.textTertiary,
                     fontSize: 9.5,
@@ -149,7 +149,7 @@ class _LocationPill extends StatelessWidget {
                   builder: (context, address) => Text(
                     address?.isNotEmpty == true
                         ? address!
-                        : 'Move the map to set pickup…',
+                        : AppStrings.setPickupHint,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.bodySm.copyWith(
@@ -231,7 +231,7 @@ class _BookingSheet extends StatelessWidget {
                 Expanded(
                   child: QuickPlaceCard(
                     icon: Icons.home_rounded,
-                    title: 'Home',
+                    title: AppStrings.placeHome,
                     subtitle: 'Maadi, Rd 9',
                     onTap: onSearch,
                   ),
@@ -240,7 +240,7 @@ class _BookingSheet extends StatelessWidget {
                 Expanded(
                   child: QuickPlaceCard(
                     icon: Icons.work_outline_rounded,
-                    title: 'Work',
+                    title: AppStrings.placeWork,
                     subtitle: 'Smart Village',
                     onTap: onSearch,
                   ),

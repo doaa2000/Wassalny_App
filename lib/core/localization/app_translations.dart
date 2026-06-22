@@ -469,5 +469,68 @@ class AppTranslations {
     'navWallet': {'en': 'Wallet', 'ar': 'المحفظة', 'es': 'Cartera'},
     'navAlerts': {'en': 'Alerts', 'ar': 'التنبيهات', 'es': 'Alertas'},
     'navProfile': {'en': 'Profile', 'ar': 'الملف الشخصي', 'es': 'Perfil'},
+
+    // Map / pickup
+    'setPickupHint': {
+      'en': 'Move the map to set pickup…',
+      'ar': 'حرّك الخريطة لتحديد الانطلاق…',
+      'es': 'Mueve el mapa para fijar la recogida…'
+    },
+    'pickerHint': {
+      'en': 'Move the map or tap to choose the spot',
+      'ar': 'حرّك الخريطة أو اضغط لاختيار المكان',
+      'es': 'Mueve el mapa o toca para elegir el punto'
+    },
+    'locating': {'en': 'Locating…', 'ar': 'جارٍ التحديد…', 'es': 'Localizando…'},
+    'confirm': {'en': 'Confirm', 'ar': 'تأكيد', 'es': 'Confirmar'},
+    'placeHome': {'en': 'Home', 'ar': 'المنزل', 'es': 'Casa'},
+    'placeWork': {'en': 'Work', 'ar': 'العمل', 'es': 'Trabajo'},
+
+    // Confirm extras
+    'estimatedTotal': {
+      'en': 'Estimated total',
+      'ar': 'الإجمالي التقديري',
+      'es': 'Total estimado'
+    },
+    'fareNote': {
+      'en':
+          'A nearby captain will accept your request. Final fare may vary with the route.',
+      'ar': 'سيقبل طلبك كابتن قريب. قد تختلف الأجرة النهائية حسب المسار.',
+      'es':
+          'Un conductor cercano aceptará tu solicitud. La tarifa final puede variar según la ruta.'
+    },
+
+    // Rate app
+    'rateTitle': {
+      'en': 'Enjoying Wassalny?',
+      'ar': 'هل تستمتع بـ Wassalny؟',
+      'es': '¿Disfrutas Wassalny?'
+    },
+    'ratePrompt': {
+      'en': 'Tap a star to rate your experience.',
+      'ar': 'اضغط على نجمة لتقييم تجربتك.',
+      'es': 'Toca una estrella para valorar tu experiencia.'
+    },
+    'submit': {'en': 'Submit', 'ar': 'إرسال', 'es': 'Enviar'},
+    'rateThanks': {
+      'en': 'Thanks for your feedback! ⭐',
+      'ar': 'شكرًا لتقييمك! ⭐',
+      'es': '¡Gracias por tu opinión! ⭐'
+    },
+
+    // About
+    'aboutDescription': {
+      'en':
+          'Wassalny is a ride-hailing app that connects riders with nearby captains across Cairo. Set your pickup on the map, request a ride, and a nearby captain accepts and drives you to your destination — simply and affordably.',
+      'ar':
+          'Wassalny تطبيق لطلب الرحلات يربط الركاب بالكباتن القريبين في القاهرة. حدّد نقطة انطلاقك على الخريطة، اطلب رحلة، ويقبلها كابتن قريب ليوصلك إلى وجهتك — ببساطة وبأسعار مناسبة.',
+      'es':
+          'Wassalny es una app de transporte que conecta a pasajeros con conductores cercanos en El Cairo. Fija tu recogida en el mapa, solicita un viaje y un conductor cercano lo acepta y te lleva a tu destino — de forma simple y económica.'
+    },
+    'aboutRights': {
+      'en': '© 2026 Wassalny. All rights reserved.',
+      'ar': '© 2026 Wassalny. جميع الحقوق محفوظة.',
+      'es': '© 2026 Wassalny. Todos los derechos reservados.'
+    },
   };
 }

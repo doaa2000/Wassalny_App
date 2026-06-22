@@ -58,6 +58,10 @@ class WassalnyApp extends StatelessWidget {
       child: ValueListenableBuilder<Locale>(
         valueListenable: AppLocale.notifier,
         builder: (context, locale, _) => MaterialApp(
+          // Rebuild the whole navigator (fresh routes that re-read AppStrings)
+          // when the language changes. The blocs above — including the tab
+          // state — live in AppDependencies, so the current tab is preserved.
+          key: ValueKey<String>(locale.languageCode),
           title: AppStrings.appName,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,

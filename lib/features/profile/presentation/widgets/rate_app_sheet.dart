@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/primary_button.dart';
 
@@ -32,7 +33,7 @@ class _RateAppSheetState extends State<_RateAppSheet> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(content: Text('Thanks for your feedback! ⭐')),
+        SnackBar(content: Text(AppStrings.rateThanks)),
       );
   }
 
@@ -53,10 +54,10 @@ class _RateAppSheetState extends State<_RateAppSheet> {
             ),
           ),
           const SizedBox(height: 22),
-          Text('Enjoying Wassalny?', style: AppTextStyles.title),
+          Text(AppStrings.rateTitle, style: AppTextStyles.title),
           const SizedBox(height: 8),
           Text(
-            'Tap a star to rate your experience.',
+            AppStrings.ratePrompt,
             textAlign: TextAlign.center,
             style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
           ),
@@ -80,7 +81,7 @@ class _RateAppSheetState extends State<_RateAppSheet> {
           ),
           const SizedBox(height: 26),
           PrimaryButton(
-            label: 'Submit',
+            label: AppStrings.submit,
             onPressed: _rating == 0 ? null : _submit,
           ),
         ],

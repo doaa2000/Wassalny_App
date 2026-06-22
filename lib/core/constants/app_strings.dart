@@ -168,4 +168,26 @@ class AppStrings {
   static String get navWallet => _t('navWallet');
   static String get navAlerts => _t('navAlerts');
   static String get navProfile => _t('navProfile');
+
+  // Map / pickup
+  static String get setPickupHint => _t('setPickupHint');
+  static String get pickerHint => _t('pickerHint');
+  static String get locating => _t('locating');
+  static String get confirm => _t('confirm');
+  static String get placeHome => _t('placeHome');
+  static String get placeWork => _t('placeWork');
+
+  // Confirm extras
+  static String get estimatedTotal => _t('estimatedTotal');
+  static String get fareNote => _t('fareNote');
+
+  // Rate app
+  static String get rateTitle => _t('rateTitle');
+  static String get ratePrompt => _t('ratePrompt');
+  static String get submit => _t('submit');
+  static String get rateThanks => _t('rateThanks');
+
+  // About
+  static String get aboutDescription => _t('aboutDescription');
+  static String get aboutRights => _t('aboutRights');
 }

@@ -99,12 +99,12 @@ class ConfirmRidePage extends StatelessWidget {
                       const SizedBox(height: 11),
                       FareRow(
                         line: FareLine(
-                            label: 'Estimated total',
+                            label: AppStrings.estimatedTotal,
                             amount: fareText,
                             isTotal: true),
                       ),
                       Text(
-                        'A nearby captain will accept your request. Final fare may vary with the route.',
+                        AppStrings.fareNote,
                         style: AppTextStyles.caption,
                       ),
                       const SizedBox(height: 16),

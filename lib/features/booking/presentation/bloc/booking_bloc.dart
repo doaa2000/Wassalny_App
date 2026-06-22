@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/logging/logging.dart';
 import '../../../../core/services/location_service.dart';
 import '../../domain/entities/driver.dart';
@@ -90,7 +91,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   Future<void> _onPickupPicked(
       BookingPickupPicked event, Emitter<BookingState> emit) async {
     // Move the pin immediately; resolve the address in the background.
-    emit(state.copyWith(pickup: event.latLng, pickupAddress: 'Locating…'));
+    emit(state.copyWith(pickup: event.latLng, pickupAddress: AppStrings.locating));
     final String address = await _location.addressOf(event.latLng);
     emit(state.copyWith(pickup: event.latLng, pickupAddress: address));
   }
@@ -102,7 +103,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     if (!event.force && state.pickup != null) return;
     final LatLng? here = await _location.currentLatLng();
     if (here == null) return;
-    emit(state.copyWith(pickup: here, pickupAddress: 'Locating…'));
+    emit(state.copyWith(pickup: here, pickupAddress: AppStrings.locating));
     final String address = await _location.addressOf(here);
     emit(state.copyWith(pickup: here, pickupAddress: address));
   }
