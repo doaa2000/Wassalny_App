@@ -91,6 +91,7 @@ class _MapViewState extends State<MapView> {
 
   /// Moves the camera to [target] and treats it as the current centre.
   Future<void> _moveTo(LatLng target, {double zoom = 16}) async {
+    if (!mounted) return;
     _cameraTarget = target;
     await _controller?.animateCamera(CameraUpdate.newLatLngZoom(target, zoom));
   }
@@ -210,13 +211,16 @@ class _MapViewState extends State<MapView> {
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (!mounted) return; // page may have been popped during the delay
       await controller.animateCamera(CameraUpdate.newLatLngBounds(bounds, 64));
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    // The GoogleMap widget owns the controller's lifecycle; don't dispose it
+    // here or pending async camera calls would hit a disposed controller.
+    _controller = null;
     super.dispose();
   }
 
