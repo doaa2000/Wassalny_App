@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -9,7 +10,9 @@ import '../../../../core/utils/app_shadows.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
 import '../../../../core/widgets/route_timeline.dart';
+import '../../../places/presentation/bloc/places_bloc.dart';
 import '../bloc/booking_bloc.dart';
+import '../widgets/place_list_tile.dart';
 import 'location_picker_page.dart';
 
 /// "Plan your ride": pick pickup and destination on the map, then continue to
@@ -52,6 +55,14 @@ class SearchPage extends StatelessWidget {
     }
   }
 
+  /// Use a saved place as the destination and jump straight to confirm.
+  void _useSavedPlace(BuildContext context, double lat, double lng, String address) {
+    context
+        .read<BookingBloc>()
+        .add(BookingDestinationSet(LatLng(lat, lng), address));
+    Navigator.pushReplacementNamed(context, AppRoutes.confirm);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +78,39 @@ class SearchPage extends StatelessWidget {
                 onTapPickup: () => _pickPickup(context),
                 onTapDestination: () => _pickDestination(context),
               ),
-              const Spacer(),
+              Expanded(
+                child: BlocBuilder<PlacesBloc, PlacesState>(
+                  builder: (context, ps) {
+                    final saved = ps.places
+                        .where((p) => p.latitude != null && p.longitude != null)
+                        .toList();
+                    if (saved.isEmpty) return const SizedBox.shrink();
+                    return ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      children: [
+                        Text(AppStrings.savedPlaces,
+                            style: AppTextStyles.label.copyWith(fontSize: 13)),
+                        const SizedBox(height: 6),
+                        for (int i = 0; i < saved.length; i++)
+                          PlaceListTile(
+                            icon: Icons.star_rounded,
+                            iconColor: AppColors.primary,
+                            iconBg: AppColors.peach,
+                            title: saved[i].label,
+                            subtitle: saved[i].address,
+                            showDivider: i != saved.length - 1,
+                            onTap: () => _useSavedPlace(
+                              context,
+                              saved[i].latitude!,
+                              saved[i].longitude!,
+                              saved[i].address,
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
                 child: PrimaryButton(

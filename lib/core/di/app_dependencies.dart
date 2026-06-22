@@ -13,6 +13,9 @@ import '../../features/booking/presentation/bloc/booking_bloc.dart';
 import '../services/supabase_service.dart';
 import '../../features/notifications/data/repositories/notifications_repository_impl.dart';
 import '../../features/notifications/presentation/bloc/notifications_bloc.dart';
+import '../../features/places/data/datasources/places_remote_data_source.dart';
+import '../../features/places/data/repositories/places_repository_impl.dart';
+import '../../features/places/presentation/bloc/places_bloc.dart';
 import '../../features/rides/data/repositories/rides_repository_impl.dart';
 import '../../features/rides/presentation/bloc/rides_bloc.dart';
 import '../../features/wallet/data/repositories/wallet_repository_impl.dart';
@@ -50,6 +53,8 @@ class _AppDependenciesState extends State<AppDependencies> {
   late final _walletRepo = WalletRepositoryImpl();
   late final _ridesRepo = RidesRepositoryImpl();
   late final _notificationsRepo = NotificationsRepositoryImpl();
+  late final _placesRepo =
+      PlacesRepositoryImpl(PlacesRemoteDataSource(SupabaseService.instance));
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +73,9 @@ class _AppDependenciesState extends State<AppDependencies> {
         BlocProvider(
           create: (_) => NotificationsBloc(_notificationsRepo)
             ..add(const NotificationsRequested()),
+        ),
+        BlocProvider(
+          create: (_) => PlacesBloc(_placesRepo)..add(const PlacesLoaded()),
         ),
       ],
       child: widget.child,

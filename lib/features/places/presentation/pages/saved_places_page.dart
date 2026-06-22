@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
+import '../../../booking/presentation/pages/location_picker_page.dart';
 import '../../domain/entities/saved_place.dart';
 import '../bloc/places_bloc.dart';
 
@@ -27,7 +29,7 @@ class SavedPlacesPage extends StatelessWidget {
                 children: [
                   RoundIconButton.back(onPressed: () => Navigator.pop(context)),
                   const SizedBox(width: 12),
-                  Text('Saved places', style: AppTextStyles.h1),
+                  Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
                 ],
               ),
               const SizedBox(height: 18),
@@ -65,11 +67,32 @@ class SavedPlacesPage extends StatelessWidget {
   }
 
   Future<void> _showAddSheet(BuildContext context) async {
-    final TextEditingController label = TextEditingController();
-    final TextEditingController address = TextEditingController();
     final PlacesBloc bloc = context.read<PlacesBloc>();
 
-    await showModalBottomSheet<void>(
+    // 1. Pick the exact spot on the map (captures coordinates + address).
+    final PickedPlace? picked = await Navigator.push<PickedPlace>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(title: AppStrings.savedPlaces),
+      ),
+    );
+    if (picked == null || !context.mounted) return;
+
+    // 2. Name it (Home, Work, …).
+    final String? label = await _askLabel(context, picked.address);
+    if (label == null || label.trim().isEmpty) return;
+
+    bloc.add(PlaceAdded(
+      label: label.trim(),
+      address: picked.address,
+      lat: picked.latLng.latitude,
+      lng: picked.latLng.longitude,
+    ));
+  }
+
+  Future<String?> _askLabel(BuildContext context, String address) {
+    final TextEditingController label = TextEditingController();
+    return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
@@ -77,24 +100,28 @@ class SavedPlacesPage extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+        padding:
+            EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('New place', style: AppTextStyles.h1),
+            Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
+            const SizedBox(height: 6),
+            Text(address,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.bodySm
+                    .copyWith(color: AppColors.textFaint)),
             const SizedBox(height: 16),
-            AppTextField(label: 'Label', hintText: 'Home, Work…', controller: label),
-            const SizedBox(height: 12),
-            AppTextField(label: 'Address', hintText: 'Street, area, city', controller: address),
+            AppTextField(
+                label: AppStrings.placeHome,
+                hintText: 'Home, Work…',
+                controller: label),
             const SizedBox(height: 18),
             PrimaryButton(
-              label: 'Save',
-              onPressed: () {
-                if (label.text.trim().isEmpty || address.text.trim().isEmpty) return;
-                bloc.add(PlaceAdded(label: label.text.trim(), address: address.text.trim()));
-                Navigator.pop(ctx);
-              },
+              label: AppStrings.submit,
+              onPressed: () => Navigator.pop(ctx, label.text),
             ),
           ],
         ),
