@@ -1,3 +1,5 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../../../../core/services/supabase_service.dart';
 
 /// Creates a ride request in the backend. Returns the new trip id (or null when
@@ -22,6 +24,10 @@ abstract class TripRemoteDataSource {
   /// Public details of the driver who accepted the trip (null while still
   /// broadcast / unassigned, or in UI-only mode).
   Future<Map<String, dynamic>?> assignedDriverRow(String tripId);
+
+  /// Live stream of the assigned captain's GPS position for [tripId] (null
+  /// until the captain starts sharing). Drives the moving car on the map.
+  Stream<LatLng?> watchDriverLocation(String tripId);
 }
 
 /// Supabase implementation: inserts a `requested` trip for the signed-in rider.
@@ -85,6 +91,24 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
     if (list.isEmpty) return null;
     return (list.first as Map).cast<String, dynamic>();
   }
+
+  @override
+  Stream<LatLng?> watchDriverLocation(String tripId) {
+    return _service.client
+        .from('driver_locations')
+        .stream(primaryKey: ['id'])
+        .eq('trip_id', tripId)
+        .order('recorded_at', ascending: false)
+        .limit(1)
+        .map((rows) {
+      if (rows.isEmpty) return null;
+      final Map<String, dynamic> latest = rows.first; // most recent fix
+      final double? lat = (latest['latitude'] as num?)?.toDouble();
+      final double? lng = (latest['longitude'] as num?)?.toDouble();
+      if (lat == null || lng == null) return null;
+      return LatLng(lat, lng);
+    });
+  }
 }
 
 /// UI-only mode (no Supabase): returns a fake id and simulates a trip
@@ -120,4 +144,8 @@ class TripNoopDataSource implements TripRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>?> assignedDriverRow(String tripId) async => null;
+
+  @override
+  Stream<LatLng?> watchDriverLocation(String tripId) =>
+      const Stream<LatLng?>.empty();
 }

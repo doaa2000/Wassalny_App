@@ -153,3 +153,13 @@ final class _BookingTripStatusChanged extends BookingEvent {
   @override
   List<Object?> get props => [status];
 }
+
+/// Internal: the assigned captain's live location changed (Realtime stream).
+final class _BookingDriverLocationChanged extends BookingEvent {
+  const _BookingDriverLocationChanged(this.location);
+
+  final LatLng? location;
+
+  @override
+  List<Object?> get props => [location];
+}

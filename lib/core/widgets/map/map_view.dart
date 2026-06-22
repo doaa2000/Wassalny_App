@@ -30,6 +30,7 @@ class MapView extends StatefulWidget {
     this.dropoff,
     this.interactivePickup = false,
     this.onPickupMoved,
+    this.driverLocation,
   });
 
   final MapVariant variant;
@@ -38,6 +39,10 @@ class MapView extends StatefulWidget {
   /// still renders a preview.
   final LatLng? pickup;
   final LatLng? dropoff;
+
+  /// The assigned captain's live position (tracking screen). When set, a car
+  /// marker is shown and the camera follows it.
+  final LatLng? driverLocation;
 
   /// In [MapVariant.idle], show a fixed centre pin and let the rider move the
   /// map under it to set their pickup — inDrive-style.
@@ -104,6 +109,14 @@ class _MapViewState extends State<MapView> {
       );
       if (moved > 50) _moveTo(widget.pickup!);
     }
+
+    // Follow the captain's car as its live position updates.
+    if (widget.variant == MapVariant.tracking &&
+        widget.driverLocation != null &&
+        widget.driverLocation != oldWidget.driverLocation &&
+        _controller != null) {
+      _controller!.animateCamera(CameraUpdate.newLatLng(widget.driverLocation!));
+    }
   }
 
   Set<Marker> _buildMarkers() {
@@ -124,6 +137,16 @@ class _MapViewState extends State<MapView> {
         infoWindow: const InfoWindow(title: 'Drop-off'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ),
+      // Live captain position (tracking screen).
+      if (widget.variant == MapVariant.tracking && widget.driverLocation != null)
+        Marker(
+          markerId: const MarkerId('driver'),
+          position: widget.driverLocation!,
+          infoWindow: const InfoWindow(title: 'Your captain'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          flat: true,
+          anchor: const Offset(0.5, 0.5),
+        ),
     };
   }
 

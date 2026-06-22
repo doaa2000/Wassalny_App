@@ -32,6 +32,7 @@ class BookingState extends Equatable {
     this.destination,
     this.destinationAddress,
     this.assignedDriver,
+    this.driverLocation,
   });
 
   final List<Driver> drivers;
@@ -67,6 +68,9 @@ class BookingState extends Equatable {
   /// The real driver who accepted the broadcast request (null until accepted).
   final Driver? assignedDriver;
 
+  /// The assigned captain's live GPS position (null until they start sharing).
+  final LatLng? driverLocation;
+
   /// The currently chosen driver from the demo/preview list.
   Driver? get selectedDriver =>
       drivers.isEmpty ? null : drivers[selectedDriverIndex];
@@ -93,6 +97,7 @@ class BookingState extends Equatable {
     String? destinationAddress,
     Driver? assignedDriver,
     bool resetAssignedDriver = false,
+    LatLng? driverLocation,
   }) {
     return BookingState(
       drivers: drivers ?? this.drivers,
@@ -112,6 +117,8 @@ class BookingState extends Equatable {
       destinationAddress: destinationAddress ?? this.destinationAddress,
       assignedDriver:
           resetAssignedDriver ? null : (assignedDriver ?? this.assignedDriver),
+      driverLocation:
+          resetAssignedDriver ? null : (driverLocation ?? this.driverLocation),
     );
   }
 
@@ -133,5 +140,6 @@ class BookingState extends Equatable {
         destination,
         destinationAddress,
         assignedDriver,
+        driverLocation,
       ];
 }

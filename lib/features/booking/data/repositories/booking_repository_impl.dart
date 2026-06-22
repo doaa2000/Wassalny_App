@@ -1,3 +1,5 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../../../../core/logging/logging.dart';
 import '../../domain/entities/driver.dart';
 import '../../domain/entities/fare_line.dart';
@@ -83,4 +85,8 @@ class BookingRepositoryImpl implements BookingRepository {
       return null;
     }
   }
+
+  @override
+  Stream<LatLng?> watchDriverLocation(String tripId) =>
+      _tripRemote.watchDriverLocation(tripId);
 }

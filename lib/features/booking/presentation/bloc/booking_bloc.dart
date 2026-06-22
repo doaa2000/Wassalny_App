@@ -35,11 +35,13 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingCurrentPickupRequested>(_onCurrentPickupRequested);
     on<BookingRideRequested>(_onRideRequested);
     on<_BookingTripStatusChanged>(_onTripStatusChanged);
+    on<_BookingDriverLocationChanged>(_onDriverLocationChanged);
   }
 
   final BookingRepository _repository;
   final LocationService _location = LocationService.instance;
   StreamSubscription<String>? _tripSub;
+  StreamSubscription<LatLng?>? _driverLocSub;
 
   Future<void> _onStarted(BookingStarted event, Emitter<BookingState> emit) async {
     emit(state.copyWith(
@@ -111,6 +113,8 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   Future<void> _onRideRequested(
       BookingRideRequested event, Emitter<BookingState> emit) async {
     emit(state.copyWith(requesting: true, resetAssignedDriver: true));
+    _driverLocSub?.cancel();
+    _driverLocSub = null;
     try {
       final String? id = await _repository.requestTrip(
         pickupAddress: event.pickupAddress,
@@ -157,17 +161,32 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
     // Once a captain accepts the broadcast, load who actually took the trip so
     // the tracking screens show the real driver (not a previewed/demo one).
-    if (state.assignedDriver == null &&
-        state.tripId != null &&
-        _assignedStatuses.contains(event.status)) {
-      final Driver? driver = await _repository.fetchAssignedDriver(state.tripId!);
-      if (driver != null) emit(state.copyWith(assignedDriver: driver));
+    if (state.tripId != null && _assignedStatuses.contains(event.status)) {
+      if (state.assignedDriver == null) {
+        final Driver? driver =
+            await _repository.fetchAssignedDriver(state.tripId!);
+        if (driver != null) emit(state.copyWith(assignedDriver: driver));
+      }
+      // Start following the captain's live GPS (once).
+      if (_driverLocSub == null) {
+        _driverLocSub = _repository.watchDriverLocation(state.tripId!).listen(
+          (loc) => add(_BookingDriverLocationChanged(loc)),
+          onError: (_) {},
+        );
+      }
     }
+  }
+
+  void _onDriverLocationChanged(
+      _BookingDriverLocationChanged event, Emitter<BookingState> emit) {
+    if (event.location == null) return;
+    emit(state.copyWith(driverLocation: event.location));
   }
 
   @override
   Future<void> close() {
     _tripSub?.cancel();
+    _driverLocSub?.cancel();
     return super.close();
   }
 }

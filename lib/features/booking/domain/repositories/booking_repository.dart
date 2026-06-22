@@ -1,3 +1,5 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../entities/driver.dart';
 import '../entities/fare_line.dart';
 import '../entities/payment_method.dart';
@@ -32,4 +34,7 @@ abstract class BookingRepository {
 
   /// The driver who accepted the trip (null while unassigned or offline).
   Future<Driver?> fetchAssignedDriver(String tripId);
+
+  /// Live stream of the assigned captain's position (null until they share it).
+  Stream<LatLng?> watchDriverLocation(String tripId);
 }

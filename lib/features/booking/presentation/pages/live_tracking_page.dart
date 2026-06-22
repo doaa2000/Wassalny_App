@@ -43,6 +43,7 @@ class LiveTrackingPage extends StatelessWidget {
                   variant: MapVariant.tracking,
                   pickup: state.pickup,
                   dropoff: state.destination,
+                  driverLocation: state.driverLocation,
                 ),
               ),
               Positioned(
