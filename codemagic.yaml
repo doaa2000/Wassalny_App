@@ -8,7 +8,7 @@ workflows:
       # Codemagic > Team settings > Code signing identities > Android,
       # then link it here by its reference name.
       android_signing:
-        - wassalny_release_keystore
+        - release_keystore
       groups:
         # Env var group holding GCLOUD_SERVICE_ACCOUNT_CREDENTIALS (the
         # Google Play service account JSON), created under
