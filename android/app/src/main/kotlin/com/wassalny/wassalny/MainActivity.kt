@@ -1,4 +1,4 @@
-package com.wassalny.wassalny
+package eg.wassalny.rider
 
 import io.flutter.embedding.android.FlutterActivity
 

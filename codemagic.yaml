@@ -1,0 +1,49 @@
+workflows:
+  android-internal-testing:
+    name: Android — Internal Testing
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      # Configure this keystore reference under
+      # Codemagic > Team settings > Code signing identities > Android,
+      # then link it here by its reference name.
+      android_signing:
+        - wassalny_release_keystore
+      groups:
+        # Env var group holding GCLOUD_SERVICE_ACCOUNT_CREDENTIALS (the
+        # Google Play service account JSON), created under
+        # Codemagic > Team settings > Environment variables.
+        - google_play
+      vars:
+        PACKAGE_NAME: "eg.wassalny.rider"
+      flutter: stable
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Write key.properties for release signing
+        script: |
+          cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=$CM_KEYSTORE_PATH
+          EOF
+      - name: Build release App Bundle
+        script: flutter build appbundle --release
+    artifacts:
+      - build/app/outputs/**/*.aab
+      - build/app/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - doaaabdeen9@gmail.com
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: false

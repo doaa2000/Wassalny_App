@@ -44,3 +44,8 @@ app.*.map.json
 
 # Local Supabase keys (do not commit)
 supabase.json
+
+# Android release signing (do not commit)
+android/key.properties
+*.jks
+*.keystore

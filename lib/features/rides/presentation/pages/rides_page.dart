@@ -14,7 +14,7 @@ import '../widgets/ride_history_card.dart';
 class RidesPage extends StatelessWidget {
   const RidesPage({super.key});
 
-  static const _filters = {
+  static Map<RidesFilter, String> get _filters => {
     RidesFilter.all: AppStrings.all,
     RidesFilter.completed: AppStrings.completed,
     RidesFilter.cancelled: AppStrings.cancelled,

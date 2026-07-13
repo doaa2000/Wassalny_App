@@ -23,7 +23,7 @@ class AppBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  static const _items = [
+  static List<NavDestination> get _items => [
     NavDestination(AppStrings.navHome, Icons.home_outlined),
     NavDestination(AppStrings.navRides, Icons.receipt_long_outlined),
     NavDestination(AppStrings.navWallet, Icons.account_balance_wallet_outlined),
