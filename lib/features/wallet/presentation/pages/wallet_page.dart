@@ -8,7 +8,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../bloc/wallet_bloc.dart';
 import '../widgets/wallet_tiles.dart';
 
-/// Wallet tab: balance card, payment methods and recent transactions.
+/// Wallet tab: balance card and payment methods.
 class WalletPage extends StatelessWidget {
   const WalletPage({super.key});
 
@@ -49,24 +49,6 @@ class WalletPage extends StatelessWidget {
                           for (final card in wallet.cards)
                             WalletCardTile(card: card),
                           const AddCardTile(),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(AppStrings.recentTransactions,
-                        style: AppTextStyles.listTitle.copyWith(fontSize: 14)),
-                    const SizedBox(height: 12),
-                    _SectionCard(
-                      child: Column(
-                        children: [
-                          for (var i = 0;
-                              i < wallet.transactions.length;
-                              i++)
-                            WalletTransactionTile(
-                              txn: wallet.transactions[i],
-                              showDivider:
-                                  i != wallet.transactions.length - 1,
-                            ),
                         ],
                       ),
                     ),

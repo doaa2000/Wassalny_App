@@ -79,19 +79,8 @@ class BookingLocalDataSource {
         ),
       ];
 
+  // Wallet/card are disabled for now — cash only until online payments launch.
   List<PaymentMethod> paymentMethods() => const [
-        PaymentMethod(
-          id: 'wallet',
-          label: 'Wassalny Wallet',
-          sub: 'EGP 340.00',
-          type: PaymentType.wallet,
-        ),
-        PaymentMethod(
-          id: 'visa',
-          label: 'Visa ·· 4291',
-          sub: 'Default card',
-          type: PaymentType.card,
-        ),
         PaymentMethod(
           id: 'cash',
           label: 'Cash',

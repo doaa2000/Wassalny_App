@@ -21,7 +21,7 @@ class BookingState extends Equatable {
     this.fareLines = const [],
     this.selectedDriverIndex = 0,
     this.filter = RideFilter.recommended,
-    this.selectedPaymentId = 'wallet',
+    this.selectedPaymentId = 'cash',
     this.tip = 0,
     this.rating = 0,
     this.requesting = false,

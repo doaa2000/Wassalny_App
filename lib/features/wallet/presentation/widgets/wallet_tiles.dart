@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/widgets/painters/car_mark_icon.dart';
 import '../../domain/entities/wallet_data.dart';
 
 /// A saved payment method row inside the wallet (card / cash) with its brand
@@ -119,66 +118,6 @@ class AddCardTile extends StatelessWidget {
                     .copyWith(color: AppColors.primary)),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// A wallet transaction row (trip debit or top-up credit).
-class WalletTransactionTile extends StatelessWidget {
-  const WalletTransactionTile({
-    super.key,
-    required this.txn,
-    this.showDivider = true,
-  });
-
-  final WalletTransaction txn;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
-    final isTopUp = txn.type == WalletTxnType.topUp;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 13),
-      decoration: BoxDecoration(
-        border: showDivider
-            ? const Border(bottom: BorderSide(color: AppColors.divider))
-            : null,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: isTopUp ? AppColors.successBg : AppColors.background,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: isTopUp
-                ? const Icon(Icons.add_rounded,
-                    size: 18, color: AppColors.success)
-                : const CarMarkIcon(size: 18, color: AppColors.textFaint),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(txn.title,
-                    style: AppTextStyles.bodySm.copyWith(
-                        color: AppColors.ink, fontWeight: FontWeight.w700)),
-                Text(txn.date,
-                    style: AppTextStyles.caption.copyWith(fontSize: 11.5)),
-              ],
-            ),
-          ),
-          Text(txn.amount,
-              style: AppTextStyles.bodyStrong.copyWith(
-                fontSize: 14,
-                color: txn.isCredit ? AppColors.success : AppColors.ink,
-              )),
-        ],
       ),
     );
   }
