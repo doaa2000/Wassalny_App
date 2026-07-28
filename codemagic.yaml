@@ -14,6 +14,11 @@ workflows:
         # Google Play service account JSON), created under
         # Codemagic > Team settings > Environment variables.
         - google_play
+        # Env var group holding MAPS_API_KEY, SUPABASE_URL and
+        # SUPABASE_ANON_KEY (the same secrets from android/local.properties
+        # and supabase.json, which are gitignored and only exist locally),
+        # created under Codemagic > Team settings > Environment variables.
+        - app_secrets
       vars:
         PACKAGE_NAME: "eg.wassalny.rider"
       flutter: stable
@@ -31,8 +36,24 @@ workflows:
           keyAlias=$CM_KEY_ALIAS
           storeFile=$CM_KEYSTORE_PATH
           EOF
+      - name: Write local.properties for Google Maps API key
+        script: |
+          cat >> "$CM_BUILD_DIR/android/local.properties" <<EOF
+          MAPS_API_KEY=$MAPS_API_KEY
+          EOF
+      - name: Write dart-define file for Supabase config
+        script: |
+          cat > "$CM_BUILD_DIR/dart_define.json" <<EOF
+          {
+            "SUPABASE_URL": "$SUPABASE_URL",
+            "SUPABASE_ANON_KEY": "$SUPABASE_ANON_KEY"
+          }
+          EOF
       - name: Build release App Bundle
-        script: flutter build appbundle --release --build-number=$BUILD_NUMBER
+        script: |
+          flutter build appbundle --release \
+            --build-number=$BUILD_NUMBER \
+            --dart-define-from-file="$CM_BUILD_DIR/dart_define.json"
     artifacts:
       - build/app/outputs/**/*.aab
       - build/app/outputs/**/mapping.txt
