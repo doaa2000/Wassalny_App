@@ -32,7 +32,7 @@ workflows:
           storeFile=$CM_KEYSTORE_PATH
           EOF
       - name: Build release App Bundle
-        script: flutter build appbundle --release
+        script: flutter build appbundle --release --build-number=$BUILD_NUMBER
     artifacts:
       - build/app/outputs/**/*.aab
       - build/app/outputs/**/mapping.txt
