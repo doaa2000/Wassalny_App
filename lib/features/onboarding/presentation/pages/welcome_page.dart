@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -11,8 +12,23 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/secondary_buttons.dart';
 
 /// First screen: a bold brand splash with a "Get started" call to action.
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
+
+  @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  String _version = '';
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((info) {
+      if (mounted) setState(() => _version = 'v${info.version}');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +113,17 @@ class WelcomePage extends StatelessWidget {
                     onPressed: () =>
                         Navigator.pushNamed(context, AppRoutes.login),
                   ),
+                  if (_version.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Center(
+                      child: Text(
+                        _version,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textFaint,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -1,7 +1,7 @@
 name: wassalny
 description: "Wassalny — ride-hailing customer app UI built with Flutter and Clean Architecture."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ^3.5.4
@@ -23,6 +23,7 @@ dependencies:
   share_plus: ^10.1.2
   dio: ^5.7.0
   shared_preferences: ^2.3.2
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:
