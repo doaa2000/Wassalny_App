@@ -14,10 +14,13 @@ workflows:
         # Google Play service account JSON), created under
         # Codemagic > Team settings > Environment variables.
         - google_play
-        # Env var group holding MAPS_API_KEY, SUPABASE_URL and
-        # SUPABASE_ANON_KEY (the same secrets from android/local.properties
-        # and supabase.json, which are gitignored and only exist locally),
-        # created under Codemagic > Team settings > Environment variables.
+        # Env var group holding MAPS_API_KEY, created under
+        # Codemagic > Team settings > Environment variables.
+        - google_maps
+        # Env var group holding SUPABASE_URL and SUPABASE_ANON_KEY (the
+        # same secrets from supabase.json, which is gitignored and only
+        # exists locally), created under Codemagic > Team settings >
+        # Environment variables.
         - app_secrets
       vars:
         PACKAGE_NAME: "eg.wassalny.rider"
@@ -36,23 +39,9 @@ workflows:
           keyAlias=$CM_KEY_ALIAS
           storeFile=$CM_KEYSTORE_PATH
           EOF
-      - name: Write local.properties for Google Maps API key
+      - name: Write Maps API key into local.properties
         script: |
-          if [ -z "$MAPS_API_KEY" ]; then
-            echo "ERROR: MAPS_API_KEY is empty — add it to the app_secrets group in Codemagic > Team settings > Environment variables."
-            exit 1
-          fi
-          # Trim accidental leading/trailing whitespace or quotes from pasting
-          # the value into the Codemagic UI, and sanity-check the shape of a
-          # Google API key (AIza + 35 chars) without printing the key itself.
-          TRIMMED_MAPS_API_KEY=$(echo "$MAPS_API_KEY" | tr -d '[:space:]"'"'"'')
-          echo "MAPS_API_KEY: length=${#TRIMMED_MAPS_API_KEY} prefix=${TRIMMED_MAPS_API_KEY:0:4}"
-          if ! echo "$TRIMMED_MAPS_API_KEY" | grep -qE '^AIza[0-9A-Za-z_-]{35}$'; then
-            echo "WARNING: MAPS_API_KEY doesn't look like a well-formed Google API key (expected AIza + 35 chars). Check for a copy/paste mistake in Codemagic's Environment variables UI."
-          fi
-          cat >> "$CM_BUILD_DIR/android/local.properties" <<EOF
-          MAPS_API_KEY=$TRIMMED_MAPS_API_KEY
-          EOF
+          echo "MAPS_API_KEY=$MAPS_API_KEY" > "$CM_BUILD_DIR/android/local.properties"
       - name: Write dart-define file for Supabase config
         script: |
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
