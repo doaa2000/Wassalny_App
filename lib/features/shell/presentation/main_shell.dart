@@ -5,7 +5,6 @@ import '../../home/presentation/pages/home_page.dart';
 import '../../notifications/presentation/pages/notifications_page.dart';
 import '../../profile/presentation/pages/profile_page.dart';
 import '../../rides/presentation/pages/rides_page.dart';
-import '../../wallet/presentation/pages/wallet_page.dart';
 import 'bloc/nav_bloc.dart';
 import 'widgets/app_bottom_nav.dart';
 
@@ -18,7 +17,6 @@ class MainShell extends StatelessWidget {
   static const _pages = [
     HomePage(),
     RidesPage(),
-    WalletPage(),
     NotificationsPage(),
     ProfilePage(),
   ];
@@ -28,17 +26,25 @@ class MainShell extends StatelessWidget {
     return BlocProvider(
       create: (_) => NavBloc(),
       child: BlocBuilder<NavBloc, NavState>(
-        builder: (context, state) {
-          final index = state.index;
-          return Scaffold(
-            extendBody: true,
-            body: IndexedStack(index: index, children: _pages),
-            bottomNavigationBar: AppBottomNav(
-              currentIndex: index,
-              onTap: (i) => context.read<NavBloc>().add(NavTabSelected(i)),
-            ),
-          );
-        },
+      builder: (context, state) {
+  final index = state.index;
+
+  debugPrint('NAV INDEX = $index');
+
+  return Scaffold(
+    extendBody: true,
+    body: IndexedStack(
+      index: index,
+      children: _pages,
+    ),
+    bottomNavigationBar: AppBottomNav(
+      currentIndex: index,
+      onTap: (i) => context.read<NavBloc>().add(
+        NavTabSelected(i),
+      ),
+    ),
+  );
+},
       ),
     );
   }

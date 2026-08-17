@@ -9,10 +9,8 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_shadows.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/round_icon_button.dart';
-import '../../../booking/domain/entities/driver.dart';
 import '../../../booking/presentation/bloc/booking_bloc.dart';
 import '../../../shell/presentation/bloc/nav_bloc.dart';
-import '../widgets/driver_mini_card.dart';
 import '../widgets/quick_place_card.dart';
 
 /// Home tab: live map with a booking sheet (greeting, search entry, saved
@@ -35,13 +33,6 @@ class _HomePageState extends State<HomePage> {
 
   void _openSearch(BuildContext context) =>
       Navigator.pushNamed(context, AppRoutes.search);
-
-  // Drivers shown on the home sheet are a live preview only. Tapping any of
-  // them (or "compare all") starts the booking flow — the ride is broadcast to
-  // all online captains, not assigned to one upfront.
-  void _openDrivers(BuildContext context, {int? select}) {
-    Navigator.pushNamed(context, AppRoutes.search);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +77,13 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(width: 10),
                     RoundIconButton(
                       icon: Icons.my_location_rounded,
-                      iconColor: AppColors.primary,
+                      iconColor: AppColors.primaryDark,
                       background: AppColors.surface,
                       size: 48,
                       radius: 16,
                       shadow: true,
-                      onPressed: () => context
-                          .read<BookingBloc>()
-                          .add(const BookingCurrentPickupRequested(force: true)),
+                      onPressed: () => context.read<BookingBloc>().add(
+                          const BookingCurrentPickupRequested(force: true)),
                     ),
                   ],
                 ),
@@ -103,11 +93,7 @@ class _HomePageState extends State<HomePage> {
           // Booking sheet.
           Align(
             alignment: Alignment.bottomCenter,
-            child: _BookingSheet(
-              onSearch: () => _openSearch(context),
-              onCompareAll: () => _openDrivers(context),
-              onPickDriver: (i) => _openDrivers(context, select: i),
-            ),
+            child: _BookingSheet(onSearch: () => _openSearch(context)),
           ),
         ],
       ),
@@ -169,25 +155,12 @@ class _LocationPill extends StatelessWidget {
 }
 
 class _BookingSheet extends StatelessWidget {
-  const _BookingSheet({
-    required this.onSearch,
-    required this.onCompareAll,
-    required this.onPickDriver,
-  });
+  const _BookingSheet({required this.onSearch});
 
   final VoidCallback onSearch;
-  final VoidCallback onCompareAll;
-  final ValueChanged<int> onPickDriver;
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<BookingBloc, BookingState, List<Driver>>(
-      selector: (state) => state.drivers,
-      builder: (context, drivers) => _buildSheet(context, drivers),
-    );
-  }
-
-  Widget _buildSheet(BuildContext context, List<Driver> drivers) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -213,7 +186,7 @@ class _BookingSheet extends StatelessWidget {
                 width: 42,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE5DACB),
+                  color: AppColors.primaryDark,
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
@@ -247,40 +220,6 @@ class _BookingSheet extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(AppStrings.driversNearYou,
-                      style: AppTextStyles.listTitle.copyWith(fontSize: 14.5)),
-                ),
-                GestureDetector(
-                  onTap: onCompareAll,
-                  child: Text(
-                    AppStrings.compareAll,
-                    style: AppTextStyles.bodySm.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 104,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: drivers.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (_, i) => DriverMiniCard(
-                  driver: drivers[i],
-                  onTap: () => onPickDriver(i),
-                ),
-              ),
-            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -307,22 +246,26 @@ class _SearchEntry extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.search_rounded, size: 20, color: AppColors.primary),
+            const Icon(
+              Icons.search_rounded,
+              size: 20,
+            ),
             const SizedBox(width: 11),
             Expanded(
               child: Text(AppStrings.whereToShort,
                   style: AppTextStyles.input.copyWith(
-                      color: AppColors.ink, fontSize: 15.5, fontWeight: FontWeight.w600)),
+                      color: AppColors.ink,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w600)),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: AppColors.peach,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(9),
               ),
               child: Text(AppStrings.setOnMap,
-                  style: AppTextStyles.micro.copyWith(
-                      color: AppColors.primary, fontSize: 12)),
+                  style: AppTextStyles.micro.copyWith(fontSize: 12)),
             ),
           ],
         ),

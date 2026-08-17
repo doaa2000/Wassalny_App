@@ -9,7 +9,7 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
           kind: NotificationKind.rideComplete,
           section: NotificationSection.today,
           title: 'Your ride is complete',
-          body: 'Trip to Cairo Festival City · EGP 86. Rate Ahmed now.',
+          body: 'Trip to Sirena Beach · EGP 86. Rate Ahmed now.',
           unread: true,
         ),
         AppNotification(
@@ -29,7 +29,7 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
           kind: NotificationKind.onTime,
           section: NotificationSection.earlier,
           title: 'Driver was on time',
-          body: 'Your trip to Zamalek arrived 2 min early.',
+          body: 'Your trip to El Qusair Port arrived 2 min early.',
         ),
       ];
 }

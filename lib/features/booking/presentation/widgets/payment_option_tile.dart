@@ -36,10 +36,10 @@ class PaymentOptionTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         decoration: BoxDecoration(
-          color: selected ? AppColors.peach : AppColors.surface,
+          color: selected ? AppColors.primaryLight : AppColors.surface,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? AppColors.primaryLight : AppColors.border,
             width: 1.5,
           ),
         ),
@@ -49,7 +49,7 @@ class PaymentOptionTile extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: selected ? AppColors.primary : AppColors.peach,
+                color: selected ? AppColors.primaryDark : AppColors.peach,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(_icon,
@@ -73,7 +73,9 @@ class PaymentOptionTile extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: selected ? AppColors.primary : const Color(0xFFE5DACB),
+                  color: selected
+                      ? AppColors.primaryDark
+                      : const Color(0xFFE5DACB),
                   width: 2,
                 ),
               ),
@@ -83,7 +85,7 @@ class PaymentOptionTile extends StatelessWidget {
                       height: 11,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.primary,
+                        color: AppColors.primaryDark,
                       ),
                     )
                   : null,

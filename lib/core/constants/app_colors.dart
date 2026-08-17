@@ -9,9 +9,9 @@ class AppColors {
   AppColors._();
 
   // ---- Brand ----
-  static const Color primary = Color(0xFFC45B2E); // terracotta
-  static const Color primaryDark = Color(0xFF9A3F1C);
-  static const Color primaryLight = Color(0xFFD9743F);
+  static const Color primary = Color(0xFFF2DB49); // terracotta
+  static const Color primaryDark = Color(0xFF1C1C1C);
+  static const Color primaryLight = Color(0xFFFFF6B8);
   static const Color onPrimary = Color(0xFFFFFFFF);
 
   // Soft brand surfaces used for icon chips, tags, pressed states.
@@ -21,20 +21,20 @@ class AppColors {
   // ---- Neutrals / text ----
   static const Color ink = Color(0xFF2B2420); // primary text
   static const Color textSecondary = Color(0xFF80736A);
-  static const Color textTertiary = Color(0xFFA2958A);
+  static const Color textTertiary = Color(0xFF6B6B6B);
   static const Color textFaint = Color(0xFFB0A498);
   static const Color chevron = Color(0xFFD2C7BB);
   static const Color disabled = Color(0xFFC7BCB0);
 
   // ---- Backgrounds / surfaces ----
-  static const Color background = Color(0xFFF5EEE6); // cream canvas
+  static const Color background = Color(0xFFF8F8F6); // cream canvas
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color border = Color(0xFFEBE2D6);
+  static const Color border = Color(0xFFE5E5E5);
   static const Color borderSoft = Color(0xFFECE3D7);
-  static const Color divider = Color(0xFFF1E9DD);
+  static const Color divider = Color(0xFFE5E5E5);
 
   // ---- Status ----
-  static const Color success = Color(0xFF22B07D);
+  static const Color success = Color(0xFF22A06B);
   static const Color successDark = Color(0xFF179C6C);
   static const Color successBg = Color(0xFFE7F6EF);
   static const Color danger = Color(0xFFF0453A);

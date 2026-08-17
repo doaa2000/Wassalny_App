@@ -77,7 +77,9 @@ class ProfilePage extends StatelessWidget {
                       destructive: true,
                       showDivider: false,
                       onTap: () {
-                        context.read<AuthBloc>().add(const AuthLogoutRequested());
+                        context
+                            .read<AuthBloc>()
+                            .add(const AuthLogoutRequested());
                         Navigator.pushNamedAndRemoveUntil(
                             context, AppRoutes.welcome, (route) => false);
                       },
@@ -106,7 +108,7 @@ class _ProfileHeader extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(26)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.3),
+            color: AppColors.shadow.withValues(alpha: 0.3),
             blurRadius: 30,
             offset: const Offset(0, 10),
             spreadRadius: -22,
@@ -131,9 +133,8 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(22),
                 ),
-                child: Text('LM',
-                    style: AppTextStyles.h3
-                        .copyWith(color: Colors.white, fontSize: 24)),
+                child:
+                    Text('LM', style: AppTextStyles.h3.copyWith(fontSize: 24)),
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -143,14 +144,14 @@ class _ProfileHeader extends StatelessWidget {
                     Text(AppStrings.riderName,
                         style: AppTextStyles.titleSm.copyWith(fontSize: 19)),
                     Text(AppStrings.riderPhone,
-                        style: AppTextStyles.bodySm
-                            .copyWith(color: AppColors.textTertiary, fontSize: 13)),
+                        style: AppTextStyles.bodySm.copyWith(
+                            color: AppColors.textTertiary, fontSize: 13)),
                     const SizedBox(height: 5),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 9, vertical: 3),
                       decoration: BoxDecoration(
-                        color: AppColors.peachAmber,
+                        color: AppColors.primaryLight,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -160,8 +161,8 @@ class _ProfileHeader extends StatelessWidget {
                               size: 12, color: AppColors.gold),
                           const SizedBox(width: 4),
                           Text(AppStrings.riderTag,
-                              style: AppTextStyles.micro.copyWith(
-                                  color: AppColors.goldText, fontSize: 11.5)),
+                              style:
+                                  AppTextStyles.micro.copyWith(fontSize: 11.5)),
                         ],
                       ),
                     ),
@@ -190,7 +191,7 @@ class _MenuGroup extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.3),
+            color: AppColors.shadow.withValues(alpha: 0.3),
             blurRadius: 26,
             offset: const Offset(0, 10),
             spreadRadius: -20,

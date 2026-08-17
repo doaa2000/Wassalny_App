@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/service_area.dart';
 import 'map_style.dart';
 
 /// Display modes for [MapView], mirroring the design component variants.
@@ -17,7 +18,7 @@ enum MapVariant {
   tracking,
 }
 
-/// A real Google Map centred on Cairo. For [MapVariant.route] and
+/// A real Google Map centred on the service area. For [MapVariant.route] and
 /// [MapVariant.tracking] it draws a pickup → drop-off polyline with markers so
 /// the booking screens keep their route preview. The public API is unchanged
 /// (`MapView({variant})`) so every screen that used the old stylized map keeps
@@ -35,8 +36,8 @@ class MapView extends StatefulWidget {
 
   final MapVariant variant;
 
-  /// Real trip endpoints. When null, sample Cairo points are used so the map
-  /// still renders a preview.
+  /// Real trip endpoints. When null, sample points within the service area
+  /// are used so the map still renders a preview.
   final LatLng? pickup;
   final LatLng? dropoff;
 
@@ -57,11 +58,12 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  // Sample Cairo coordinates used until live trip geometry is wired in.
-  static const LatLng _defaultPickup = LatLng(30.0444, 31.2357); // Downtown
-  static const LatLng _defaultDropoff = LatLng(30.0626, 31.2497); // Zamalek-ish
-
-  static const LatLng _cairoCenter = LatLng(30.0500, 31.2400);
+  // Sample coordinates around the service area, used until live trip
+  // geometry is wired in.
+  static const LatLng _defaultPickup =
+      ServiceArea.defaultCenter; // El Qusair centre
+  static const LatLng _defaultDropoff =
+      LatLng(26.1221, 34.2933); // Sirena Beach-ish
 
   LatLng get _pickup => widget.pickup ?? _defaultPickup;
   LatLng get _dropoff => widget.dropoff ?? _defaultDropoff;
@@ -80,7 +82,8 @@ class _MapViewState extends State<MapView> {
 
   void _onCameraMoveStarted() => _userMoved = true;
 
-  void _onCameraMove(CameraPosition position) => _cameraTarget = position.target;
+  void _onCameraMove(CameraPosition position) =>
+      _cameraTarget = position.target;
 
   void _onCameraIdle() {
     if (_userMoved && _cameraTarget != null) {
@@ -105,8 +108,10 @@ class _MapViewState extends State<MapView> {
     if (_interactivePickup && widget.pickup != null && _controller != null) {
       final LatLng current = _cameraTarget ?? const LatLng(0, 0);
       final double moved = Geolocator.distanceBetween(
-        current.latitude, current.longitude,
-        widget.pickup!.latitude, widget.pickup!.longitude,
+        current.latitude,
+        current.longitude,
+        widget.pickup!.latitude,
+        widget.pickup!.longitude,
       );
       if (moved > 50) _moveTo(widget.pickup!);
     }
@@ -116,7 +121,8 @@ class _MapViewState extends State<MapView> {
         widget.driverLocation != null &&
         widget.driverLocation != oldWidget.driverLocation &&
         _controller != null) {
-      _controller!.animateCamera(CameraUpdate.newLatLng(widget.driverLocation!));
+      _controller!
+          .animateCamera(CameraUpdate.newLatLng(widget.driverLocation!));
     }
   }
 
@@ -139,12 +145,14 @@ class _MapViewState extends State<MapView> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ),
       // Live captain position (tracking screen).
-      if (widget.variant == MapVariant.tracking && widget.driverLocation != null)
+      if (widget.variant == MapVariant.tracking &&
+          widget.driverLocation != null)
         Marker(
           markerId: const MarkerId('driver'),
           position: widget.driverLocation!,
           infoWindow: const InfoWindow(title: 'Your captain'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
           flat: true,
           anchor: const Offset(0.5, 0.5),
         ),
@@ -158,7 +166,7 @@ class _MapViewState extends State<MapView> {
       Polyline(
         polylineId: const PolylineId('route_shadow'),
         points: [_pickup, _dropoff],
-        color: Colors.black.withOpacity(0.12),
+        color: Colors.black.withValues(alpha: 0.12),
         width: 11,
         geodesic: true,
         startCap: Cap.roundCap,
@@ -185,7 +193,7 @@ class _MapViewState extends State<MapView> {
     if (_interactivePickup && widget.pickup != null) {
       return CameraPosition(target: widget.pickup!, zoom: 16);
     }
-    return const CameraPosition(target: _cairoCenter, zoom: 13);
+    return const CameraPosition(target: ServiceArea.defaultCenter, zoom: 13);
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
@@ -202,12 +210,20 @@ class _MapViewState extends State<MapView> {
     if (_showRoute) {
       final bounds = LatLngBounds(
         southwest: LatLng(
-          _pickup.latitude < _dropoff.latitude ? _pickup.latitude : _dropoff.latitude,
-          _pickup.longitude < _dropoff.longitude ? _pickup.longitude : _dropoff.longitude,
+          _pickup.latitude < _dropoff.latitude
+              ? _pickup.latitude
+              : _dropoff.latitude,
+          _pickup.longitude < _dropoff.longitude
+              ? _pickup.longitude
+              : _dropoff.longitude,
         ),
         northeast: LatLng(
-          _pickup.latitude > _dropoff.latitude ? _pickup.latitude : _dropoff.latitude,
-          _pickup.longitude > _dropoff.longitude ? _pickup.longitude : _dropoff.longitude,
+          _pickup.latitude > _dropoff.latitude
+              ? _pickup.latitude
+              : _dropoff.latitude,
+          _pickup.longitude > _dropoff.longitude
+              ? _pickup.longitude
+              : _dropoff.longitude,
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -289,24 +305,26 @@ class _CenterPin extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              color: AppColors.primaryDark,
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.4),
+                  color: AppColors.primaryDark.withValues(alpha: 0.4),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
-            child: const Icon(Icons.my_location_rounded, color: Colors.white, size: 20),
+            child: const Icon(Icons.my_location_rounded,
+                color: Colors.white, size: 20),
           ),
-          Container(width: 2.5, height: 14, color: AppColors.primary),
+          Container(width: 2.5, height: 14, color: AppColors.primaryDark),
           Container(
             width: 8,
             height: 8,
-            decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+                color: AppColors.primaryDark, shape: BoxShape.circle),
           ),
         ],
       ),

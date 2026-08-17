@@ -14,8 +14,8 @@ class ProfileMenuItem extends StatelessWidget {
     this.showChevron = true,
     this.destructive = false,
     this.showDivider = true,
-    this.iconBg = AppColors.peach,
-    this.iconColor = AppColors.primary,
+    this.iconBg = AppColors.primary,
+    this.iconColor = AppColors.primaryDark,
     this.onTap,
   });
 

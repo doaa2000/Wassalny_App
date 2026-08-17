@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../../core/constants/service_area.dart';
 import '../../../../core/logging/logging.dart';
 import '../../domain/entities/driver.dart';
 import '../../domain/entities/fare_line.dart';
@@ -21,12 +22,15 @@ class BookingRepositoryImpl implements BookingRepository {
 
   @override
   Future<List<Driver>> fetchNearbyDrivers() async {
-    // Real online drivers near central Cairo (placeholder coords until the map
-    // picker feeds real lat/lng).
+    // Real online drivers near the service area's default city (placeholder
+    // coords until the map picker feeds real lat/lng).
     final DriversRemoteDataSource? remote = _driversRemote;
     if (remote != null) {
       try {
-        final List<Driver> real = await remote.nearbyDrivers(lat: 30.0444, lng: 31.2357);
+        final List<Driver> real = await remote.nearbyDrivers(
+          lat: ServiceArea.defaultCenter.latitude,
+          lng: ServiceArea.defaultCenter.longitude,
+        );
         if (real.isNotEmpty) return real;
       } catch (e, s) {
         appLogger.logWarning('nearby_drivers failed; using demo catalogue',

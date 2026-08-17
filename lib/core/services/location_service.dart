@@ -2,6 +2,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../constants/service_area.dart';
+
 /// Thin wrapper around device GPS (geolocator) and reverse geocoding
 /// (geocoding). Keeps permission handling in one place so the picker and any
 /// future live-tracking code share the same logic.
@@ -9,8 +11,9 @@ class LocationService {
   LocationService._();
   static final LocationService instance = LocationService._();
 
-  /// Cairo, used as a safe default when GPS is unavailable.
-  static const LatLng fallback = LatLng(30.0444, 31.2357);
+  /// The service area's default city centre, used as a safe fallback when
+  /// GPS is unavailable.
+  static const LatLng fallback = ServiceArea.defaultCenter;
 
   /// Ensures location services are on and permission is granted, returning the
   /// device's current position — or `null` if it can't be obtained.

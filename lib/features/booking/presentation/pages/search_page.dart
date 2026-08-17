@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/service_area.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_shadows.dart';
@@ -56,10 +57,16 @@ class SearchPage extends StatelessWidget {
   }
 
   /// Use a saved place as the destination and jump straight to confirm.
-  void _useSavedPlace(BuildContext context, double lat, double lng, String address) {
-    context
-        .read<BookingBloc>()
-        .add(BookingDestinationSet(LatLng(lat, lng), address));
+  void _useSavedPlace(
+      BuildContext context, double lat, double lng, String address) {
+    final LatLng point = LatLng(lat, lng);
+    if (!ServiceArea.contains(point)) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.outsideServiceArea)));
+      return;
+    }
+    context.read<BookingBloc>().add(BookingDestinationSet(point, address));
     Navigator.pushReplacementNamed(context, AppRoutes.confirm);
   }
 
@@ -95,7 +102,7 @@ class SearchPage extends StatelessWidget {
                           PlaceListTile(
                             icon: Icons.star_rounded,
                             iconColor: AppColors.primary,
-                            iconBg: AppColors.peach,
+                            iconBg: AppColors.primaryLight,
                             title: saved[i].label,
                             subtitle: saved[i].address,
                             showDivider: i != saved.length - 1,
@@ -229,10 +236,10 @@ class _FieldBox extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14),
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-          color: highlighted ? AppColors.peach : AppColors.background,
+          color: highlighted ? AppColors.primaryLight : AppColors.background,
           borderRadius: BorderRadius.circular(14),
           border: highlighted
-              ? Border.all(color: AppColors.primary, width: 1.5)
+              ? Border.all(color: AppColors.primaryLight, width: 1.5)
               : null,
         ),
         child: Row(
@@ -249,7 +256,10 @@ class _FieldBox extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(Icons.map_outlined, size: 18, color: AppColors.primary),
+            const Icon(
+              Icons.map_outlined,
+              size: 18,
+            ),
           ],
         ),
       ),

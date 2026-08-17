@@ -16,7 +16,7 @@ class PrimaryButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.color = AppColors.primary,
-    this.foreground = AppColors.onPrimary,
+    this.foreground = AppColors.primaryDark,
     this.height = AppDimens.buttonHeight,
     this.leading,
     this.trailing,

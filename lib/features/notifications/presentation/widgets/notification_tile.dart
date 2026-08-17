@@ -38,8 +38,8 @@ class NotificationTile extends StatelessWidget {
                 Text(notification.title, style: AppTextStyles.listTitle),
                 const SizedBox(height: 2),
                 Text(notification.body,
-                    style: AppTextStyles.caption.copyWith(
-                        fontSize: 12.5, height: 1.4)),
+                    style: AppTextStyles.caption
+                        .copyWith(fontSize: 12.5, height: 1.4)),
               ],
             ),
           ),
@@ -63,23 +63,23 @@ class NotificationTile extends StatelessWidget {
     late final Widget child;
     switch (notification.kind) {
       case NotificationKind.rideComplete:
-        bg = AppColors.peach;
-        child = const CarMarkIcon(size: 20, color: AppColors.primary);
+        bg = AppColors.primary;
+        child = const CarMarkIcon(size: 20, color: AppColors.primaryDark);
         break;
       case NotificationKind.promo:
-        bg = AppColors.peachAmber;
+        bg = AppColors.primary;
         child = const Icon(Icons.card_giftcard_rounded,
-            size: 20, color: AppColors.gold);
+            size: 20, color: AppColors.primaryDark);
         break;
       case NotificationKind.topUp:
         bg = AppColors.successBg;
         child = const Icon(Icons.account_balance_wallet_outlined,
-            size: 20, color: AppColors.success);
+            size: 20, color: AppColors.primaryDark);
         break;
       case NotificationKind.onTime:
-        bg = AppColors.peach;
+        bg = AppColors.primary;
         child = const Icon(Icons.schedule_rounded,
-            size: 20, color: AppColors.primary);
+            size: 20, color: AppColors.primaryDark);
         break;
     }
     return Container(

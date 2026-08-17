@@ -18,8 +18,7 @@ import '../../features/places/data/repositories/places_repository_impl.dart';
 import '../../features/places/presentation/bloc/places_bloc.dart';
 import '../../features/rides/data/repositories/rides_repository_impl.dart';
 import '../../features/rides/presentation/bloc/rides_bloc.dart';
-import '../../features/wallet/data/repositories/wallet_repository_impl.dart';
-import '../../features/wallet/presentation/bloc/wallet_bloc.dart';
+
 
 /// Lightweight composition root.
 ///
@@ -50,7 +49,6 @@ class _AppDependenciesState extends State<AppDependencies> {
       BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote, _driversRemote);
   late final _authRepo =
       AuthRepositoryImpl(AuthRemoteDataSource(SupabaseService.instance));
-  late final _walletRepo = WalletRepositoryImpl();
   late final _ridesRepo = RidesRepositoryImpl();
   late final _notificationsRepo = NotificationsRepositoryImpl();
   late final _placesRepo =
@@ -64,9 +62,7 @@ class _AppDependenciesState extends State<AppDependencies> {
         BlocProvider(
           create: (_) => BookingBloc(_bookingRepo)..add(const BookingStarted()),
         ),
-        BlocProvider(
-          create: (_) => WalletBloc(_walletRepo)..add(const WalletRequested()),
-        ),
+     
         BlocProvider(
           create: (_) => RidesBloc(_ridesRepo)..add(const RidesRequested()),
         ),

@@ -68,7 +68,7 @@ class AboutUsPage extends StatelessWidget {
                   SizedBox(height: 14),
                   _InfoRow(icon: Icons.public_rounded, label: 'www.wassalny.app'),
                   SizedBox(height: 14),
-                  _InfoRow(icon: Icons.place_outlined, label: 'Cairo, Egypt'),
+                  _InfoRow(icon: Icons.place_outlined, label: 'El Qusair, Egypt'),
                 ],
               ),
             ),

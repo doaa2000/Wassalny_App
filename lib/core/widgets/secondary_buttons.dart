@@ -118,7 +118,7 @@ class SoftButton extends StatelessWidget {
         height: height,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.peach,
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(radius),
         ),
         child: Text(

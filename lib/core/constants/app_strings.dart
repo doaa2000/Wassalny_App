@@ -174,6 +174,7 @@ class AppStrings {
   static String get pickerHint => _t('pickerHint');
   static String get locating => _t('locating');
   static String get confirm => _t('confirm');
+  static String get outsideServiceArea => _t('outsideServiceArea');
   static String get placeHome => _t('placeHome');
   static String get placeWork => _t('placeWork');
 

@@ -44,9 +44,7 @@ class NotificationsPage extends StatelessWidget {
                       ),
                       Text(AppStrings.markAllRead,
                           style: AppTextStyles.bodySm.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13)),
+                              fontWeight: FontWeight.w700, fontSize: 13)),
                     ],
                   ),
                 ),
@@ -89,7 +87,7 @@ class _GroupCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.3),
+            color: AppColors.shadow.withValues(alpha: 0.3),
             blurRadius: 26,
             offset: const Offset(0, 10),
             spreadRadius: -20,

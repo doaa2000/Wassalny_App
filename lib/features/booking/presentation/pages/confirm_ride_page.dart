@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/service_area.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/map/map_view.dart';
@@ -119,10 +120,13 @@ class ConfirmRidePage extends StatelessWidget {
                           // Broadcast the request (no driver_id) so every online
                           // captain receives it live and the first to accept
                           // takes the trip — inDrive-style.
-                          final pickup = state.pickup ??
-                              const LatLng(30.0444, 31.2357);
+                          // These only apply if the rider somehow reaches this
+                          // button without a route (the "Find driver" button
+                          // upstream requires one) — fall back to the service
+                          // area's default city rather than a hardcoded point.
+                          final pickup = state.pickup ?? ServiceArea.defaultCenter;
                           final dropoff = state.destination ??
-                              const LatLng(30.0566, 31.3300);
+                              const LatLng(26.1161, 34.3736);
                           context.read<BookingBloc>().add(
                                 BookingRideRequested(
                                   pickupAddress:

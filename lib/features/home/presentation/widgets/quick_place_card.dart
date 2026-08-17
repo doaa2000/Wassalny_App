@@ -36,10 +36,13 @@ class QuickPlaceCard extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: AppColors.peach,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(11),
               ),
-              child: Icon(icon, size: 18, color: AppColors.primary),
+              child: Icon(
+                icon,
+                size: 18,
+              ),
             ),
             const SizedBox(width: 9),
             Expanded(
@@ -48,8 +51,8 @@ class QuickPlaceCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(title,
-                      style: AppTextStyles.bodySm
-                          .copyWith(color: AppColors.ink, fontWeight: FontWeight.w700),
+                      style: AppTextStyles.bodySm.copyWith(
+                          color: AppColors.ink, fontWeight: FontWeight.w700),
                       overflow: TextOverflow.ellipsis),
                   Text(subtitle,
                       style: AppTextStyles.caption.copyWith(

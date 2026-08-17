@@ -31,11 +31,11 @@ class AppTranslations {
     },
     'welcomeSubtitle': {
       'en':
-          'Compare nearby drivers, see real prices, and book the perfect ride across Cairo in seconds.',
+          'Compare nearby drivers, see real prices, and book the perfect ride across El Qusair in seconds.',
       'ar':
-          'قارن بين السائقين القريبين، واطّلع على الأسعار الحقيقية، واحجز رحلتك المثالية في القاهرة خلال ثوانٍ.',
+          'قارن بين السائقين القريبين، واطّلع على الأسعار الحقيقية، واحجز رحلتك المثالية في القصير خلال ثوانٍ.',
       'es':
-          'Compara conductores cercanos, consulta precios reales y reserva el viaje perfecto por El Cairo en segundos.'
+          'Compara conductores cercanos, consulta precios reales y reserva el viaje perfecto por El Qusair en segundos.'
     },
     'getStarted': {'en': 'Get started', 'ar': 'ابدأ الآن', 'es': 'Comenzar'},
     'haveAccount': {
@@ -69,11 +69,11 @@ class AppTranslations {
     },
     'enableLocationSubtitle': {
       'en':
-          'We use your location to find nearby drivers and set your pickup point accurately across Cairo.',
+          'We use your location to find nearby drivers and set your pickup point accurately across El Qusair.',
       'ar':
-          'نستخدم موقعك للعثور على السائقين القريبين وتحديد نقطة انطلاقك بدقة في القاهرة.',
+          'نستخدم موقعك للعثور على السائقين القريبين وتحديد نقطة انطلاقك بدقة في القصير.',
       'es':
-          'Usamos tu ubicación para encontrar conductores cercanos y fijar tu punto de recogida con precisión en El Cairo.'
+          'Usamos tu ubicación para encontrar conductores cercanos y fijar tu punto de recogida con precisión en El Qusair.'
     },
     'allowLocation': {
       'en': 'Allow location access',
@@ -218,9 +218,9 @@ class AppTranslations {
 
     // Home
     'currentLocation': {
-      'en': 'Tahrir Square, Cairo',
-      'ar': 'Tahrir Square, Cairo',
-      'es': 'Tahrir Square, Cairo'
+      'en': 'Qusair Fort, El Qusair',
+      'ar': 'Qusair Fort, El Qusair',
+      'es': 'Qusair Fort, El Qusair'
     },
     'greeting': {
       'en': 'Good evening, Layla',
@@ -271,9 +271,9 @@ class AppTranslations {
       'es': 'Elige tu conductor'
     },
     'tripRoute': {
-      'en': 'Tahrir Square → Cairo Festival City',
-      'ar': 'Tahrir Square → Cairo Festival City',
-      'es': 'Tahrir Square → Cairo Festival City'
+      'en': 'Qusair Fort → Sirena Beach',
+      'ar': 'Qusair Fort → Sirena Beach',
+      'es': 'Qusair Fort → Sirena Beach'
     },
     'arrives': {'en': 'Arrives', 'ar': 'يصل خلال', 'es': 'Llega en'},
     'plate': {'en': 'Plate', 'ar': 'اللوحة', 'es': 'Placa'},
@@ -294,9 +294,9 @@ class AppTranslations {
     'pickup': {'en': 'PICKUP', 'ar': 'الانطلاق', 'es': 'RECOGIDA'},
     'dropoff': {'en': 'DROP-OFF', 'ar': 'الوجهة', 'es': 'DESTINO'},
     'dropoffPlace': {
-      'en': 'Cairo Festival City',
-      'ar': 'Cairo Festival City',
-      'es': 'Cairo Festival City'
+      'en': 'Sirena Beach',
+      'ar': 'Sirena Beach',
+      'es': 'Sirena Beach'
     },
     'change': {'en': 'Change', 'ar': 'تغيير', 'es': 'Cambiar'},
     'paymentMethod': {
@@ -318,10 +318,10 @@ class AppTranslations {
     },
     'findingSubtitle': {
       'en':
-          'Matching you with the best nearby driver\nfor your trip to Cairo Festival City',
-      'ar': 'نبحث لك عن أفضل سائق قريب\nلرحلتك إلى Cairo Festival City',
+          'Matching you with the best nearby driver\nfor your trip to Sirena Beach',
+      'ar': 'نبحث لك عن أفضل سائق قريب\nلرحلتك إلى Sirena Beach',
       'es':
-          'Buscando el mejor conductor cercano\npara tu viaje a Cairo Festival City'
+          'Buscando el mejor conductor cercano\npara tu viaje a Sirena Beach'
     },
     'cancel': {'en': 'Cancel', 'ar': 'إلغاء', 'es': 'Cancelar'},
 
@@ -483,6 +483,11 @@ class AppTranslations {
     },
     'locating': {'en': 'Locating…', 'ar': 'جارٍ التحديد…', 'es': 'Localizando…'},
     'confirm': {'en': 'Confirm', 'ar': 'تأكيد', 'es': 'Confirmar'},
+    'outsideServiceArea': {
+      'en': "Sorry, we don't serve this area yet.",
+      'ar': 'عذرًا، الخدمة غير متاحة في هذه المنطقة حاليًا.',
+      'es': 'Lo sentimos, aún no operamos en esta zona.'
+    },
     'placeHome': {'en': 'Home', 'ar': 'المنزل', 'es': 'Casa'},
     'placeWork': {'en': 'Work', 'ar': 'العمل', 'es': 'Trabajo'},
 
@@ -521,11 +526,11 @@ class AppTranslations {
     // About
     'aboutDescription': {
       'en':
-          'Wassalny is a ride-hailing app that connects riders with nearby captains across Cairo. Set your pickup on the map, request a ride, and a nearby captain accepts and drives you to your destination — simply and affordably.',
+          'Wassalny is a ride-hailing app that connects riders with nearby captains across El Qusair. Set your pickup on the map, request a ride, and a nearby captain accepts and drives you to your destination — simply and affordably.',
       'ar':
-          'Wassalny تطبيق لطلب الرحلات يربط الركاب بالكباتن القريبين في القاهرة. حدّد نقطة انطلاقك على الخريطة، اطلب رحلة، ويقبلها كابتن قريب ليوصلك إلى وجهتك — ببساطة وبأسعار مناسبة.',
+          'Wassalny تطبيق لطلب الرحلات يربط الركاب بالكباتن القريبين في القصير. حدّد نقطة انطلاقك على الخريطة، اطلب رحلة، ويقبلها كابتن قريب ليوصلك إلى وجهتك — ببساطة وبأسعار مناسبة.',
       'es':
-          'Wassalny es una app de transporte que conecta a pasajeros con conductores cercanos en El Cairo. Fija tu recogida en el mapa, solicita un viaje y un conductor cercano lo acepta y te lleva a tu destino — de forma simple y económica.'
+          'Wassalny es una app de transporte que conecta a pasajeros con conductores cercanos en El Qusair. Fija tu recogida en el mapa, solicita un viaje y un conductor cercano lo acepta y te lleva a tu destino — de forma simple y económica.'
     },
     'aboutRights': {
       'en': '© 2026 Wassalny. All rights reserved.',

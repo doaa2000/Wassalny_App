@@ -26,7 +26,6 @@ class AppBottomNav extends StatelessWidget {
   static List<NavDestination> get _items => [
     NavDestination(AppStrings.navHome, Icons.home_outlined),
     NavDestination(AppStrings.navRides, Icons.receipt_long_outlined),
-    NavDestination(AppStrings.navWallet, Icons.account_balance_wallet_outlined),
     NavDestination(AppStrings.navAlerts, Icons.notifications_none_rounded),
     NavDestination(AppStrings.navProfile, Icons.person_outline_rounded),
   ];

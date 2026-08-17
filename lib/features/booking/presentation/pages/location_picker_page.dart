@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/service_area.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/map/map_style.dart';
@@ -33,7 +34,8 @@ class LocationPickerPage extends StatefulWidget {
   final String title;
 
   /// Where to centre the map initially. When null (and [useCurrentLocation]),
-  /// the device GPS position is used, falling back to Cairo.
+  /// the device GPS position is used, falling back to the service area's
+  /// default city.
   final LatLng? initial;
 
   /// Try to centre on the device location when [initial] is null.
@@ -123,7 +125,8 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
           if (_ready)
             Positioned.fill(
               child: GoogleMap(
-                initialCameraPosition: CameraPosition(target: _center, zoom: 16),
+                initialCameraPosition:
+                    CameraPosition(target: _center, zoom: 16),
                 style: wassalnyMapStyle,
                 onMapCreated: (c) => _controller = c,
                 onCameraMove: _onCameraMove,
@@ -169,8 +172,8 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                     ),
                     const SizedBox(width: 12),
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(14),
@@ -196,7 +199,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
             bottom: 168,
             child: RoundIconButton(
               icon: Icons.my_location_rounded,
-              iconColor: AppColors.primary,
+              iconColor: AppColors.primaryDark,
               background: AppColors.surface,
               size: 48,
               radius: 16,
@@ -243,7 +246,8 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                             _resolving ? AppStrings.locating : _address,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.listTitle.copyWith(fontSize: 14.5),
+                            style: AppTextStyles.listTitle
+                                .copyWith(fontSize: 14.5),
                           ),
                         ),
                       ],
@@ -251,10 +255,16 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                     const SizedBox(height: 14),
                     PrimaryButton(
                       label: AppStrings.confirm,
-                      onPressed: () => Navigator.pop(
-                        context,
-                        PickedPlace(_center, _address),
-                      ),
+                      onPressed: () {
+                        if (!ServiceArea.contains(_center)) {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(SnackBar(
+                                content: Text(AppStrings.outsideServiceArea)));
+                          return;
+                        }
+                        Navigator.pop(context, PickedPlace(_center, _address));
+                      },
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -280,12 +290,12 @@ class _CenterPin extends StatelessWidget {
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: AppColors.primaryDark,
             shape: BoxShape.circle,
             border: Border.all(color: Colors.white, width: 3),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.4),
+                color: AppColors.primaryDark.withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -297,13 +307,13 @@ class _CenterPin extends StatelessWidget {
         Container(
           width: 2,
           height: 14,
-          color: AppColors.primary,
+          color: AppColors.primaryDark,
         ),
         Container(
           width: 7,
           height: 7,
           decoration: const BoxDecoration(
-            color: AppColors.primary,
+            color: AppColors.primaryDark,
             shape: BoxShape.circle,
           ),
         ),
