@@ -16,7 +16,6 @@ class AppRoutes {
 
   // Booking flow (pushed full-screen over the shell).
   static const String search = '/search';
-  static const String drivers = '/drivers';
   static const String confirm = '/confirm';
   static const String finding = '/finding';
   static const String assigned = '/assigned';

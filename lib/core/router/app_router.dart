@@ -6,7 +6,6 @@ import '../../features/auth/presentation/pages/otp_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
 import '../../features/booking/presentation/pages/confirm_ride_page.dart';
 import '../../features/booking/presentation/pages/driver_assigned_page.dart';
-import '../../features/booking/presentation/pages/driver_select_page.dart';
 import '../../features/booking/presentation/pages/finding_driver_page.dart';
 import '../../features/booking/presentation/pages/live_tracking_page.dart';
 import '../../features/booking/presentation/pages/search_page.dart';
@@ -48,8 +47,6 @@ class AppRouter {
         return (_) => const MainShell();
       case AppRoutes.search:
         return (_) => const SearchPage();
-      case AppRoutes.drivers:
-        return (_) => const DriverSelectPage();
       case AppRoutes.confirm:
         return (_) => const ConfirmRidePage();
       case AppRoutes.finding:

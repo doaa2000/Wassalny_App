@@ -70,7 +70,7 @@ class RidesPage extends StatelessWidget {
                   itemBuilder: (context, i) => RideHistoryCard(
                     ride: rides[i],
                     onRebook: () =>
-                        Navigator.pushNamed(context, AppRoutes.drivers),
+                        Navigator.pushNamed(context, AppRoutes.search),
                   ),
                 ),
               ),

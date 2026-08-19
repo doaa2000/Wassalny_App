@@ -255,16 +255,26 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                     const SizedBox(height: 14),
                     PrimaryButton(
                       label: AppStrings.confirm,
-                      onPressed: () {
-                        if (!ServiceArea.contains(_center)) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(SnackBar(
-                                content: Text(AppStrings.outsideServiceArea)));
-                          return;
-                        }
-                        Navigator.pop(context, PickedPlace(_center, _address));
-                      },
+                      onPressed: _resolving
+                          ? null
+                          : () {
+                              if (!ServiceArea.contains(_center)) {
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text(AppStrings.outsideServiceArea),
+                                    ),
+                                  );
+                                return;
+                              }
+
+                              Navigator.pop(
+                                context,
+                                PickedPlace(_center, _address),
+                              );
+                            },
                     ),
                     const SizedBox(height: 12),
                   ],

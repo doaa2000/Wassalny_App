@@ -48,7 +48,7 @@ class TripCompletedPage extends StatelessWidget {
                           height: 68,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                           ),
                           child: const Icon(Icons.check_rounded,
                               color: Colors.white, size: 36),
@@ -61,7 +61,7 @@ class TripCompletedPage extends StatelessWidget {
                         Text(
                           'Hope you enjoyed your ride with ${driver.firstName}.',
                           style: AppTextStyles.bodySm.copyWith(
-                              color: Colors.white.withOpacity(0.88)),
+                              color: Colors.white.withValues(alpha: 0.88)),
                         ),
                       ],
                     ),
@@ -87,8 +87,9 @@ class TripCompletedPage extends StatelessWidget {
                             _TipChip(
                               value: _tips[i],
                               selected: state.tip == _tips[i],
-                              onTap: () =>
-                                  context.read<BookingBloc>().add(BookingTipChanged(_tips[i])),
+                              onTap: () => context
+                                  .read<BookingBloc>()
+                                  .add(BookingTipChanged(_tips[i])),
                             ),
                             if (i != _tips.length - 1) const SizedBox(width: 9),
                           ],
@@ -102,7 +103,8 @@ class TripCompletedPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border, width: 1.5),
+                          border:
+                              Border.all(color: AppColors.border, width: 1.5),
                         ),
                         child: TextField(
                           cursorColor: AppColors.primary,
@@ -112,8 +114,8 @@ class TripCompletedPage extends StatelessWidget {
                             isDense: true,
                             border: InputBorder.none,
                             hintText: AppStrings.leaveReview,
-                            hintStyle: AppTextStyles.body
-                                .copyWith(fontSize: 14, color: AppColors.textTertiary),
+                            hintStyle: AppTextStyles.body.copyWith(
+                                fontSize: 14, color: AppColors.textTertiary),
                           ),
                         ),
                       ),
@@ -121,7 +123,9 @@ class TripCompletedPage extends StatelessWidget {
                       PrimaryButton(
                         label: AppStrings.submitDone,
                         onPressed: () {
-                          context.read<BookingBloc>().add(const BookingTripReset());
+                          context
+                              .read<BookingBloc>()
+                              .add(const BookingTripReset());
                           Navigator.popUntil(
                               context, ModalRoute.withName(AppRoutes.main));
                         },
@@ -152,7 +156,7 @@ class _StatsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.3),
+            color: AppColors.shadow.withValues(alpha: 0.3),
             blurRadius: 30,
             offset: const Offset(0, 12),
             spreadRadius: -20,
@@ -172,8 +176,7 @@ class _StatsCard extends StatelessWidget {
     );
   }
 
-  Widget _divider() =>
-      Container(width: 1, height: 34, color: AppColors.border);
+  Widget _divider() => Container(width: 1, height: 34, color: AppColors.border);
 
   Widget _stat(String value, String label, {bool highlight = false}) {
     return Column(
@@ -184,8 +187,7 @@ class _StatsCard extends StatelessWidget {
               fontSize: highlight ? 18 : 21,
               color: highlight ? AppColors.primary : AppColors.ink,
             )),
-        Text(label,
-            style: AppTextStyles.caption.copyWith(fontSize: 11.5)),
+        Text(label, style: AppTextStyles.caption.copyWith(fontSize: 11.5)),
       ],
     );
   }
@@ -205,7 +207,7 @@ class _RateCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.3),
+            color: AppColors.shadow.withValues(alpha: 0.3),
             blurRadius: 30,
             offset: const Offset(0, 12),
             spreadRadius: -20,
@@ -231,7 +233,8 @@ class _RateCard extends StatelessWidget {
             buildWhen: (a, b) => a.rating != b.rating,
             builder: (context, state) => StarRating(
               value: state.rating,
-              onChanged: (v) => context.read<BookingBloc>().add(BookingRatingChanged(v)),
+              onChanged: (v) =>
+                  context.read<BookingBloc>().add(BookingRatingChanged(v)),
             ),
           ),
         ],
@@ -260,10 +263,10 @@ class _TipChip extends StatelessWidget {
           height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? AppColors.peach : AppColors.surface,
+            color: selected ? AppColors.primaryLight : AppColors.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border,
+              color: selected ? AppColors.primaryLight : AppColors.border,
               width: 1.5,
             ),
           ),

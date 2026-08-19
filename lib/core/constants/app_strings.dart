@@ -181,6 +181,9 @@ class AppStrings {
   // Confirm extras
   static String get estimatedTotal => _t('estimatedTotal');
   static String get fareNote => _t('fareNote');
+  static String get yourOffer => _t('yourOffer');
+  static String get suggestedFare => _t('suggestedFare');
+  static String get priceTooLow => _t('priceTooLow');
 
   // Rate app
   static String get rateTitle => _t('rateTitle');

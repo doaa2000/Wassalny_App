@@ -28,124 +28,124 @@ class LiveTrackingPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-      backgroundColor: const Color(0xFFE8ECEF),
-      body: BlocBuilder<BookingBloc, BookingState>(
-        builder: (context, state) {
-          final driver = state.activeDriver;
-          if (driver == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        backgroundColor: const Color(0xFFE8ECEF),
+        body: BlocBuilder<BookingBloc, BookingState>(
+          builder: (context, state) {
+            final driver = state.activeDriver;
+            if (driver == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: MapView(
-                  variant: MapVariant.tracking,
-                  pickup: state.pickup,
-                  dropoff: state.destination,
-                  driverLocation: state.driverLocation,
-                ),
-              ),
-              Positioned(
-                top: 0,
-                left: 18,
-                right: 18,
-                child: SafeArea(
-                  bottom: false,
-                  child: Row(
-                    children: [
-                      Expanded(child: _ArrivingCard()),
-                      const SizedBox(width: 10),
-                      _SosButton(),
-                    ],
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: MapView(
+                    variant: MapVariant.tracking,
+                    pickup: state.pickup,
+                    dropoff: state.destination,
+                    driverLocation: state.driverLocation,
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(26)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x290F1A24),
-                        blurRadius: 40,
-                        offset: Offset(0, -12),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                Positioned(
+                  top: 0,
+                  left: 18,
+                  right: 18,
                   child: SafeArea(
-                    top: false,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                    bottom: false,
+                    child: Row(
                       children: [
-                        const SheetHandle(),
-                        const _ProgressBar(),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: [
-                            GradientAvatar(
-                              initials: driver.initials,
-                              gradient: driver.avatarGradient,
-                              size: 52,
-                              radius: 16,
-                              fontSize: 18,
-                            ),
-                            const SizedBox(width: 13),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(driver.name,
-                                      style: AppTextStyles.listTitle
-                                          .copyWith(fontSize: 15.5)),
-                                  Text('${driver.car} · ${driver.plate}',
-                                      style: AppTextStyles.caption),
-                                ],
-                              ),
-                            ),
-                            const RoundIconButton(
-                              icon: Icons.call_rounded,
-                              size: 46,
-                              radius: 14,
-                              background: AppColors.primary,
-                              iconColor: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            RoundIconButton(
-                              icon: Icons.chat_bubble_outline_rounded,
-                              size: 46,
-                              radius: 14,
-                              background: AppColors.surface,
-                              iconColor: AppColors.primary,
-                              border: Border.all(
-                                  color: AppColors.border, width: 1.5),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        PrimaryButton(
-                          label: AppStrings.completeTripDemo,
-                          color: AppColors.ink,
-                          glow: false,
-                          height: 54,
-                          onPressed: () => Navigator.pushReplacementNamed(
-                              context, AppRoutes.completed),
-                        ),
-                        const SizedBox(height: 8),
+                        Expanded(child: _ArrivingCard()),
+                        const SizedBox(width: 10),
+                        _SosButton(),
                       ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
-      ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(26)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x290F1A24),
+                          blurRadius: 40,
+                          offset: Offset(0, -12),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                    child: SafeArea(
+                      top: false,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SheetHandle(),
+                          const _ProgressBar(),
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              GradientAvatar(
+                                initials: driver.initials,
+                                gradient: driver.avatarGradient,
+                                size: 52,
+                                radius: 16,
+                                fontSize: 18,
+                              ),
+                              const SizedBox(width: 13),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(driver.name,
+                                        style: AppTextStyles.listTitle
+                                            .copyWith(fontSize: 15.5)),
+                                    Text('${driver.car} · ${driver.plate}',
+                                        style: AppTextStyles.caption),
+                                  ],
+                                ),
+                              ),
+                              const RoundIconButton(
+                                icon: Icons.call_rounded,
+                                size: 46,
+                                radius: 14,
+                                background: AppColors.primary,
+                                iconColor: AppColors.primaryDark,
+                              ),
+                              const SizedBox(width: 10),
+                              RoundIconButton(
+                                icon: Icons.chat_bubble_outline_rounded,
+                                size: 46,
+                                radius: 14,
+                                background: AppColors.surface,
+                                iconColor: AppColors.primary,
+                                border: Border.all(
+                                    color: AppColors.border, width: 1.5),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          PrimaryButton(
+                            label: AppStrings.completeTripDemo,
+                            color: AppColors.primary,
+                            glow: false,
+                            height: 54,
+                            onPressed: () => Navigator.pushReplacementNamed(
+                                context, AppRoutes.completed),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -161,7 +161,7 @@ class _ArrivingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.35),
+            color: AppColors.shadow.withValues(alpha: 0.35),
             blurRadius: 26,
             offset: const Offset(0, 10),
             spreadRadius: -12,
@@ -209,7 +209,7 @@ class _SosButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.danger.withOpacity(0.6),
+            color: AppColors.danger.withValues(alpha: 0.6),
             blurRadius: 24,
             offset: const Offset(0, 10),
             spreadRadius: -8,
@@ -217,8 +217,8 @@ class _SosButton extends StatelessWidget {
         ],
       ),
       child: Text(AppStrings.sos,
-          style: AppTextStyles.micro
-              .copyWith(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
+          style: AppTextStyles.micro.copyWith(
+              color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
     );
   }
 }

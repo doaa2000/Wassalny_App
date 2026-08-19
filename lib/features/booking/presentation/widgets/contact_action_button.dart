@@ -21,7 +21,7 @@ class ContactActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = filled ? Colors.white : AppColors.primary;
+    final fg = filled ? AppColors.primaryDark : AppColors.primary;
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -30,9 +30,8 @@ class ContactActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: filled ? AppColors.primary : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: filled
-                ? null
-                : Border.all(color: AppColors.border, width: 1.5),
+            border:
+                filled ? null : Border.all(color: AppColors.border, width: 1.5),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -40,9 +39,8 @@ class ContactActionButton extends StatelessWidget {
               Icon(icon, size: 20, color: fg),
               const SizedBox(height: 2),
               Text(label,
-                  style: AppTextStyles.listTitle.copyWith(
-                      color: filled ? Colors.white : AppColors.ink,
-                      fontSize: 14)),
+                  style: AppTextStyles.listTitle
+                      .copyWith(color: AppColors.ink, fontSize: 14)),
             ],
           ),
         ),

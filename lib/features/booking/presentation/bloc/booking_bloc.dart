@@ -48,8 +48,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       paymentMethods: _repository.getPaymentMethods(),
       fareLines: _repository.getFareBreakdown(),
     ));
-    final List<Driver> drivers = await _repository.fetchNearbyDrivers();
-    emit(state.copyWith(drivers: drivers));
   }
 
   void _onDriverSelected(

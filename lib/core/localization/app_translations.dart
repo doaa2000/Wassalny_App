@@ -504,6 +504,21 @@ class AppTranslations {
       'es':
           'Un conductor cercano aceptará tu solicitud. La tarifa final puede variar según la ruta.'
     },
+    'yourOffer': {
+      'en': 'Your offer',
+      'ar': 'السعر اللي بتعرضه',
+      'es': 'Tu oferta'
+    },
+    'suggestedFare': {
+      'en': 'Suggested',
+      'ar': 'المقترح',
+      'es': 'Sugerido'
+    },
+    'priceTooLow': {
+      'en': 'Enter a fair price to get a captain faster',
+      'ar': 'اكتب سعر مناسب عشان تلاقي كابتن أسرع',
+      'es': 'Ingresa un precio justo para conseguir un conductor más rápido'
+    },
 
     // Rate app
     'rateTitle': {
