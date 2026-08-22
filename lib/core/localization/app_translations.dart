@@ -290,7 +290,7 @@ class AppTranslations {
       'ar': 'تأكيد الرحلة',
       'es': 'Confirmar viaje'
     },
-    'requestRide': {'en': 'Request ride', 'ar': 'اطلب رحلة', 'es': 'Solicitar viaje'},
+    'requestRide': {'en': 'Request ride', 'ar': 'اطلب الرحلة', 'es': 'Solicitar viaje'},
     'pickup': {'en': 'PICKUP', 'ar': 'الانطلاق', 'es': 'RECOGIDA'},
     'dropoff': {'en': 'DROP-OFF', 'ar': 'الوجهة', 'es': 'DESTINO'},
     'dropoffPlace': {
@@ -523,28 +523,28 @@ class AppTranslations {
     'fareNote': {
       'en':
           'A nearby captain will accept your request. Final fare may vary with the route.',
-      'ar': 'سيقبل طلبك كابتن قريب. قد تختلف الأجرة النهائية حسب المسار.',
+      'ar': 'سيقبل طلبك أحد السائقين القريبين. قد تختلف الأجرة النهائية حسب المسار.',
       'es':
           'Un conductor cercano aceptará tu solicitud. La tarifa final puede variar según la ruta.'
     },
     'yourOffer': {
       'en': 'Your offer',
-      'ar': 'السعر اللي بتعرضه',
+      'ar': 'السعر الذي تعرضه',
       'es': 'Tu oferta'
     },
     'suggestedFare': {
       'en': 'Suggested',
-      'ar': 'المقترح',
+      'ar': 'السعر المقترح',
       'es': 'Sugerido'
     },
     'priceTooLow': {
       'en': 'Enter a fair price to get a captain faster',
-      'ar': 'اكتب سعر مناسب عشان تلاقي كابتن أسرع',
+      'ar': 'يُرجى إدخال سعر مناسب للحصول على سائق بشكل أسرع',
       'es': 'Ingresa un precio justo para conseguir un conductor más rápido'
     },
     'tapToAddAddress': {
       'en': 'Tap to add address',
-      'ar': 'دوس لإضافة العنوان',
+      'ar': 'اضغط لإضافة العنوان',
       'es': 'Toca para añadir dirección'
     },
     'renamePlace': {

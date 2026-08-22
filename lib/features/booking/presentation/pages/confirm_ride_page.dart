@@ -47,7 +47,10 @@ class _ConfirmRidePageState extends State<ConfirmRidePage> {
   void _seedSuggestedFare(int fare) {
     if (_suggestedFare != null) return;
     _suggestedFare = fare;
-    _priceController.text = fare.toString();
+    _priceController.value = TextEditingValue(
+      text: fare.toString(),
+      selection: TextSelection.collapsed(offset: fare.toString().length),
+    );
   }
 
   int? get _enteredPrice => int.tryParse(_priceController.text.trim());
@@ -338,7 +341,11 @@ class _PriceInput extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              controller.text = suggestedFare.toString();
+              final String text = suggestedFare.toString();
+              controller.value = TextEditingValue(
+                text: text,
+                selection: TextSelection.collapsed(offset: text.length),
+              );
               onChanged();
             },
             child: Container(
