@@ -29,8 +29,9 @@ class _FindingDriverPageState extends State<FindingDriverPage>
   StreamSubscription<BookingState>? _statusSub;
   Timer? _timeoutTimer;
   bool _timedOut = false;
+  int _secondsLeft = _searchTimeoutSeconds;
 
-  static const Duration _searchTimeout = Duration(seconds: 45);
+  static const int _searchTimeoutSeconds = 45;
 
   @override
   void initState() {
@@ -44,11 +45,28 @@ class _FindingDriverPageState extends State<FindingDriverPage>
         Navigator.pushReplacementNamed(context, AppRoutes.assigned);
       }
     });
-    // If nobody accepts within the timeout, stop waiting and let the rider
-    // decide instead of spinning the radar forever.
-    _timeoutTimer = Timer(_searchTimeout, () {
-      if (!mounted) return;
-      setState(() => _timedOut = true);
+    _startCountdown();
+  }
+
+  // Ticks every second so the rider can see time actually passing, instead
+  // of the radar spinning with no sense of how long the search will run.
+  void _startCountdown() {
+    _secondsLeft = _searchTimeoutSeconds;
+    _timeoutTimer?.cancel();
+    _timeoutTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_secondsLeft <= 1) {
+        timer.cancel();
+        setState(() {
+          _secondsLeft = 0;
+          _timedOut = true;
+        });
+        return;
+      }
+      setState(() => _secondsLeft -= 1);
     });
   }
 
@@ -87,11 +105,7 @@ class _FindingDriverPageState extends State<FindingDriverPage>
           ),
         );
     setState(() => _timedOut = false);
-    _timeoutTimer?.cancel();
-    _timeoutTimer = Timer(_searchTimeout, () {
-      if (!mounted) return;
-      setState(() => _timedOut = true);
-    });
+    _startCountdown();
   }
 
   @override
@@ -220,6 +234,8 @@ class _FindingDriverPageState extends State<FindingDriverPage>
           style: AppTextStyles.body.copyWith(color: Colors.white.withOpacity(0.85)),
         ),
         const SizedBox(height: 22),
+        _CountdownBadge(secondsLeft: _secondsLeft, totalSeconds: _searchTimeoutSeconds),
+        const SizedBox(height: 18),
         _PulsingDots(controller: _radar),
       ],
     );
@@ -288,6 +304,46 @@ class _FindingDriverPageState extends State<FindingDriverPage>
           ),
         );
       },
+    );
+  }
+}
+
+class _CountdownBadge extends StatelessWidget {
+  const _CountdownBadge({required this.secondsLeft, required this.totalSeconds});
+
+  final int secondsLeft;
+  final int totalSeconds;
+
+  @override
+  Widget build(BuildContext context) {
+    final double progress = totalSeconds == 0 ? 0 : secondsLeft / totalSeconds;
+    final String label = '0:${secondsLeft.toString().padLeft(2, '0')}';
+    return SizedBox(
+      width: 54,
+      height: 54,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: 54,
+            height: 54,
+            child: CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 3,
+              backgroundColor: Colors.white.withOpacity(0.2),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ),
+          Text(
+            label,
+            style: AppTextStyles.body.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
