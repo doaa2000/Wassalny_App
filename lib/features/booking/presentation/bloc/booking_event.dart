@@ -43,16 +43,6 @@ final class BookingPaymentChanged extends BookingEvent {
   List<Object?> get props => [paymentId];
 }
 
-/// The rider selected a tip amount.
-final class BookingTipChanged extends BookingEvent {
-  const BookingTipChanged(this.tip);
-
-  final int tip;
-
-  @override
-  List<Object?> get props => [tip];
-}
-
 /// The rider set the post-trip star rating.
 final class BookingRatingChanged extends BookingEvent {
   const BookingRatingChanged(this.rating);
@@ -142,6 +132,17 @@ final class BookingRideRequested extends BookingEvent {
   @override
   List<Object?> get props =>
       [pickupAddress, dropoffAddress, pickupLat, pickupLng, dropoffLat, dropoffLng, paymentMethod, price, driverId];
+}
+
+/// The rider submitted their post-trip star rating (and optional review).
+/// Persists to the backend, then resets local tip/rating state.
+final class BookingRatingSubmitted extends BookingEvent {
+  const BookingRatingSubmitted({this.comment});
+
+  final String? comment;
+
+  @override
+  List<Object?> get props => [comment];
 }
 
 /// The rider cancelled while waiting for a captain to accept — either by

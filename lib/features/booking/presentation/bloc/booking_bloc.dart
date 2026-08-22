@@ -26,7 +26,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingDriverSelected>(_onDriverSelected);
     on<BookingFilterChanged>(_onFilterChanged);
     on<BookingPaymentChanged>(_onPaymentChanged);
-    on<BookingTipChanged>(_onTipChanged);
     on<BookingRatingChanged>(_onRatingChanged);
     on<BookingTripReset>(_onTripReset);
     on<BookingPickupSet>(_onPickupSet);
@@ -35,6 +34,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingCurrentPickupRequested>(_onCurrentPickupRequested);
     on<BookingRideRequested>(_onRideRequested);
     on<BookingTripCancelled>(_onTripCancelled);
+    on<BookingRatingSubmitted>(_onRatingSubmitted);
     on<_BookingTripStatusChanged>(_onTripStatusChanged);
     on<_BookingDriverLocationChanged>(_onDriverLocationChanged);
   }
@@ -66,10 +66,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     emit(state.copyWith(selectedPaymentId: event.paymentId));
   }
 
-  void _onTipChanged(BookingTipChanged event, Emitter<BookingState> emit) {
-    emit(state.copyWith(tip: event.tip));
-  }
-
   void _onRatingChanged(
       BookingRatingChanged event, Emitter<BookingState> emit) {
     emit(state.copyWith(rating: event.rating));
@@ -77,6 +73,17 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
   void _onTripReset(BookingTripReset event, Emitter<BookingState> emit) {
     emit(state.copyWith(tip: 0, rating: 0));
+  }
+
+  Future<void> _onRatingSubmitted(
+      BookingRatingSubmitted event, Emitter<BookingState> emit) async {
+    final String? id = state.tripId;
+    final int rating = state.rating;
+    if (id != null && rating > 0) {
+      await _repository.submitRating(
+          tripId: id, rating: rating, comment: event.comment);
+    }
+    emit(state.copyWith(tip: 0, rating: 0, resetTrip: true, resetAssignedDriver: true));
   }
 
   void _onPickupSet(BookingPickupSet event, Emitter<BookingState> emit) {

@@ -33,6 +33,15 @@ abstract class TripRemoteDataSource {
   /// tap "Cancel" while waiting, or when the search times out with no captain
   /// accepting. Without this the trip would stay `requested` forever.
   Future<void> cancelTrip(String tripId);
+
+  /// Records the rider's post-trip star rating (1–5) and optional written
+  /// review for [tripId]. One rating per trip — the `ratings` table enforces
+  /// that uniqueness server-side.
+  Future<void> submitRating({
+    required String tripId,
+    required int rating,
+    String? comment,
+  });
 }
 
 /// Supabase implementation: inserts a `requested` trip for the signed-in rider.
@@ -126,6 +135,31 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
         .eq('id', tripId)
         .eq('status', 'requested');
   }
+
+  @override
+  Future<void> submitRating({
+    required String tripId,
+    required int rating,
+    String? comment,
+  }) async {
+    final String? passengerId = _service.currentUserId;
+    if (passengerId == null) return;
+
+    // Look up the assigned driver ourselves — the caller only has the trip
+    // id, and `ratings` needs both sides of the trip.
+    final Map<String, dynamic>? driverRow = await assignedDriverRow(tripId);
+    final String? driverId = driverRow?['profile_id']?.toString() ??
+        driverRow?['id']?.toString();
+    if (driverId == null) return;
+
+    await _service.client.from('ratings').insert({
+      'trip_id': tripId,
+      'passenger_id': passengerId,
+      'driver_id': driverId,
+      'rating': rating,
+      if (comment != null && comment.trim().isNotEmpty) 'comment': comment.trim(),
+    });
+  }
 }
 
 /// UI-only mode (no Supabase): returns a fake id and simulates a trip
@@ -168,4 +202,11 @@ class TripNoopDataSource implements TripRemoteDataSource {
 
   @override
   Future<void> cancelTrip(String tripId) async {}
+
+  @override
+  Future<void> submitRating({
+    required String tripId,
+    required int rating,
+    String? comment,
+  }) async {}
 }

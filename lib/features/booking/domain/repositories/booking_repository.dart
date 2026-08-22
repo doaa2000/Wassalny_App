@@ -41,4 +41,11 @@ abstract class BookingRepository {
   /// Cancels a still-unassigned trip (rider gave up waiting, or the search
   /// timed out with no captain accepting).
   Future<void> cancelTrip(String tripId);
+
+  /// Records the rider's post-trip star rating (and optional review).
+  Future<void> submitRating({
+    required String tripId,
+    required int rating,
+    String? comment,
+  });
 }

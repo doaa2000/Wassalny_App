@@ -12,11 +12,22 @@ import '../../domain/entities/driver.dart';
 import '../bloc/booking_bloc.dart';
 import '../utils/driver_presentation.dart';
 
-/// Trip summary + rating + tip screen shown after the ride completes.
-class TripCompletedPage extends StatelessWidget {
+/// Trip summary + rating screen shown after the ride completes.
+class TripCompletedPage extends StatefulWidget {
   const TripCompletedPage({super.key});
 
-  static const _tips = [0, 5, 10, 20];
+  @override
+  State<TripCompletedPage> createState() => _TripCompletedPageState();
+}
+
+class _TripCompletedPageState extends State<TripCompletedPage> {
+  final TextEditingController _reviewController = TextEditingController();
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,27 +86,6 @@ class TripCompletedPage extends StatelessWidget {
                       const SizedBox(height: 14),
                       _RateCard(driver: driver),
                       const SizedBox(height: 18),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(AppStrings.addTip,
-                            style: AppTextStyles.label.copyWith(fontSize: 13)),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          for (var i = 0; i < _tips.length; i++) ...[
-                            _TipChip(
-                              value: _tips[i],
-                              selected: state.tip == _tips[i],
-                              onTap: () => context
-                                  .read<BookingBloc>()
-                                  .add(BookingTipChanged(_tips[i])),
-                            ),
-                            if (i != _tips.length - 1) const SizedBox(width: 9),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         height: 52,
@@ -107,6 +97,7 @@ class TripCompletedPage extends StatelessWidget {
                               Border.all(color: AppColors.border, width: 1.5),
                         ),
                         child: TextField(
+                          controller: _reviewController,
                           cursorColor: AppColors.primary,
                           style: AppTextStyles.body
                               .copyWith(color: AppColors.ink, fontSize: 14),
@@ -123,9 +114,11 @@ class TripCompletedPage extends StatelessWidget {
                       PrimaryButton(
                         label: AppStrings.submitDone,
                         onPressed: () {
-                          context
-                              .read<BookingBloc>()
-                              .add(const BookingTripReset());
+                          context.read<BookingBloc>().add(
+                                BookingRatingSubmitted(
+                                  comment: _reviewController.text,
+                                ),
+                              );
                           Navigator.popUntil(
                               context, ModalRoute.withName(AppRoutes.main));
                         },
@@ -238,46 +231,6 @@ class _RateCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TipChip extends StatelessWidget {
-  const _TipChip({
-    required this.value,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final int value;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 50,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: selected ? AppColors.primaryLight : AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: selected ? AppColors.primaryLight : AppColors.border,
-              width: 1.5,
-            ),
-          ),
-          child: Text(
-            value == 0 ? 'No tip' : 'EGP $value',
-            style: AppTextStyles.bodySm.copyWith(
-              fontWeight: FontWeight.w700,
-              color: selected ? AppColors.primaryDark : AppColors.textSecondary,
-            ),
-          ),
-        ),
       ),
     );
   }

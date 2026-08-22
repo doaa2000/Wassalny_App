@@ -103,4 +103,19 @@ class BookingRepositoryImpl implements BookingRepository {
           feature: 'Booking', error: e, stackTrace: s);
     }
   }
+
+  @override
+  Future<void> submitRating({
+    required String tripId,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      await _tripRemote.submitRating(
+          tripId: tripId, rating: rating, comment: comment);
+    } catch (e, s) {
+      appLogger.logWarning('submitRating failed',
+          feature: 'Booking', error: e, stackTrace: s);
+    }
+  }
 }
