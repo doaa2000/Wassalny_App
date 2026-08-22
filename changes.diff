@@ -1,22 +1,34 @@
 diff --git a/lib/core/constants/app_strings.dart b/lib/core/constants/app_strings.dart
-index a07e721..a0e4033 100644
+index a07e721..2eba9b6 100644
 --- a/lib/core/constants/app_strings.dart
 +++ b/lib/core/constants/app_strings.dart
-@@ -181,6 +181,9 @@ class AppStrings {
+@@ -181,11 +181,21 @@ class AppStrings {
    // Confirm extras
    static String get estimatedTotal => _t('estimatedTotal');
    static String get fareNote => _t('fareNote');
 +  static String get yourOffer => _t('yourOffer');
 +  static String get suggestedFare => _t('suggestedFare');
 +  static String get priceTooLow => _t('priceTooLow');
++  static String get tapToAddAddress => _t('tapToAddAddress');
  
    // Rate app
    static String get rateTitle => _t('rateTitle');
+   static String get ratePrompt => _t('ratePrompt');
+   static String get submit => _t('submit');
++  static String get renamePlace => _t('renamePlace');
++  static String get save => _t('save');
++  static String get couldNotLoadPlaces => _t('couldNotLoadPlaces');
++  static String get couldNotAddPlace => _t('couldNotAddPlace');
++  static String get couldNotRenamePlace => _t('couldNotRenamePlace');
++  static String get couldNotRemovePlace => _t('couldNotRemovePlace');
+   static String get rateThanks => _t('rateThanks');
+ 
+   // About
 diff --git a/lib/core/localization/app_translations.dart b/lib/core/localization/app_translations.dart
-index f82e930..e82ea51 100644
+index f82e930..8362ab9 100644
 --- a/lib/core/localization/app_translations.dart
 +++ b/lib/core/localization/app_translations.dart
-@@ -504,6 +504,21 @@ class AppTranslations {
+@@ -504,6 +504,26 @@ class AppTranslations {
        'es':
            'Un conductor cercano aceptará tu solicitud. La tarifa final puede variar según la ruta.'
      },
@@ -35,9 +47,47 @@ index f82e930..e82ea51 100644
 +      'ar': 'اكتب سعر مناسب عشان تلاقي كابتن أسرع',
 +      'es': 'Ingresa un precio justo para conseguir un conductor más rápido'
 +    },
++    'tapToAddAddress': {
++      'en': 'Tap to add address',
++      'ar': 'دوس لإضافة العنوان',
++      'es': 'Toca para añadir dirección'
++    },
  
      // Rate app
      'rateTitle': {
+@@ -517,6 +537,32 @@ class AppTranslations {
+       'es': 'Toca una estrella para valorar tu experiencia.'
+     },
+     'submit': {'en': 'Submit', 'ar': 'إرسال', 'es': 'Enviar'},
++    'renamePlace': {
++      'en': 'Rename place',
++      'ar': 'إعادة تسمية المكان',
++      'es': 'Renombrar lugar'
++    },
++    'save': {'en': 'Save', 'ar': 'حفظ', 'es': 'Guardar'},
++    'couldNotLoadPlaces': {
++      'en': 'Could not load places. Pull down to retry.',
++      'ar': 'تعذّر تحميل الأماكن. اسحبي للأسفل للمحاولة مرة أخرى.',
++      'es': 'No se pudieron cargar los lugares. Desliza hacia abajo para reintentar.'
++    },
++    'couldNotAddPlace': {
++      'en': 'Could not save this place. Check your connection and try again.',
++      'ar': 'تعذّر حفظ المكان. تأكدي من الاتصال بالإنترنت وحاولي مرة أخرى.',
++      'es': 'No se pudo guardar este lugar. Verifica tu conexión e inténtalo de nuevo.'
++    },
++    'couldNotRenamePlace': {
++      'en': 'Could not rename this place. Try again.',
++      'ar': 'تعذّر تغيير اسم المكان. حاولي مرة أخرى.',
++      'es': 'No se pudo renombrar este lugar. Inténtalo de nuevo.'
++    },
++    'couldNotRemovePlace': {
++      'en': 'Could not remove this place. Try again.',
++      'ar': 'تعذّر حذف المكان. حاولي مرة أخرى.',
++      'es': 'No se pudo eliminar este lugar. Inténtalo de nuevo.'
++    },
+     'rateThanks': {
+       'en': 'Thanks for your feedback! ⭐',
+       'ar': 'شكرًا لتقييمك! ⭐',
 diff --git a/lib/core/router/app_router.dart b/lib/core/router/app_router.dart
 index d5d6a6b..0f2454a 100644
 --- a/lib/core/router/app_router.dart
@@ -628,6 +678,499 @@ index c7f1668..0000000
 -    );
 -  }
 -}
+diff --git a/lib/features/home/presentation/pages/home_page.dart b/lib/features/home/presentation/pages/home_page.dart
+index 655a2e6..5bc1dc0 100644
+--- a/lib/features/home/presentation/pages/home_page.dart
++++ b/lib/features/home/presentation/pages/home_page.dart
+@@ -4,12 +4,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
+ 
+ import '../../../../core/constants/app_colors.dart';
+ import '../../../../core/constants/app_strings.dart';
++import '../../../../core/constants/service_area.dart';
+ import '../../../../core/router/app_routes.dart';
+ import '../../../../core/theme/app_text_styles.dart';
+ import '../../../../core/utils/app_shadows.dart';
+ import '../../../../core/widgets/map/map_view.dart';
+ import '../../../../core/widgets/round_icon_button.dart';
+ import '../../../booking/presentation/bloc/booking_bloc.dart';
++import '../../../places/domain/entities/saved_place.dart';
++import '../../../places/presentation/bloc/places_bloc.dart';
++import '../../../places/presentation/utils/add_place_flow.dart';
+ import '../../../shell/presentation/bloc/nav_bloc.dart';
+ import '../widgets/quick_place_card.dart';
+ 
+@@ -34,6 +38,39 @@ class _HomePageState extends State<HomePage> {
+   void _openSearch(BuildContext context) =>
+       Navigator.pushNamed(context, AppRoutes.search);
+ 
++  /// Finds a saved place whose label matches [wantedLabel] (e.g. "Home"),
++  /// case-insensitively — the app has no dedicated home/work type, just a
++  /// free-text label, so this is how the quick-place cards recognise them.
++  SavedPlace? _findByLabel(List<SavedPlace> places, String wantedLabel) {
++    for (final p in places) {
++      if (p.label.trim().toLowerCase() == wantedLabel.trim().toLowerCase()) {
++        return p;
++      }
++    }
++    return null;
++  }
++
++  void _onQuickPlaceTap(
++      BuildContext context, SavedPlace? place, String presetLabel) {
++    // No "Home"/"Work" saved yet — prompt the rider to add one, pre-filled.
++    if (place == null || place.latitude == null || place.longitude == null) {
++      runAddPlaceFlow(context, context.read<PlacesBloc>(),
++          presetLabel: presetLabel);
++      return;
++    }
++    final LatLng point = LatLng(place.latitude!, place.longitude!);
++    if (!ServiceArea.contains(point)) {
++      ScaffoldMessenger.of(context)
++        ..hideCurrentSnackBar()
++        ..showSnackBar(SnackBar(content: Text(AppStrings.outsideServiceArea)));
++      return;
++    }
++    context
++        .read<BookingBloc>()
++        .add(BookingDestinationSet(point, place.address));
++    Navigator.pushNamed(context, AppRoutes.confirm);
++  }
++
+   @override
+   Widget build(BuildContext context) {
+     return Scaffold(
+@@ -93,7 +130,23 @@ class _HomePageState extends State<HomePage> {
+           // Booking sheet.
+           Align(
+             alignment: Alignment.bottomCenter,
+-            child: _BookingSheet(onSearch: () => _openSearch(context)),
++            child: BlocBuilder<PlacesBloc, PlacesState>(
++              builder: (context, placesState) {
++                final SavedPlace? home =
++                    _findByLabel(placesState.places, AppStrings.placeHome);
++                final SavedPlace? work =
++                    _findByLabel(placesState.places, AppStrings.placeWork);
++                return _BookingSheet(
++                  onSearch: () => _openSearch(context),
++                  homePlace: home,
++                  workPlace: work,
++                  onTapHome: () => _onQuickPlaceTap(
++                      context, home, AppStrings.placeHome),
++                  onTapWork: () => _onQuickPlaceTap(
++                      context, work, AppStrings.placeWork),
++                );
++              },
++            ),
+           ),
+         ],
+       ),
+@@ -155,9 +208,19 @@ class _LocationPill extends StatelessWidget {
+ }
+ 
+ class _BookingSheet extends StatelessWidget {
+-  const _BookingSheet({required this.onSearch});
++  const _BookingSheet({
++    required this.onSearch,
++    required this.homePlace,
++    required this.workPlace,
++    required this.onTapHome,
++    required this.onTapWork,
++  });
+ 
+   final VoidCallback onSearch;
++  final SavedPlace? homePlace;
++  final SavedPlace? workPlace;
++  final VoidCallback onTapHome;
++  final VoidCallback onTapWork;
+ 
+   @override
+   Widget build(BuildContext context) {
+@@ -205,8 +268,8 @@ class _BookingSheet extends StatelessWidget {
+                   child: QuickPlaceCard(
+                     icon: Icons.home_rounded,
+                     title: AppStrings.placeHome,
+-                    subtitle: 'Maadi, Rd 9',
+-                    onTap: onSearch,
++                    subtitle: homePlace?.address ?? AppStrings.tapToAddAddress,
++                    onTap: onTapHome,
+                   ),
+                 ),
+                 const SizedBox(width: 10),
+@@ -214,8 +277,8 @@ class _BookingSheet extends StatelessWidget {
+                   child: QuickPlaceCard(
+                     icon: Icons.work_outline_rounded,
+                     title: AppStrings.placeWork,
+-                    subtitle: 'Smart Village',
+-                    onTap: onSearch,
++                    subtitle: workPlace?.address ?? AppStrings.tapToAddAddress,
++                    onTap: onTapWork,
+                   ),
+                 ),
+               ],
+diff --git a/lib/features/places/presentation/bloc/places_bloc.dart b/lib/features/places/presentation/bloc/places_bloc.dart
+index e39f5d0..428acaa 100644
+--- a/lib/features/places/presentation/bloc/places_bloc.dart
++++ b/lib/features/places/presentation/bloc/places_bloc.dart
+@@ -1,6 +1,7 @@
+ import 'package:equatable/equatable.dart';
+ import 'package:flutter_bloc/flutter_bloc.dart';
+ 
++import '../../../../core/constants/app_strings.dart';
+ import '../../domain/entities/saved_place.dart';
+ import '../../domain/repositories/places_repository.dart';
+ 
+@@ -24,7 +25,8 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
+     try {
+       emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
+     } catch (_) {
+-      emit(state.copyWith(status: PlacesStatus.failure, error: 'Could not load places.'));
++      emit(state.copyWith(
++          status: PlacesStatus.failure, error: AppStrings.couldNotLoadPlaces));
+     }
+   }
+ 
+@@ -33,17 +35,28 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
+       await _repo.add(label: e.label, address: e.address, lat: e.lat, lng: e.lng);
+       emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
+     } catch (_) {
+-      emit(state.copyWith(status: PlacesStatus.failure, error: 'Could not add place.'));
++      emit(state.copyWith(
++          status: PlacesStatus.failure, error: AppStrings.couldNotAddPlace));
+     }
+   }
+ 
+   Future<void> _onRenamed(PlaceRenamed e, Emitter<PlacesState> emit) async {
+-    await _repo.rename(id: e.id, label: e.label);
+-    emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
++    try {
++      await _repo.rename(id: e.id, label: e.label);
++      emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
++    } catch (_) {
++      emit(state.copyWith(
++          status: PlacesStatus.failure, error: AppStrings.couldNotRenamePlace));
++    }
+   }
+ 
+   Future<void> _onRemoved(PlaceRemoved e, Emitter<PlacesState> emit) async {
+-    await _repo.remove(e.id);
+-    emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
++    try {
++      await _repo.remove(e.id);
++      emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
++    } catch (_) {
++      emit(state.copyWith(
++          status: PlacesStatus.failure, error: AppStrings.couldNotRemovePlace));
++    }
+   }
+ }
+diff --git a/lib/features/places/presentation/pages/saved_places_page.dart b/lib/features/places/presentation/pages/saved_places_page.dart
+index 06f6532..2668729 100644
+--- a/lib/features/places/presentation/pages/saved_places_page.dart
++++ b/lib/features/places/presentation/pages/saved_places_page.dart
+@@ -7,9 +7,9 @@ import '../../../../core/theme/app_text_styles.dart';
+ import '../../../../core/widgets/app_text_field.dart';
+ import '../../../../core/widgets/primary_button.dart';
+ import '../../../../core/widgets/round_icon_button.dart';
+-import '../../../booking/presentation/pages/location_picker_page.dart';
+ import '../../domain/entities/saved_place.dart';
+ import '../bloc/places_bloc.dart';
++import '../utils/add_place_flow.dart';
+ 
+ /// Full CRUD screen for the rider's saved places (Supabase `saved_places`).
+ class SavedPlacesPage extends StatelessWidget {
+@@ -20,110 +20,57 @@ class SavedPlacesPage extends StatelessWidget {
+     return Scaffold(
+       backgroundColor: AppColors.surface,
+       body: SafeArea(
+-        child: Padding(
+-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+-          child: Column(
+-            crossAxisAlignment: CrossAxisAlignment.start,
+-            children: [
+-              Row(
+-                children: [
+-                  RoundIconButton.back(onPressed: () => Navigator.pop(context)),
+-                  const SizedBox(width: 12),
+-                  Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
+-                ],
+-              ),
+-              const SizedBox(height: 18),
+-              Expanded(
+-                child: BlocBuilder<PlacesBloc, PlacesState>(
+-                  builder: (context, state) {
+-                    if (state.status == PlacesStatus.loading ||
+-                        state.status == PlacesStatus.initial) {
+-                      return const Center(child: CircularProgressIndicator());
+-                    }
+-                    if (state.places.isEmpty) {
+-                      return Center(
+-                        child: Text('No saved places yet.',
+-                            style: AppTextStyles.body.copyWith(color: AppColors.textFaint)),
++        child: BlocListener<PlacesBloc, PlacesState>(
++          listenWhen: (prev, curr) =>
++              curr.status == PlacesStatus.failure && curr.error != null,
++          listener: (context, state) {
++            ScaffoldMessenger.of(context)
++              ..hideCurrentSnackBar()
++              ..showSnackBar(SnackBar(content: Text(state.error!)));
++          },
++          child: Padding(
++            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
++            child: Column(
++              crossAxisAlignment: CrossAxisAlignment.start,
++              children: [
++                Row(
++                  children: [
++                    RoundIconButton.back(onPressed: () => Navigator.pop(context)),
++                    const SizedBox(width: 12),
++                    Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
++                  ],
++                ),
++                const SizedBox(height: 18),
++                Expanded(
++                  child: BlocBuilder<PlacesBloc, PlacesState>(
++                    builder: (context, state) {
++                      if (state.status == PlacesStatus.loading ||
++                          state.status == PlacesStatus.initial) {
++                        return const Center(child: CircularProgressIndicator());
++                      }
++                      if (state.places.isEmpty) {
++                        return Center(
++                          child: Text('No saved places yet.',
++                              style: AppTextStyles.body.copyWith(color: AppColors.textFaint)),
++                        );
++                      }
++                      return ListView.separated(
++                        itemCount: state.places.length,
++                        separatorBuilder: (_, __) => const SizedBox(height: 10),
++                        itemBuilder: (context, i) => _PlaceCard(place: state.places[i]),
+                       );
+-                    }
+-                    return ListView.separated(
+-                      itemCount: state.places.length,
+-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+-                      itemBuilder: (context, i) => _PlaceCard(place: state.places[i]),
+-                    );
+-                  },
++                    },
++                  ),
+                 ),
+-              ),
+-              const SizedBox(height: 8),
+-              PrimaryButton(
+-                label: 'Add place',
+-                onPressed: () => _showAddSheet(context),
+-              ),
+-            ],
+-          ),
+-        ),
+-      ),
+-    );
+-  }
+-
+-  Future<void> _showAddSheet(BuildContext context) async {
+-    final PlacesBloc bloc = context.read<PlacesBloc>();
+-
+-    // 1. Pick the exact spot on the map (captures coordinates + address).
+-    final PickedPlace? picked = await Navigator.push<PickedPlace>(
+-      context,
+-      MaterialPageRoute(
+-        builder: (_) => LocationPickerPage(title: AppStrings.savedPlaces),
+-      ),
+-    );
+-    if (picked == null || !context.mounted) return;
+-
+-    // 2. Name it (Home, Work, …).
+-    final String? label = await _askLabel(context, picked.address);
+-    if (label == null || label.trim().isEmpty) return;
+-
+-    bloc.add(PlaceAdded(
+-      label: label.trim(),
+-      address: picked.address,
+-      lat: picked.latLng.latitude,
+-      lng: picked.latLng.longitude,
+-    ));
+-  }
+-
+-  Future<String?> _askLabel(BuildContext context, String address) {
+-    final TextEditingController label = TextEditingController();
+-    return showModalBottomSheet<String>(
+-      context: context,
+-      isScrollControlled: true,
+-      backgroundColor: AppColors.surface,
+-      shape: const RoundedRectangleBorder(
+-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+-      ),
+-      builder: (ctx) => Padding(
+-        padding:
+-            EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+-        child: Column(
+-          mainAxisSize: MainAxisSize.min,
+-          crossAxisAlignment: CrossAxisAlignment.start,
+-          children: [
+-            Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
+-            const SizedBox(height: 6),
+-            Text(address,
+-                maxLines: 2,
+-                overflow: TextOverflow.ellipsis,
+-                style: AppTextStyles.bodySm
+-                    .copyWith(color: AppColors.textFaint)),
+-            const SizedBox(height: 16),
+-            AppTextField(
+-                label: AppStrings.placeHome,
+-                hintText: 'Home, Work…',
+-                controller: label),
+-            const SizedBox(height: 18),
+-            PrimaryButton(
+-              label: AppStrings.submit,
+-              onPressed: () => Navigator.pop(ctx, label.text),
++                const SizedBox(height: 8),
++                PrimaryButton(
++                  label: 'Add place',
++                  onPressed: () =>
++                      runAddPlaceFlow(context, context.read<PlacesBloc>()),
++                ),
++              ],
+             ),
+-          ],
++          ),
+         ),
+       ),
+     );
+@@ -159,6 +106,10 @@ class _PlaceCard extends StatelessWidget {
+               ],
+             ),
+           ),
++          IconButton(
++            icon: const Icon(Icons.edit_outlined, color: AppColors.textFaint),
++            onPressed: () => _showRenameDialog(context, place),
++          ),
+           IconButton(
+             icon: const Icon(Icons.delete_outline_rounded, color: AppColors.textFaint),
+             onPressed: () => context.read<PlacesBloc>().add(PlaceRemoved(place.id)),
+@@ -167,4 +118,33 @@ class _PlaceCard extends StatelessWidget {
+       ),
+     );
+   }
++
++  Future<void> _showRenameDialog(BuildContext context, SavedPlace place) async {
++    final PlacesBloc bloc = context.read<PlacesBloc>();
++    final TextEditingController controller =
++        TextEditingController(text: place.label);
++
++    final String? newLabel = await showDialog<String>(
++      context: context,
++      builder: (ctx) => AlertDialog(
++        backgroundColor: AppColors.surface,
++        title: Text(AppStrings.renamePlace, style: AppTextStyles.h1.copyWith(fontSize: 18)),
++        content: AppTextField(controller: controller, hintText: 'Home, Work…'),
++        actions: [
++          TextButton(
++            onPressed: () => Navigator.pop(ctx),
++            child: Text(AppStrings.cancel),
++          ),
++          TextButton(
++            onPressed: () => Navigator.pop(ctx, controller.text),
++            child: Text(AppStrings.save),
++          ),
++        ],
++      ),
++    );
++
++    final String trimmed = newLabel?.trim() ?? '';
++    if (trimmed.isEmpty || trimmed == place.label) return;
++    bloc.add(PlaceRenamed(id: place.id, label: trimmed));
++  }
+ }
+diff --git a/lib/features/places/presentation/utils/add_place_flow.dart b/lib/features/places/presentation/utils/add_place_flow.dart
+new file mode 100644
+index 0000000..df3097a
+--- /dev/null
++++ b/lib/features/places/presentation/utils/add_place_flow.dart
+@@ -0,0 +1,83 @@
++import 'package:flutter/material.dart';
++
++import '../../../../core/constants/app_colors.dart';
++import '../../../../core/constants/app_strings.dart';
++import '../../../../core/theme/app_text_styles.dart';
++import '../../../../core/widgets/app_text_field.dart';
++import '../../../../core/widgets/primary_button.dart';
++import '../../../booking/presentation/pages/location_picker_page.dart';
++import '../bloc/places_bloc.dart';
++
++/// Runs the full "add a saved place" flow: pick a spot on the map, name it,
++/// then dispatch [PlaceAdded]. Shared by the Saved Places screen and the
++/// Home quick-place cards so both stay in sync with one implementation.
++///
++/// [presetLabel] pre-fills the name field (e.g. "Home"/"Work" when the rider
++/// tapped an empty quick-place slot) — they can still edit it before saving.
++Future<void> runAddPlaceFlow(
++  BuildContext context,
++  PlacesBloc bloc, {
++  String? presetLabel,
++}) async {
++  final PickedPlace? picked = await Navigator.push<PickedPlace>(
++    context,
++    MaterialPageRoute(
++      builder: (_) => LocationPickerPage(title: AppStrings.savedPlaces),
++    ),
++  );
++  if (picked == null || !context.mounted) return;
++
++  final String? label =
++      await _askLabel(context, picked.address, presetLabel: presetLabel);
++  if (label == null || label.trim().isEmpty) return;
++
++  bloc.add(PlaceAdded(
++    label: label.trim(),
++    address: picked.address,
++    lat: picked.latLng.latitude,
++    lng: picked.latLng.longitude,
++  ));
++}
++
++Future<String?> _askLabel(
++  BuildContext context,
++  String address, {
++  String? presetLabel,
++}) {
++  final TextEditingController label =
++      TextEditingController(text: presetLabel ?? '');
++  return showModalBottomSheet<String>(
++    context: context,
++    isScrollControlled: true,
++    backgroundColor: AppColors.surface,
++    shape: const RoundedRectangleBorder(
++      borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
++    ),
++    builder: (ctx) => Padding(
++      padding:
++          EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
++      child: Column(
++        mainAxisSize: MainAxisSize.min,
++        crossAxisAlignment: CrossAxisAlignment.start,
++        children: [
++          Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
++          const SizedBox(height: 6),
++          Text(address,
++              maxLines: 2,
++              overflow: TextOverflow.ellipsis,
++              style: AppTextStyles.bodySm.copyWith(color: AppColors.textFaint)),
++          const SizedBox(height: 16),
++          AppTextField(
++              label: AppStrings.placeHome,
++              hintText: 'Home, Work…',
++              controller: label),
++          const SizedBox(height: 18),
++          PrimaryButton(
++            label: AppStrings.submit,
++            onPressed: () => Navigator.pop(ctx, label.text),
++          ),
++        ],
++      ),
++    ),
++  );
++}
 diff --git a/lib/features/rides/presentation/pages/rides_page.dart b/lib/features/rides/presentation/pages/rides_page.dart
 index 0cab23b..616aafc 100644
 --- a/lib/features/rides/presentation/pages/rides_page.dart
