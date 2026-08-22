@@ -350,6 +350,11 @@ class AppTranslations {
       'es': 'Sigue tu viaje'
     },
     'cancelRide': {'en': 'Cancel ride', 'ar': 'إلغاء الرحلة', 'es': 'Cancelar viaje'},
+    'tripInProgress': {
+      'en': 'Trip in progress',
+      'ar': 'الرحلة جارية',
+      'es': 'Viaje en curso'
+    },
     'call': {'en': 'Call', 'ar': 'اتصال', 'es': 'Llamar'},
     'chat': {'en': 'Chat', 'ar': 'محادثة', 'es': 'Chat'},
     'share': {'en': 'Share', 'ar': 'مشاركة', 'es': 'Compartir'},

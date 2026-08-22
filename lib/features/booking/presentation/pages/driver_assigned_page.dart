@@ -8,7 +8,6 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/gradient_avatar.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/painters/car_side_illustration.dart';
-import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/rating.dart';
 import '../bloc/booking_bloc.dart';
 import '../utils/driver_presentation.dart';
@@ -24,9 +23,8 @@ class DriverAssignedPage extends StatelessWidget {
     return BlocListener<BookingBloc, BookingState>(
       listenWhen: (prev, curr) => prev.tripStatus != curr.tripStatus,
       listener: (context, state) {
-        if (state.tripStatus == 'in_progress' ||
-            state.tripStatus == 'completed') {
-          Navigator.pushReplacementNamed(context, AppRoutes.tracking);
+        if (state.tripStatus == 'completed') {
+          Navigator.pushReplacementNamed(context, AppRoutes.completed);
         }
       },
       child: Scaffold(
@@ -66,7 +64,9 @@ class DriverAssignedPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Text(
-                          '${driver.firstName} is arriving in ${driver.etaMinutes} min',
+                          state.tripStatus == 'in_progress'
+                              ? AppStrings.tripInProgress
+                              : '${driver.firstName} is arriving in ${driver.etaMinutes} min',
                           style: AppTextStyles.bodySm.copyWith(
                               color: Colors.white, fontWeight: FontWeight.w700),
                         ),
@@ -175,16 +175,7 @@ class DriverAssignedPage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 14),
-                        PrimaryButton(
-                          label: AppStrings.trackYourRide,
-                          color: AppColors.primary,
-                          glow: false,
-                          height: 54,
-                          onPressed: () =>
-                              Navigator.pushNamed(context, AppRoutes.tracking),
-                        ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 4),
                         GestureDetector(
                           onTap: () => Navigator.popUntil(
                               context, ModalRoute.withName(AppRoutes.main)),

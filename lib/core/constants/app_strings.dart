@@ -111,6 +111,7 @@ class AppStrings {
   // Assigned
   static String get trackYourRide => _t('trackYourRide');
   static String get cancelRide => _t('cancelRide');
+  static String get tripInProgress => _t('tripInProgress');
   static String get call => _t('call');
   static String get chat => _t('chat');
   static String get share => _t('share');

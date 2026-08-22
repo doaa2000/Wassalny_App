@@ -7,7 +7,6 @@ import '../../features/auth/presentation/pages/signup_page.dart';
 import '../../features/booking/presentation/pages/confirm_ride_page.dart';
 import '../../features/booking/presentation/pages/driver_assigned_page.dart';
 import '../../features/booking/presentation/pages/finding_driver_page.dart';
-import '../../features/booking/presentation/pages/live_tracking_page.dart';
 import '../../features/booking/presentation/pages/search_page.dart';
 import '../../features/booking/presentation/pages/trip_completed_page.dart';
 import '../logging/presentation/log_viewer_page.dart';
@@ -53,8 +52,6 @@ class AppRouter {
         return (_) => const FindingDriverPage();
       case AppRoutes.assigned:
         return (_) => const DriverAssignedPage();
-      case AppRoutes.tracking:
-        return (_) => const LiveTrackingPage();
       case AppRoutes.completed:
         return (_) => const TripCompletedPage();
       case AppRoutes.logs:
