@@ -144,6 +144,12 @@ final class BookingRideRequested extends BookingEvent {
       [pickupAddress, dropoffAddress, pickupLat, pickupLng, dropoffLat, dropoffLng, paymentMethod, price, driverId];
 }
 
+/// The rider cancelled while waiting for a captain to accept — either by
+/// tapping "Cancel" or because the search timed out with no acceptance.
+final class BookingTripCancelled extends BookingEvent {
+  const BookingTripCancelled();
+}
+
 /// Internal: the tracked trip's status changed (from the Realtime stream).
 final class _BookingTripStatusChanged extends BookingEvent {
   const _BookingTripStatusChanged(this.status);

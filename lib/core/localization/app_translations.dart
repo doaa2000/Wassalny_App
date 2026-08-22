@@ -324,6 +324,24 @@ class AppTranslations {
           'Buscando el mejor conductor cercano\npara tu viaje a Sirena Beach'
     },
     'cancel': {'en': 'Cancel', 'ar': 'إلغاء', 'es': 'Cancelar'},
+    'noDriversFound': {
+      'en': 'No captains available right now',
+      'ar': 'مفيش كباتن متاحين دلوقتي',
+      'es': 'No hay conductores disponibles ahora'
+    },
+    'noDriversFoundSubtitle': {
+      'en':
+          'No one nearby accepted your request. Try raising your offer or search again in a bit.',
+      'ar': 'محدش قريب قبل طلبك. جربي تزودي السعر أو حاولي تاني بعد شوية.',
+      'es':
+          'Nadie cercano aceptó tu solicitud. Intenta subir tu oferta o vuelve a intentarlo pronto.'
+    },
+    'tryAgain': {'en': 'Try again', 'ar': 'حاول تاني', 'es': 'Intentar de nuevo'},
+    'backToSearch': {
+      'en': 'Back to search',
+      'ar': 'رجوع للبحث',
+      'es': 'Volver a la búsqueda'
+    },
 
     // Assigned
     'trackYourRide': {

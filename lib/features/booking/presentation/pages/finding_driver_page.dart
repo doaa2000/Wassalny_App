@@ -27,6 +27,10 @@ class _FindingDriverPageState extends State<FindingDriverPage>
     duration: const Duration(milliseconds: 2600),
   )..repeat();
   StreamSubscription<BookingState>? _statusSub;
+  Timer? _timeoutTimer;
+  bool _timedOut = false;
+
+  static const Duration _searchTimeout = Duration(seconds: 45);
 
   @override
   void initState() {
@@ -36,16 +40,58 @@ class _FindingDriverPageState extends State<FindingDriverPage>
     _statusSub = context.read<BookingBloc>().stream.listen((state) {
       if (mounted && state.tripStatus.isNotEmpty && state.tripStatus != 'requested') {
         _statusSub?.cancel();
+        _timeoutTimer?.cancel();
         Navigator.pushReplacementNamed(context, AppRoutes.assigned);
       }
+    });
+    // If nobody accepts within the timeout, stop waiting and let the rider
+    // decide instead of spinning the radar forever.
+    _timeoutTimer = Timer(_searchTimeout, () {
+      if (!mounted) return;
+      setState(() => _timedOut = true);
     });
   }
 
   @override
   void dispose() {
     _statusSub?.cancel();
+    _timeoutTimer?.cancel();
     _radar.dispose();
     super.dispose();
+  }
+
+  void _cancelAndLeave() {
+    context.read<BookingBloc>().add(const BookingTripCancelled());
+    Navigator.pop(context);
+  }
+
+  void _tryAgain() {
+    // Cancel the timed-out request, then re-request with the same route —
+    // the rider stays on this screen and the radar/timer restart.
+    context.read<BookingBloc>().add(const BookingTripCancelled());
+    final BookingState state = context.read<BookingBloc>().state;
+    if (!state.hasRoute) {
+      Navigator.pop(context);
+      return;
+    }
+    context.read<BookingBloc>().add(
+          BookingRideRequested(
+            pickupAddress: state.pickupAddress ?? 'Current location',
+            dropoffAddress: state.destinationAddress ?? 'Destination',
+            pickupLat: state.pickup!.latitude,
+            pickupLng: state.pickup!.longitude,
+            dropoffLat: state.destination!.latitude,
+            dropoffLng: state.destination!.longitude,
+            paymentMethod: state.selectedPaymentId,
+            driverId: null,
+          ),
+        );
+    setState(() => _timedOut = false);
+    _timeoutTimer?.cancel();
+    _timeoutTimer = Timer(_searchTimeout, () {
+      if (!mounted) return;
+      setState(() => _timedOut = true);
+    });
   }
 
   @override
@@ -65,53 +111,7 @@ class _FindingDriverPageState extends State<FindingDriverPage>
             Positioned(top: -40, left: -40, child: _circle(200)),
             Positioned(bottom: -30, right: -30, child: _circle(160)),
             Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 200,
-                    height: 200,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        _radarRing(0),
-                        _radarRing(0.5),
-                        Bobbing(
-                          distance: 6,
-                          duration: const Duration(seconds: 3),
-                          child: Container(
-                            width: 106,
-                            height: 106,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.18),
-                              borderRadius: BorderRadius.circular(34),
-                            ),
-                            alignment: Alignment.center,
-                            child: const CarMarkIcon(
-                              size: 58,
-                              color: Colors.white,
-                              wheels: true,
-                              wheelColor: AppColors.primaryDark,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  Text(AppStrings.findingDriver,
-                      style: AppTextStyles.h3.copyWith(color: Colors.white)),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppStrings.findingSubtitle,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body
-                        .copyWith(color: Colors.white.withOpacity(0.85)),
-                  ),
-                  const SizedBox(height: 22),
-                  _PulsingDots(controller: _radar),
-                ],
-              ),
+              child: _timedOut ? _buildTimedOut() : _buildSearching(),
             ),
             Positioned(
               left: 30,
@@ -119,24 +119,140 @@ class _FindingDriverPageState extends State<FindingDriverPage>
               bottom: 40,
               child: SafeArea(
                 top: false,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    height: 54,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(AppStrings.cancel,
-                        style: AppTextStyles.button
-                            .copyWith(fontSize: 15, color: Colors.white)),
-                  ),
-                ),
+                child: _timedOut
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: _tryAgain,
+                            child: Container(
+                              height: 54,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(AppStrings.tryAgain,
+                                  style: AppTextStyles.button.copyWith(
+                                      fontSize: 15, color: AppColors.primaryDark)),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: _cancelAndLeave,
+                            child: Container(
+                              height: 54,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.18),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(AppStrings.backToSearch,
+                                  style: AppTextStyles.button
+                                      .copyWith(fontSize: 15, color: Colors.white)),
+                            ),
+                          ),
+                        ],
+                      )
+                    : GestureDetector(
+                        onTap: _cancelAndLeave,
+                        child: Container(
+                          height: 54,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.18),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(AppStrings.cancel,
+                              style: AppTextStyles.button
+                                  .copyWith(fontSize: 15, color: Colors.white)),
+                        ),
+                      ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSearching() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 200,
+          height: 200,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              _radarRing(0),
+              _radarRing(0.5),
+              Bobbing(
+                distance: 6,
+                duration: const Duration(seconds: 3),
+                child: Container(
+                  width: 106,
+                  height: 106,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(34),
+                  ),
+                  alignment: Alignment.center,
+                  child: const CarMarkIcon(
+                    size: 58,
+                    color: Colors.white,
+                    wheels: true,
+                    wheelColor: AppColors.primaryDark,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 40),
+        Text(AppStrings.findingDriver,
+            style: AppTextStyles.h3.copyWith(color: Colors.white)),
+        const SizedBox(height: 8),
+        Text(
+          AppStrings.findingSubtitle,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.body.copyWith(color: Colors.white.withOpacity(0.85)),
+        ),
+        const SizedBox(height: 22),
+        _PulsingDots(controller: _radar),
+      ],
+    );
+  }
+
+  Widget _buildTimedOut() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 106,
+            height: 106,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(34),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.search_off_rounded,
+                size: 52, color: Colors.white),
+          ),
+          const SizedBox(height: 32),
+          Text(AppStrings.noDriversFound,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.h3.copyWith(color: Colors.white)),
+          const SizedBox(height: 8),
+          Text(
+            AppStrings.noDriversFoundSubtitle,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.body.copyWith(color: Colors.white.withOpacity(0.85)),
+          ),
+        ],
       ),
     );
   }

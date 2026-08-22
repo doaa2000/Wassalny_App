@@ -103,6 +103,10 @@ class AppStrings {
   static String get findingDriver => _t('findingDriver');
   static String get findingSubtitle => _t('findingSubtitle');
   static String get cancel => _t('cancel');
+  static String get noDriversFound => _t('noDriversFound');
+  static String get noDriversFoundSubtitle => _t('noDriversFoundSubtitle');
+  static String get tryAgain => _t('tryAgain');
+  static String get backToSearch => _t('backToSearch');
 
   // Assigned
   static String get trackYourRide => _t('trackYourRide');

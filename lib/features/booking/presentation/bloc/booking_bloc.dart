@@ -34,6 +34,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<BookingPickupPicked>(_onPickupPicked);
     on<BookingCurrentPickupRequested>(_onCurrentPickupRequested);
     on<BookingRideRequested>(_onRideRequested);
+    on<BookingTripCancelled>(_onTripCancelled);
     on<_BookingTripStatusChanged>(_onTripStatusChanged);
     on<_BookingDriverLocationChanged>(_onDriverLocationChanged);
   }
@@ -143,6 +144,23 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       appLogger.logError('requestTrip failed',
           feature: 'Booking', error: e, stackTrace: s);
       emit(state.copyWith(requesting: false));
+    }
+  }
+
+  Future<void> _onTripCancelled(
+      BookingTripCancelled event, Emitter<BookingState> emit) async {
+    final String? id = state.tripId;
+    _tripSub?.cancel();
+    _tripSub = null;
+    _driverLocSub?.cancel();
+    _driverLocSub = null;
+    emit(state.copyWith(
+      requesting: false,
+      resetTrip: true,
+      resetAssignedDriver: true,
+    ));
+    if (id != null) {
+      await _repository.cancelTrip(id);
     }
   }
 

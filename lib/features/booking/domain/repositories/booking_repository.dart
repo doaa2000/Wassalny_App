@@ -37,4 +37,8 @@ abstract class BookingRepository {
 
   /// Live stream of the assigned captain's position (null until they share it).
   Stream<LatLng?> watchDriverLocation(String tripId);
+
+  /// Cancels a still-unassigned trip (rider gave up waiting, or the search
+  /// timed out with no captain accepting).
+  Future<void> cancelTrip(String tripId);
 }

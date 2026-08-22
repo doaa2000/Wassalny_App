@@ -28,6 +28,11 @@ abstract class TripRemoteDataSource {
   /// Live stream of the assigned captain's GPS position for [tripId] (null
   /// until the captain starts sharing). Drives the moving car on the map.
   Stream<LatLng?> watchDriverLocation(String tripId);
+
+  /// Marks a still-unassigned trip as cancelled by the rider — used when they
+  /// tap "Cancel" while waiting, or when the search times out with no captain
+  /// accepting. Without this the trip would stay `requested` forever.
+  Future<void> cancelTrip(String tripId);
 }
 
 /// Supabase implementation: inserts a `requested` trip for the signed-in rider.
@@ -109,6 +114,18 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
       return LatLng(lat, lng);
     });
   }
+
+  @override
+  Future<void> cancelTrip(String tripId) async {
+    // Only cancel while still `requested` — if a captain has already
+    // accepted in the meantime, leave the trip alone rather than yanking it
+    // out from under them.
+    await _service.client
+        .from('trips')
+        .update({'status': 'cancelled'})
+        .eq('id', tripId)
+        .eq('status', 'requested');
+  }
 }
 
 /// UI-only mode (no Supabase): returns a fake id and simulates a trip
@@ -148,4 +165,7 @@ class TripNoopDataSource implements TripRemoteDataSource {
   @override
   Stream<LatLng?> watchDriverLocation(String tripId) =>
       const Stream<LatLng?>.empty();
+
+  @override
+  Future<void> cancelTrip(String tripId) async {}
 }
