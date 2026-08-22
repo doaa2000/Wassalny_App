@@ -7,9 +7,9 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/round_icon_button.dart';
-import '../../../booking/presentation/pages/location_picker_page.dart';
 import '../../domain/entities/saved_place.dart';
 import '../bloc/places_bloc.dart';
+import '../utils/add_place_flow.dart';
 
 /// Full CRUD screen for the rider's saved places (Supabase `saved_places`).
 class SavedPlacesPage extends StatelessWidget {
@@ -20,110 +20,57 @@ class SavedPlacesPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  RoundIconButton.back(onPressed: () => Navigator.pop(context)),
-                  const SizedBox(width: 12),
-                  Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
-                ],
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: BlocBuilder<PlacesBloc, PlacesState>(
-                  builder: (context, state) {
-                    if (state.status == PlacesStatus.loading ||
-                        state.status == PlacesStatus.initial) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state.places.isEmpty) {
-                      return Center(
-                        child: Text('No saved places yet.',
-                            style: AppTextStyles.body.copyWith(color: AppColors.textFaint)),
-                      );
-                    }
-                    return ListView.separated(
-                      itemCount: state.places.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (context, i) => _PlaceCard(place: state.places[i]),
-                    );
-                  },
+        child: BlocListener<PlacesBloc, PlacesState>(
+          listenWhen: (prev, curr) =>
+              curr.status == PlacesStatus.failure && curr.error != null,
+          listener: (context, state) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(content: Text(state.error!)));
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    RoundIconButton.back(onPressed: () => Navigator.pop(context)),
+                    const SizedBox(width: 12),
+                    Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              PrimaryButton(
-                label: 'Add place',
-                onPressed: () => _showAddSheet(context),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showAddSheet(BuildContext context) async {
-    final PlacesBloc bloc = context.read<PlacesBloc>();
-
-    // 1. Pick the exact spot on the map (captures coordinates + address).
-    final PickedPlace? picked = await Navigator.push<PickedPlace>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LocationPickerPage(title: AppStrings.savedPlaces),
-      ),
-    );
-    if (picked == null || !context.mounted) return;
-
-    // 2. Name it (Home, Work, …).
-    final String? label = await _askLabel(context, picked.address);
-    if (label == null || label.trim().isEmpty) return;
-
-    bloc.add(PlaceAdded(
-      label: label.trim(),
-      address: picked.address,
-      lat: picked.latLng.latitude,
-      lng: picked.latLng.longitude,
-    ));
-  }
-
-  Future<String?> _askLabel(BuildContext context, String address) {
-    final TextEditingController label = TextEditingController();
-    return showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (ctx) => Padding(
-        padding:
-            EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
-            const SizedBox(height: 6),
-            Text(address,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.bodySm
-                    .copyWith(color: AppColors.textFaint)),
-            const SizedBox(height: 16),
-            AppTextField(
-                label: AppStrings.placeHome,
-                hintText: 'Home, Work…',
-                controller: label),
-            const SizedBox(height: 18),
-            PrimaryButton(
-              label: AppStrings.submit,
-              onPressed: () => Navigator.pop(ctx, label.text),
+                const SizedBox(height: 18),
+                Expanded(
+                  child: BlocBuilder<PlacesBloc, PlacesState>(
+                    builder: (context, state) {
+                      if (state.status == PlacesStatus.loading ||
+                          state.status == PlacesStatus.initial) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (state.places.isEmpty) {
+                        return Center(
+                          child: Text('No saved places yet.',
+                              style: AppTextStyles.body.copyWith(color: AppColors.textFaint)),
+                        );
+                      }
+                      return ListView.separated(
+                        itemCount: state.places.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, i) => _PlaceCard(place: state.places[i]),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                PrimaryButton(
+                  label: 'Add place',
+                  onPressed: () =>
+                      runAddPlaceFlow(context, context.read<PlacesBloc>()),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -160,11 +107,44 @@ class _PlaceCard extends StatelessWidget {
             ),
           ),
           IconButton(
+            icon: const Icon(Icons.edit_outlined, color: AppColors.textFaint),
+            onPressed: () => _showRenameDialog(context, place),
+          ),
+          IconButton(
             icon: const Icon(Icons.delete_outline_rounded, color: AppColors.textFaint),
             onPressed: () => context.read<PlacesBloc>().add(PlaceRemoved(place.id)),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showRenameDialog(BuildContext context, SavedPlace place) async {
+    final PlacesBloc bloc = context.read<PlacesBloc>();
+    final TextEditingController controller =
+        TextEditingController(text: place.label);
+
+    final String? newLabel = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(AppStrings.renamePlace, style: AppTextStyles.h1.copyWith(fontSize: 18)),
+        content: AppTextField(controller: controller, hintText: 'Home, Work…'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppStrings.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: Text(AppStrings.save),
+          ),
+        ],
+      ),
+    );
+
+    final String trimmed = newLabel?.trim() ?? '';
+    if (trimmed.isEmpty || trimmed == place.label) return;
+    bloc.add(PlaceRenamed(id: place.id, label: trimmed));
   }
 }

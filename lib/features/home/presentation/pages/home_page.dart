@@ -4,12 +4,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/service_area.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_shadows.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/round_icon_button.dart';
 import '../../../booking/presentation/bloc/booking_bloc.dart';
+import '../../../places/domain/entities/saved_place.dart';
+import '../../../places/presentation/bloc/places_bloc.dart';
+import '../../../places/presentation/utils/add_place_flow.dart';
 import '../../../shell/presentation/bloc/nav_bloc.dart';
 import '../widgets/quick_place_card.dart';
 
@@ -33,6 +37,39 @@ class _HomePageState extends State<HomePage> {
 
   void _openSearch(BuildContext context) =>
       Navigator.pushNamed(context, AppRoutes.search);
+
+  /// Finds a saved place whose label matches [wantedLabel] (e.g. "Home"),
+  /// case-insensitively — the app has no dedicated home/work type, just a
+  /// free-text label, so this is how the quick-place cards recognise them.
+  SavedPlace? _findByLabel(List<SavedPlace> places, String wantedLabel) {
+    for (final p in places) {
+      if (p.label.trim().toLowerCase() == wantedLabel.trim().toLowerCase()) {
+        return p;
+      }
+    }
+    return null;
+  }
+
+  void _onQuickPlaceTap(
+      BuildContext context, SavedPlace? place, String presetLabel) {
+    // No "Home"/"Work" saved yet — prompt the rider to add one, pre-filled.
+    if (place == null || place.latitude == null || place.longitude == null) {
+      runAddPlaceFlow(context, context.read<PlacesBloc>(),
+          presetLabel: presetLabel);
+      return;
+    }
+    final LatLng point = LatLng(place.latitude!, place.longitude!);
+    if (!ServiceArea.contains(point)) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.outsideServiceArea)));
+      return;
+    }
+    context
+        .read<BookingBloc>()
+        .add(BookingDestinationSet(point, place.address));
+    Navigator.pushNamed(context, AppRoutes.confirm);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +130,23 @@ class _HomePageState extends State<HomePage> {
           // Booking sheet.
           Align(
             alignment: Alignment.bottomCenter,
-            child: _BookingSheet(onSearch: () => _openSearch(context)),
+            child: BlocBuilder<PlacesBloc, PlacesState>(
+              builder: (context, placesState) {
+                final SavedPlace? home =
+                    _findByLabel(placesState.places, AppStrings.placeHome);
+                final SavedPlace? work =
+                    _findByLabel(placesState.places, AppStrings.placeWork);
+                return _BookingSheet(
+                  onSearch: () => _openSearch(context),
+                  homePlace: home,
+                  workPlace: work,
+                  onTapHome: () => _onQuickPlaceTap(
+                      context, home, AppStrings.placeHome),
+                  onTapWork: () => _onQuickPlaceTap(
+                      context, work, AppStrings.placeWork),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -155,9 +208,19 @@ class _LocationPill extends StatelessWidget {
 }
 
 class _BookingSheet extends StatelessWidget {
-  const _BookingSheet({required this.onSearch});
+  const _BookingSheet({
+    required this.onSearch,
+    required this.homePlace,
+    required this.workPlace,
+    required this.onTapHome,
+    required this.onTapWork,
+  });
 
   final VoidCallback onSearch;
+  final SavedPlace? homePlace;
+  final SavedPlace? workPlace;
+  final VoidCallback onTapHome;
+  final VoidCallback onTapWork;
 
   @override
   Widget build(BuildContext context) {
@@ -205,8 +268,8 @@ class _BookingSheet extends StatelessWidget {
                   child: QuickPlaceCard(
                     icon: Icons.home_rounded,
                     title: AppStrings.placeHome,
-                    subtitle: 'Maadi, Rd 9',
-                    onTap: onSearch,
+                    subtitle: homePlace?.address ?? AppStrings.tapToAddAddress,
+                    onTap: onTapHome,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -214,8 +277,8 @@ class _BookingSheet extends StatelessWidget {
                   child: QuickPlaceCard(
                     icon: Icons.work_outline_rounded,
                     title: AppStrings.placeWork,
-                    subtitle: 'Smart Village',
-                    onTap: onSearch,
+                    subtitle: workPlace?.address ?? AppStrings.tapToAddAddress,
+                    onTap: onTapWork,
                   ),
                 ),
               ],

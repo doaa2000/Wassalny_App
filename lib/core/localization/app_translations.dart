@@ -519,6 +519,37 @@ class AppTranslations {
       'ar': 'اكتب سعر مناسب عشان تلاقي كابتن أسرع',
       'es': 'Ingresa un precio justo para conseguir un conductor más rápido'
     },
+    'tapToAddAddress': {
+      'en': 'Tap to add address',
+      'ar': 'دوس لإضافة العنوان',
+      'es': 'Toca para añadir dirección'
+    },
+    'renamePlace': {
+      'en': 'Rename place',
+      'ar': 'إعادة تسمية المكان',
+      'es': 'Renombrar lugar'
+    },
+    'save': {'en': 'Save', 'ar': 'حفظ', 'es': 'Guardar'},
+    'couldNotLoadPlaces': {
+      'en': 'Could not load places. Pull down to retry.',
+      'ar': 'تعذّر تحميل الأماكن. اسحبي للأسفل للمحاولة مرة أخرى.',
+      'es': 'No se pudieron cargar los lugares. Desliza hacia abajo para reintentar.'
+    },
+    'couldNotAddPlace': {
+      'en': 'Could not save this place. Check your connection and try again.',
+      'ar': 'تعذّر حفظ المكان. تأكدي من الاتصال بالإنترنت وحاولي مرة أخرى.',
+      'es': 'No se pudo guardar este lugar. Verifica tu conexión e inténtalo de nuevo.'
+    },
+    'couldNotRenamePlace': {
+      'en': 'Could not rename this place. Try again.',
+      'ar': 'تعذّر تغيير اسم المكان. حاولي مرة أخرى.',
+      'es': 'No se pudo renombrar este lugar. Inténtalo de nuevo.'
+    },
+    'couldNotRemovePlace': {
+      'en': 'Could not remove this place. Try again.',
+      'ar': 'تعذّر حذف المكان. حاولي مرة أخرى.',
+      'es': 'No se pudo eliminar este lugar. Inténtalo de nuevo.'
+    },
 
     // Rate app
     'rateTitle': {

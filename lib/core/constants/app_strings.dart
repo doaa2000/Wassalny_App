@@ -184,6 +184,13 @@ class AppStrings {
   static String get yourOffer => _t('yourOffer');
   static String get suggestedFare => _t('suggestedFare');
   static String get priceTooLow => _t('priceTooLow');
+  static String get tapToAddAddress => _t('tapToAddAddress');
+  static String get renamePlace => _t('renamePlace');
+  static String get save => _t('save');
+  static String get couldNotLoadPlaces => _t('couldNotLoadPlaces');
+  static String get couldNotAddPlace => _t('couldNotAddPlace');
+  static String get couldNotRenamePlace => _t('couldNotRenamePlace');
+  static String get couldNotRemovePlace => _t('couldNotRemovePlace');
 
   // Rate app
   static String get rateTitle => _t('rateTitle');

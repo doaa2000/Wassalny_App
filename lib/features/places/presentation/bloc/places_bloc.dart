@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/saved_place.dart';
 import '../../domain/repositories/places_repository.dart';
 
@@ -24,7 +25,8 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     try {
       emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
     } catch (_) {
-      emit(state.copyWith(status: PlacesStatus.failure, error: 'Could not load places.'));
+      emit(state.copyWith(
+          status: PlacesStatus.failure, error: AppStrings.couldNotLoadPlaces));
     }
   }
 
@@ -33,17 +35,28 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
       await _repo.add(label: e.label, address: e.address, lat: e.lat, lng: e.lng);
       emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
     } catch (_) {
-      emit(state.copyWith(status: PlacesStatus.failure, error: 'Could not add place.'));
+      emit(state.copyWith(
+          status: PlacesStatus.failure, error: AppStrings.couldNotAddPlace));
     }
   }
 
   Future<void> _onRenamed(PlaceRenamed e, Emitter<PlacesState> emit) async {
-    await _repo.rename(id: e.id, label: e.label);
-    emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
+    try {
+      await _repo.rename(id: e.id, label: e.label);
+      emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
+    } catch (_) {
+      emit(state.copyWith(
+          status: PlacesStatus.failure, error: AppStrings.couldNotRenamePlace));
+    }
   }
 
   Future<void> _onRemoved(PlaceRemoved e, Emitter<PlacesState> emit) async {
-    await _repo.remove(e.id);
-    emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
+    try {
+      await _repo.remove(e.id);
+      emit(state.copyWith(status: PlacesStatus.ready, places: await _repo.getAll()));
+    } catch (_) {
+      emit(state.copyWith(
+          status: PlacesStatus.failure, error: AppStrings.couldNotRemovePlace));
+    }
   }
 }
