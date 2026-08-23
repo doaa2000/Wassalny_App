@@ -10,10 +10,15 @@ import 'core/router/app_router.dart';
 import 'core/router/app_routes.dart';
 import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 void main() => runGuarded(() async {
       WidgetsFlutterBinding.ensureInitialized();
-
+await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
       // Bring up logging first so everything below (including failures during
       // startup) is captured to file and console.
       await bootstrapLogging();
