@@ -156,8 +156,6 @@ class AppStrings {
 
   // Profile
   static String get riderName => _t('riderName');
-  static String get riderPhone => _t('riderPhone');
-  static String get riderTag => _t('riderTag');
   static String get personalInfo => _t('personalInfo');
   static String get savedLocations => _t('savedLocations');
   static String get language => _t('language');

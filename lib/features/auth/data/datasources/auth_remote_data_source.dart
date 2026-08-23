@@ -16,6 +16,7 @@ class AuthRemoteDataSource {
         id: u.id,
         email: u.email ?? '',
         fullName: u.userMetadata?['full_name'] as String?,
+        phone: (u.phone != null && u.phone!.isNotEmpty) ? u.phone : null,
       );
 
   AppUser _demo(String email, [String? name]) =>

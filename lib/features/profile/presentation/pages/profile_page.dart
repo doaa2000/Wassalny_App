@@ -6,6 +6,7 @@ import '../../../../core/constants/app_dimens.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/language_sheet.dart';
 import '../widgets/profile_menu_item.dart';
@@ -102,6 +103,17 @@ class ProfilePage extends StatelessWidget {
 class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final AppUser? user = context.watch<AuthBloc>().state.user;
+
+    // Prefer full name, then fall back to the email's local part so we never
+    // show a placeholder that looks like real data.
+    final String displayName = (user?.fullName?.trim().isNotEmpty ?? false)
+        ? user!.fullName!.trim()
+        : (user?.email.split('@').first ?? AppStrings.riderName);
+    final String? subtitle = user?.phone ?? user?.email;
+
+    final String initials = _initialsFor(displayName);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -133,39 +145,20 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(22),
                 ),
-                child:
-                    Text('LM', style: AppTextStyles.h3.copyWith(fontSize: 24)),
+                child: Text(initials,
+                    style: AppTextStyles.h3.copyWith(fontSize: 24)),
               ),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(AppStrings.riderName,
+                    Text(displayName,
                         style: AppTextStyles.titleSm.copyWith(fontSize: 19)),
-                    Text(AppStrings.riderPhone,
-                        style: AppTextStyles.bodySm.copyWith(
-                            color: AppColors.textTertiary, fontSize: 13)),
-                    const SizedBox(height: 5),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 9, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.star_rounded,
-                              size: 12, color: AppColors.gold),
-                          const SizedBox(width: 4),
-                          Text(AppStrings.riderTag,
-                              style:
-                                  AppTextStyles.micro.copyWith(fontSize: 11.5)),
-                        ],
-                      ),
-                    ),
+                    if (subtitle != null)
+                      Text(subtitle,
+                          style: AppTextStyles.bodySm.copyWith(
+                              color: AppColors.textTertiary, fontSize: 13)),
                   ],
                 ),
               ),
@@ -174,6 +167,16 @@ class _ProfileHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _initialsFor(String name) {
+    final List<String> parts =
+        name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) {
+      return parts.first.substring(0, parts.first.length >= 2 ? 2 : 1).toUpperCase();
+    }
+    return (parts.first[0] + parts[1][0]).toUpperCase();
   }
 }
 

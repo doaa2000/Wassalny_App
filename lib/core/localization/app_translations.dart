@@ -455,16 +455,10 @@ class AppTranslations {
 
     // Profile
     'riderName': {
-      'en': 'Layla Mansour',
-      'ar': 'Layla Mansour',
-      'es': 'Layla Mansour'
+      'en': 'Rider',
+      'ar': 'راكب',
+      'es': 'Pasajero'
     },
-    'riderPhone': {
-      'en': '+20 100 234 5678',
-      'ar': '+20 100 234 5678',
-      'es': '+20 100 234 5678'
-    },
-    'riderTag': {'en': '4.9 · Rider', 'ar': '4.9 · راكب', 'es': '4.9 · Pasajero'},
     'personalInfo': {
       'en': 'Personal information',
       'ar': 'المعلومات الشخصية',
