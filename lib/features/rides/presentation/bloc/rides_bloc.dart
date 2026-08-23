@@ -16,8 +16,17 @@ class RidesBloc extends Bloc<RidesEvent, RidesState> {
 
   final RidesRepository _repository;
 
-  void _onRequested(RidesRequested event, Emitter<RidesState> emit) {
-    emit(state.copyWith(rides: _repository.getRides()));
+  Future<void> _onRequested(RidesRequested event, Emitter<RidesState> emit) async {
+    emit(state.copyWith(status: RidesStatus.loading));
+    try {
+      final rides = await _repository.getRides();
+      emit(state.copyWith(status: RidesStatus.success, rides: rides));
+    } catch (e) {
+      emit(state.copyWith(
+        status: RidesStatus.failure,
+        errorMessage: 'تعذر تحميل الرحلات. حاول مرة أخرى.',
+      ));
+    }
   }
 
   void _onFilterChanged(RidesFilterChanged event, Emitter<RidesState> emit) {

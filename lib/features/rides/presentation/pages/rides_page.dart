@@ -26,7 +26,6 @@ class RidesPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: BlocBuilder<RidesBloc, RidesState>(
         builder: (context, state) {
-          final rides = state.visibleRides;
           return CustomScrollView(
             slivers: [
               SliverSafeArea(
@@ -61,23 +60,80 @@ class RidesPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                    20, 10, 20, AppDimens.bottomNavSafe),
-                sliver: SliverList.separated(
-                  itemCount: rides.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, i) => RideHistoryCard(
-                    ride: rides[i],
-                    onRebook: () =>
-                        Navigator.pushNamed(context, AppRoutes.search),
-                  ),
-                ),
-              ),
+              ..._buildContentSlivers(context, state),
             ],
           );
         },
       ),
     );
+  }
+
+  /// Returns the sliver(s) for the current loading/error/empty/data state,
+  /// so the filter tabs above stay visible no matter what's happening below.
+  List<Widget> _buildContentSlivers(BuildContext context, RidesState state) {
+    if (state.status == RidesStatus.loading || state.status == RidesStatus.initial) {
+      return [
+        const SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ];
+    }
+
+    if (state.status == RidesStatus.failure) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    state.errorMessage ?? 'حدث خطأ ما',
+                    style: AppTextStyles.h3,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () =>
+                        context.read<RidesBloc>().add(const RidesRequested()),
+                    child: const Text('إعادة المحاولة'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+
+    final rides = state.visibleRides;
+
+    if (rides.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Text('لا توجد رحلات بعد', style: AppTextStyles.h3),
+          ),
+        ),
+      ];
+    }
+
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, AppDimens.bottomNavSafe),
+        sliver: SliverList.separated(
+          itemCount: rides.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, i) => RideHistoryCard(
+            ride: rides[i],
+            onRebook: () => Navigator.pushNamed(context, AppRoutes.search),
+          ),
+        ),
+      ),
+    ];
   }
 }

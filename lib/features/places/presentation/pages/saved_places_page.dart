@@ -35,7 +35,8 @@ class SavedPlacesPage extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    RoundIconButton.back(onPressed: () => Navigator.pop(context)),
+                    RoundIconButton.back(
+                        onPressed: () => Navigator.pop(context)),
                     const SizedBox(width: 12),
                     Text(AppStrings.savedPlaces, style: AppTextStyles.h1),
                   ],
@@ -51,13 +52,15 @@ class SavedPlacesPage extends StatelessWidget {
                       if (state.places.isEmpty) {
                         return Center(
                           child: Text('No saved places yet.',
-                              style: AppTextStyles.body.copyWith(color: AppColors.textFaint)),
+                              style: AppTextStyles.body
+                                  .copyWith(color: AppColors.textFaint)),
                         );
                       }
                       return ListView.separated(
                         itemCount: state.places.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, i) => _PlaceCard(place: state.places[i]),
+                        itemBuilder: (context, i) =>
+                            _PlaceCard(place: state.places[i]),
                       );
                     },
                   ),
@@ -99,10 +102,13 @@ class _PlaceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(place.label, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700)),
+                Text(place.label,
+                    style: AppTextStyles.body
+                        .copyWith(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(place.address,
-                    style: AppTextStyles.bodySm.copyWith(color: AppColors.textFaint)),
+                    style: AppTextStyles.bodySm
+                        .copyWith(color: AppColors.textFaint)),
               ],
             ),
           ),
@@ -111,8 +117,10 @@ class _PlaceCard extends StatelessWidget {
             onPressed: () => _showRenameDialog(context, place),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.textFaint),
-            onPressed: () => context.read<PlacesBloc>().add(PlaceRemoved(place.id)),
+            icon: const Icon(Icons.delete_outline_rounded,
+                color: AppColors.textFaint),
+            onPressed: () =>
+                context.read<PlacesBloc>().add(PlaceRemoved(place.id)),
           ),
         ],
       ),
@@ -128,16 +136,21 @@ class _PlaceCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text(AppStrings.renamePlace, style: AppTextStyles.h1.copyWith(fontSize: 18)),
+        title: Text(AppStrings.renamePlace,
+            style: AppTextStyles.h1.copyWith(fontSize: 18)),
         content: AppTextField(controller: controller, hintText: 'Home, Work…'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(AppStrings.cancel),
+            child: Text(AppStrings.cancel,
+                style:
+                    AppTextStyles.body.copyWith(color: AppColors.primaryDark)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, controller.text),
-            child: Text(AppStrings.save),
+            child: Text(AppStrings.save,
+                style:
+                    AppTextStyles.body.copyWith(color: AppColors.primaryDark)),
           ),
         ],
       ),

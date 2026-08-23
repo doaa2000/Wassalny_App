@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wassalny/features/rides/data/datasources/rides_remote_data_source.dart';
 
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
@@ -49,8 +50,9 @@ class _AppDependenciesState extends State<AppDependencies> {
       BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote, _driversRemote);
   late final _authRepo =
       AuthRepositoryImpl(AuthRemoteDataSource(SupabaseService.instance));
-  late final _ridesRepo = RidesRepositoryImpl();
-  late final _notificationsRepo = NotificationsRepositoryImpl();
+late final _ridesRepo =
+    RidesRepositoryImpl(RidesRemoteDataSource(SupabaseService.instance)); 
+     late final _notificationsRepo = NotificationsRepositoryImpl();
   late final _placesRepo =
       PlacesRepositoryImpl(PlacesRemoteDataSource(SupabaseService.instance));
 

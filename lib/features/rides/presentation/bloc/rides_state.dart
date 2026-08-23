@@ -3,12 +3,22 @@ part of 'rides_bloc.dart';
 /// Tabs on the ride-history screen.
 enum RidesFilter { all, completed, cancelled }
 
+/// Loading lifecycle for the ride-history screen.
+enum RidesStatus { initial, loading, success, failure }
+
 /// Ride-history screen state: the full list plus the active filter.
 class RidesState extends Equatable {
-  const RidesState({this.rides = const [], this.filter = RidesFilter.all});
+  const RidesState({
+    this.status = RidesStatus.initial,
+    this.rides = const [],
+    this.filter = RidesFilter.all,
+    this.errorMessage,
+  });
 
+  final RidesStatus status;
   final List<RideHistory> rides;
   final RidesFilter filter;
+  final String? errorMessage;
 
   /// Rides visible under the active filter.
   List<RideHistory> get visibleRides {
@@ -22,9 +32,19 @@ class RidesState extends Equatable {
     }
   }
 
-  RidesState copyWith({List<RideHistory>? rides, RidesFilter? filter}) =>
-      RidesState(rides: rides ?? this.rides, filter: filter ?? this.filter);
+  RidesState copyWith({
+    RidesStatus? status,
+    List<RideHistory>? rides,
+    RidesFilter? filter,
+    String? errorMessage,
+  }) =>
+      RidesState(
+        status: status ?? this.status,
+        rides: rides ?? this.rides,
+        filter: filter ?? this.filter,
+        errorMessage: errorMessage,
+      );
 
   @override
-  List<Object?> get props => [rides, filter];
+  List<Object?> get props => [status, rides, filter, errorMessage];
 }
