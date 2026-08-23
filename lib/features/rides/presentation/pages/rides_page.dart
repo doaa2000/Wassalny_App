@@ -24,21 +24,20 @@ class RidesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<RidesBloc, RidesState>(
-        builder: (context, state) {
-          return CustomScrollView(
-            slivers: [
-              SliverSafeArea(
-                bottom: false,
-                sliver: SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(22, 12, 22, 8),
+      body: SafeArea(
+        bottom: false,
+        child: BlocBuilder<RidesBloc, RidesState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 12, 22, 8),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
                     child: Text(AppStrings.yourRides, style: AppTextStyles.h3),
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -59,81 +58,63 @@ class RidesPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              ..._buildContentSlivers(context, state),
-            ],
-          );
-        },
+                Expanded(child: _buildContent(context, state)),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  /// Returns the sliver(s) for the current loading/error/empty/data state,
-  /// so the filter tabs above stay visible no matter what's happening below.
-  List<Widget> _buildContentSlivers(BuildContext context, RidesState state) {
+  /// Returns the widget for the current loading/error/empty/data state. The
+  /// title and filter chips above are outside this scrollable area entirely,
+  /// so they stay put no matter how far the list scrolls.
+  Widget _buildContent(BuildContext context, RidesState state) {
     if (state.status == RidesStatus.loading || state.status == RidesStatus.initial) {
-      return [
-        const SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ];
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (state.status == RidesStatus.failure) {
-      return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    state.errorMessage ?? 'حدث خطأ ما',
-                    style: AppTextStyles.h3,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () =>
-                        context.read<RidesBloc>().add(const RidesRequested()),
-                    child: const Text('إعادة المحاولة'),
-                  ),
-                ],
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                state.errorMessage ?? 'حدث خطأ ما',
+                style: AppTextStyles.h3,
+                textAlign: TextAlign.center,
               ),
-            ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () =>
+                    context.read<RidesBloc>().add(const RidesRequested()),
+                child: const Text('إعادة المحاولة'),
+              ),
+            ],
           ),
         ),
-      ];
+      );
     }
 
     final rides = state.visibleRides;
 
     if (rides.isEmpty) {
-      return [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(
-            child: Text('لا توجد رحلات بعد', style: AppTextStyles.h3),
-          ),
-        ),
-      ];
+      return Center(
+        child: Text('لا توجد رحلات بعد', style: AppTextStyles.h3),
+      );
     }
 
-    return [
-      SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, AppDimens.bottomNavSafe),
-        sliver: SliverList.separated(
-          itemCount: rides.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
-          itemBuilder: (context, i) => RideHistoryCard(
-            ride: rides[i],
-            onRebook: () => Navigator.pushNamed(context, AppRoutes.search),
-          ),
-        ),
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, AppDimens.bottomNavSafe),
+      itemCount: rides.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, i) => RideHistoryCard(
+        ride: rides[i],
+        onRebook: () => Navigator.pushNamed(context, AppRoutes.search),
       ),
-    ];
+    );
   }
 }
