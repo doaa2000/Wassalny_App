@@ -34,6 +34,8 @@ class ProfilePage extends StatelessWidget {
                     ProfileMenuItem(
                       icon: Icons.person_outline_rounded,
                       label: AppStrings.personalInfo,
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.personalInfo),
                     ),
                     ProfileMenuItem(
                       icon: Icons.location_on_outlined,

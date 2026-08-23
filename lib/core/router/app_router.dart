@@ -15,6 +15,7 @@ import '../../features/profile/presentation/pages/about_us_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_intro_page.dart';
 import '../../features/onboarding/presentation/pages/welcome_page.dart';
 import '../../features/places/presentation/pages/saved_places_page.dart';
+import '../../features/profile/presentation/pages/personal_info_page.dart';
 import '../../features/shell/presentation/main_shell.dart';
 import 'app_routes.dart';
 
@@ -60,6 +61,8 @@ class AppRouter {
         return (_) => const AboutUsPage();
       case AppRoutes.savedPlaces:
         return (_) => const SavedPlacesPage();
+      case AppRoutes.personalInfo:
+        return (_) => const PersonalInfoPage();
       case AppRoutes.welcome:
       default:
         return (_) => const WelcomePage();

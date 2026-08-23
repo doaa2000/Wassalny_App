@@ -23,6 +23,7 @@ class AppRoutes {
 
   // Saved places (CRUD example).
   static const String savedPlaces = '/saved-places';
+  static const String personalInfo = '/personal-info';
 
   // Debug log viewer.
   static const String logs = '/logs';

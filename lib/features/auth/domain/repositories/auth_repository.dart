@@ -15,4 +15,8 @@ abstract class AuthRepository {
 
   /// The currently signed-in user (null when signed out).
   AppUser? currentUser();
+
+  /// Updates the signed-in user's editable profile fields. Pass only the
+  /// fields that changed — omitted ones are left as-is.
+  Future<AppUser> updateProfile({String? fullName, String? phone});
 }

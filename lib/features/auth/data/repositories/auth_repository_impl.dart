@@ -24,4 +24,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   AppUser? currentUser() => _remote.currentUser();
+
+  @override
+  Future<AppUser> updateProfile({String? fullName, String? phone}) =>
+      _remote.updateProfile(fullName: fullName, phone: phone);
 }

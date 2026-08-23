@@ -59,4 +59,44 @@ class AuthRemoteDataSource {
     if (u == null || u.isAnonymous) return null;
     return _map(u);
   }
+
+  /// Updates the rider's name and/or phone. The name goes through Supabase
+  /// Auth's own metadata (`updateUser`); the phone is written to the
+  /// `profiles` table directly — Auth's own `phone` field requires an OTP
+  /// verification flow this app doesn't implement, so `profiles.phone` (a
+  /// plain, unverified column per the shared schema) is the honest place to
+  /// store a rider-entered number instead.
+  Future<AppUser> updateProfile({String? fullName, String? phone}) async {
+    if (!_service.isConfigured) {
+      final AppUser? current = currentUser();
+      return AppUser(
+        id: current?.id ?? 'demo-user',
+        email: current?.email ?? '',
+        fullName: fullName ?? current?.fullName,
+        phone: phone ?? current?.phone,
+      );
+    }
+
+    if (fullName != null) {
+      await _service.client.auth
+          .updateUser(UserAttributes(data: {'full_name': fullName}));
+    }
+
+    final String? userId = _service.client.auth.currentUser?.id;
+    if (phone != null && userId != null) {
+      await _service.client.from('profiles').update({'phone': phone}).eq('id', userId);
+    }
+
+    final User? refreshed = _service.client.auth.currentUser;
+    if (refreshed == null) throw const AuthException('Not signed in');
+    final AppUser mapped = _map(refreshed);
+    // auth.User doesn't carry profiles.phone, so overlay it from what we
+    // just wrote (or keep whatever was already showing).
+    return AppUser(
+      id: mapped.id,
+      email: mapped.email,
+      fullName: mapped.fullName,
+      phone: phone ?? mapped.phone,
+    );
+  }
 }

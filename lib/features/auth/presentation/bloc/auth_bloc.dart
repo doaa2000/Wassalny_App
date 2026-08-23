@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignUpRequested>(_onSignUp);
     on<AuthLoginRequested>(_onLogin);
     on<AuthLogoutRequested>(_onLogout);
+    on<AuthProfileUpdateRequested>(_onProfileUpdate);
     add(const AuthStarted());
   }
 
@@ -56,5 +57,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogout(AuthLogoutRequested e, Emitter<AuthState> emit) async {
     await _repo.logout();
     emit(const AuthState(status: AuthStatus.unauthenticated));
+  }
+
+  Future<void> _onProfileUpdate(
+      AuthProfileUpdateRequested e, Emitter<AuthState> emit) async {
+    emit(state.copyWith(profileUpdateStatus: ProfileUpdateStatus.loading));
+    try {
+      final AppUser updated =
+          await _repo.updateProfile(fullName: e.fullName, phone: e.phone);
+      emit(state.copyWith(
+        user: updated,
+        profileUpdateStatus: ProfileUpdateStatus.success,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        profileUpdateStatus: ProfileUpdateStatus.failure,
+        profileError: 'Could not update your profile. Please try again.',
+      ));
+    }
   }
 }

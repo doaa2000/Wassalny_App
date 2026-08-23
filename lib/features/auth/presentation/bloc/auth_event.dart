@@ -36,3 +36,15 @@ final class AuthLoginRequested extends AuthEvent {
 final class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
 }
+
+/// The rider saved changes on the Personal Info screen. Only non-null fields
+/// are updated — leave a field null to keep its current value unchanged.
+final class AuthProfileUpdateRequested extends AuthEvent {
+  const AuthProfileUpdateRequested({this.fullName, this.phone});
+
+  final String? fullName;
+  final String? phone;
+
+  @override
+  List<Object?> get props => [fullName, phone];
+}

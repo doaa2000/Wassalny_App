@@ -464,6 +464,21 @@ class AppTranslations {
       'ar': 'المعلومات الشخصية',
       'es': 'Información personal'
     },
+    'emailCannotBeChanged': {
+      'en': 'Email cannot be changed here',
+      'ar': 'لا يمكن تغيير البريد الإلكتروني من هنا',
+      'es': 'El correo electrónico no se puede cambiar aquí'
+    },
+    'profileUpdated': {
+      'en': 'Your profile has been updated',
+      'ar': 'تم تحديث بياناتك الشخصية بنجاح',
+      'es': 'Tu perfil ha sido actualizado'
+    },
+    'couldNotUpdateProfile': {
+      'en': 'Could not update your profile. Please try again.',
+      'ar': 'تعذّر تحديث بياناتك. يُرجى المحاولة مرة أخرى.',
+      'es': 'No se pudo actualizar tu perfil. Inténtalo de nuevo.'
+    },
     'savedLocations': {
       'en': 'Saved locations',
       'ar': 'المواقع المحفوظة',

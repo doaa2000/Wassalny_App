@@ -157,6 +157,9 @@ class AppStrings {
   // Profile
   static String get riderName => _t('riderName');
   static String get personalInfo => _t('personalInfo');
+  static String get emailCannotBeChanged => _t('emailCannotBeChanged');
+  static String get profileUpdated => _t('profileUpdated');
+  static String get couldNotUpdateProfile => _t('couldNotUpdateProfile');
   static String get savedLocations => _t('savedLocations');
   static String get language => _t('language');
   static String get languageValue => _t('languageValue');
