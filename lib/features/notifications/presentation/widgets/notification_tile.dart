@@ -81,6 +81,11 @@ class NotificationTile extends StatelessWidget {
         child = const Icon(Icons.schedule_rounded,
             size: 20, color: AppColors.primaryDark);
         break;
+      case NotificationKind.general:
+        bg = AppColors.primary;
+        child = const Icon(Icons.notifications_none_rounded,
+            size: 20, color: AppColors.primaryDark);
+        break;
     }
     return Container(
       width: 42,

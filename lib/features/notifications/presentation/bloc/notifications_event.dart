@@ -12,3 +12,18 @@ sealed class NotificationsEvent extends Equatable {
 final class NotificationsRequested extends NotificationsEvent {
   const NotificationsRequested();
 }
+
+/// The rider tapped a notification — mark it as read.
+final class NotificationTapped extends NotificationsEvent {
+  const NotificationTapped(this.id);
+
+  final String id;
+
+  @override
+  List<Object?> get props => [id];
+}
+
+/// The rider tapped "Mark all read".
+final class NotificationsMarkAllRead extends NotificationsEvent {
+  const NotificationsMarkAllRead();
+}

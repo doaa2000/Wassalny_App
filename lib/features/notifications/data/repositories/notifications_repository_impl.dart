@@ -1,35 +1,20 @@
 import '../../domain/entities/app_notification.dart';
 import '../../domain/repositories/notifications_repository.dart';
+import '../datasources/notifications_remote_data_source.dart';
 
-/// Dummy notifications matching the design.
+/// Reads the rider's real notifications from the backend (empty in UI-only
+/// mode, via [NotificationsNoopDataSource]).
 class NotificationsRepositoryImpl implements NotificationsRepository {
+  const NotificationsRepositoryImpl(this._remote);
+
+  final NotificationsRemoteDataSource _remote;
+
   @override
-  List<AppNotification> getNotifications() => const [
-        AppNotification(
-          kind: NotificationKind.rideComplete,
-          section: NotificationSection.today,
-          title: 'Your ride is complete',
-          body: 'Trip to Sirena Beach · EGP 86. Rate Ahmed now.',
-          unread: true,
-        ),
-        AppNotification(
-          kind: NotificationKind.promo,
-          section: NotificationSection.today,
-          title: '25% off your next 3 rides 🎉',
-          body: 'Use code WSL25 before Sunday. T&Cs apply.',
-          unread: true,
-        ),
-        AppNotification(
-          kind: NotificationKind.topUp,
-          section: NotificationSection.earlier,
-          title: 'Wallet topped up',
-          body: 'EGP 200 added to your Wassalny Wallet.',
-        ),
-        AppNotification(
-          kind: NotificationKind.onTime,
-          section: NotificationSection.earlier,
-          title: 'Driver was on time',
-          body: 'Your trip to El Qusair Port arrived 2 min early.',
-        ),
-      ];
+  Future<List<AppNotification>> getNotifications() => _remote.getNotifications();
+
+  @override
+  Future<void> markAsRead(String id) => _remote.markAsRead(id);
+
+  @override
+  Future<void> markAllRead() => _remote.markAllRead();
 }

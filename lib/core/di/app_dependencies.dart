@@ -12,6 +12,7 @@ import '../../features/booking/data/repositories/booking_repository_impl.dart';
 import '../../features/booking/domain/repositories/booking_repository.dart';
 import '../../features/booking/presentation/bloc/booking_bloc.dart';
 import '../services/supabase_service.dart';
+import '../../features/notifications/data/datasources/notifications_remote_data_source.dart';
 import '../../features/notifications/data/repositories/notifications_repository_impl.dart';
 import '../../features/notifications/presentation/bloc/notifications_bloc.dart';
 import '../../features/places/data/datasources/places_remote_data_source.dart';
@@ -50,9 +51,14 @@ class _AppDependenciesState extends State<AppDependencies> {
       BookingRepositoryImpl(BookingLocalDataSource(), _tripRemote, _driversRemote);
   late final _authRepo =
       AuthRepositoryImpl(AuthRemoteDataSource(SupabaseService.instance));
-late final _ridesRepo =
-    RidesRepositoryImpl(RidesRemoteDataSource(SupabaseService.instance)); 
-     late final _notificationsRepo = NotificationsRepositoryImpl();
+  late final _ridesRepo =
+      RidesRepositoryImpl(RidesRemoteDataSource(SupabaseService.instance));
+  late final NotificationsRemoteDataSource _notificationsRemote =
+      SupabaseService.instance.isConfigured
+          ? NotificationsSupabaseDataSource(SupabaseService.instance)
+          : const NotificationsNoopDataSource();
+  late final _notificationsRepo =
+      NotificationsRepositoryImpl(_notificationsRemote);
   late final _placesRepo =
       PlacesRepositoryImpl(PlacesRemoteDataSource(SupabaseService.instance));
 

@@ -18,22 +18,13 @@ class NotificationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocBuilder<NotificationsBloc, NotificationsState>(
-        builder: (context, state) {
-          final items = state.items;
-          final today = items
-              .where((n) => n.section == NotificationSection.today)
-              .toList();
-          final earlier = items
-              .where((n) => n.section == NotificationSection.earlier)
-              .toList();
-
-          return ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              SafeArea(
-                bottom: false,
-                child: Padding(
+      body: SafeArea(
+        bottom: false,
+        child: BlocBuilder<NotificationsBloc, NotificationsState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Padding(
                   padding: const EdgeInsets.fromLTRB(22, 12, 22, 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,33 +33,81 @@ class NotificationsPage extends StatelessWidget {
                         child: Text(AppStrings.notifications,
                             style: AppTextStyles.h3),
                       ),
-                      Text(AppStrings.markAllRead,
-                          style: AppTextStyles.bodySm.copyWith(
-                              fontWeight: FontWeight.w700, fontSize: 13)),
+                      GestureDetector(
+                        onTap: () => context
+                            .read<NotificationsBloc>()
+                            .add(const NotificationsMarkAllRead()),
+                        child: Text(AppStrings.markAllRead,
+                            style: AppTextStyles.bodySm.copyWith(
+                                fontWeight: FontWeight.w700, fontSize: 13)),
+                      ),
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    20, 10, 20, AppDimens.bottomNavSafe),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SectionLabel(AppStrings.today),
-                    const SizedBox(height: 8),
-                    _GroupCard(items: today),
-                    const SizedBox(height: 20),
-                    SectionLabel(AppStrings.earlier),
-                    const SizedBox(height: 8),
-                    _GroupCard(items: earlier),
-                  ],
-                ),
+                Expanded(child: _buildContent(context, state)),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, NotificationsState state) {
+    if (state.status == NotificationsStatus.loading ||
+        state.status == NotificationsStatus.initial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.status == NotificationsStatus.failure) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(state.error ?? 'حدث خطأ ما',
+                  style: AppTextStyles.h3, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => context
+                    .read<NotificationsBloc>()
+                    .add(const NotificationsRequested()),
+                child: const Text('إعادة المحاولة'),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        ),
+      );
+    }
+
+    final items = state.items;
+    if (items.isEmpty) {
+      return Center(
+        child: Text('لا توجد إشعارات بعد', style: AppTextStyles.h3),
+      );
+    }
+
+    final today =
+        items.where((n) => n.section == NotificationSection.today).toList();
+    final earlier =
+        items.where((n) => n.section == NotificationSection.earlier).toList();
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, AppDimens.bottomNavSafe),
+      children: [
+        if (today.isNotEmpty) ...[
+          SectionLabel(AppStrings.today),
+          const SizedBox(height: 8),
+          _GroupCard(items: today),
+          const SizedBox(height: 20),
+        ],
+        if (earlier.isNotEmpty) ...[
+          SectionLabel(AppStrings.earlier),
+          const SizedBox(height: 8),
+          _GroupCard(items: earlier),
+        ],
+      ],
     );
   }
 }
@@ -97,9 +136,14 @@ class _GroupCard extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < items.length; i++)
-            NotificationTile(
-              notification: items[i],
-              showDivider: i != items.length - 1,
+            GestureDetector(
+              onTap: () => context
+                  .read<NotificationsBloc>()
+                  .add(NotificationTapped(items[i].id)),
+              child: NotificationTile(
+                notification: items[i],
+                showDivider: i != items.length - 1,
+              ),
             ),
         ],
       ),
