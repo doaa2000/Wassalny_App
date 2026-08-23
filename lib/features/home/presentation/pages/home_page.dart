@@ -14,7 +14,6 @@ import '../../../booking/presentation/bloc/booking_bloc.dart';
 import '../../../places/domain/entities/saved_place.dart';
 import '../../../places/presentation/bloc/places_bloc.dart';
 import '../../../places/presentation/utils/add_place_flow.dart';
-import '../../../shell/presentation/bloc/nav_bloc.dart';
 import '../widgets/quick_place_card.dart';
 
 /// Home tab: live map with a booking sheet (greeting, search entry, saved
@@ -99,17 +98,6 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(top: 8),
                 child: Row(
                   children: [
-                    RoundIconButton(
-                      icon: Icons.menu_rounded,
-                      iconColor: AppColors.ink,
-                      background: AppColors.surface,
-                      size: 48,
-                      radius: 16,
-                      shadow: true,
-                      onPressed: () =>
-                          context.read<NavBloc>().add(const NavTabSelected(4)),
-                    ),
-                    const SizedBox(width: 12),
                     Expanded(child: _LocationPill()),
                     const SizedBox(width: 10),
                     RoundIconButton(
