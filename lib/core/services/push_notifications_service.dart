@@ -27,7 +27,8 @@ class PushNotificationsService {
   PushNotificationsService._();
   static final PushNotificationsService instance = PushNotificationsService._();
 
-  final FlutterLocalNotificationsPlugin _local = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _local =
+      FlutterLocalNotificationsPlugin();
 
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'wassalny_default',
@@ -53,7 +54,7 @@ class PushNotificationsService {
           ?.createNotificationChannel(_channel);
 
       await _local.initialize(
-        const InitializationSettings(
+        settings: const InitializationSettings(
           android: AndroidInitializationSettings('@mipmap/ic_launcher'),
           iOS: DarwinInitializationSettings(),
         ),
@@ -66,10 +67,10 @@ class PushNotificationsService {
         final RemoteNotification? notification = message.notification;
         if (notification == null) return;
         _local.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
+          id: notification.hashCode,
+          title: notification.title,
+          body: notification.body,
+          notificationDetails: NotificationDetails(
             android: AndroidNotificationDetails(
               _channel.id,
               _channel.name,
