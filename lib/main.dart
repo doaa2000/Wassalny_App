@@ -13,6 +13,7 @@ import 'core/services/push_notifications_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/notifications/presentation/bloc/notifications_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,8 +76,10 @@ class WassalnyApp extends StatelessWidget {
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (prev, curr) =>
             curr.user != null && prev.user?.id != curr.user?.id,
-        listener: (context, state) =>
-            PushNotificationsService.instance.registerDeviceToken(state.user!.id),
+        listener: (context, state) {
+          PushNotificationsService.instance.registerDeviceToken(state.user!.id);
+          context.read<NotificationsBloc>().add(const NotificationsRequested());
+        },
         child: ValueListenableBuilder<Locale>(
           valueListenable: AppLocale.notifier,
           builder: (context, locale, _) => MaterialApp(
