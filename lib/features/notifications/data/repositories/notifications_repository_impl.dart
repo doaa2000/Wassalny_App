@@ -13,6 +13,9 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
   Future<List<AppNotification>> getNotifications() => _remote.getNotifications();
 
   @override
+  Stream<List<AppNotification>> watchNotifications() => _remote.watchNotifications();
+
+  @override
   Future<void> markAsRead(String id) => _remote.markAsRead(id);
 
   @override

@@ -2,6 +2,7 @@ import '../entities/app_notification.dart';
 
 abstract class NotificationsRepository {
   Future<List<AppNotification>> getNotifications();
+  Stream<List<AppNotification>> watchNotifications();
   Future<void> markAsRead(String id);
   Future<void> markAllRead();
 }

@@ -76,7 +76,7 @@ class _AppDependenciesState extends State<AppDependencies> {
         ),
         BlocProvider(
           create: (_) => NotificationsBloc(_notificationsRepo)
-            ..add(const NotificationsRequested()),
+            ..add(const NotificationsSubscriptionRequested()),
         ),
         BlocProvider(
           create: (_) => PlacesBloc(_placesRepo)..add(const PlacesLoaded()),

@@ -72,7 +72,7 @@ class NotificationsPage extends StatelessWidget {
               TextButton(
                 onPressed: () => context
                     .read<NotificationsBloc>()
-                    .add(const NotificationsRequested()),
+                    .add(const NotificationsSubscriptionRequested()),
                 child: const Text('إعادة المحاولة'),
               ),
             ],

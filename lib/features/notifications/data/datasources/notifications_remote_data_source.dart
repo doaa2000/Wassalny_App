@@ -4,6 +4,12 @@ import '../../domain/entities/app_notification.dart';
 /// Reads and updates the signed-in rider's notifications from the backend.
 abstract class NotificationsRemoteDataSource {
   Future<List<AppNotification>> getNotifications();
+
+  /// Live stream via Supabase Realtime — emits the current list immediately,
+  /// then again every time a row changes (new notification arrives, one is
+  /// marked read, etc.), so the screen updates without any manual reload.
+  Stream<List<AppNotification>> watchNotifications();
+
   Future<void> markAsRead(String id);
   Future<void> markAllRead();
 }
@@ -32,6 +38,22 @@ class NotificationsSupabaseDataSource implements NotificationsRemoteDataSource {
         .cast<Map<String, dynamic>>()
         .map(_toNotification)
         .toList(growable: false);
+  }
+
+  @override
+  Stream<List<AppNotification>> watchNotifications() {
+    final String? userId = _service.currentUserId;
+    if (userId == null) return const Stream.empty();
+
+    return _service.client
+        .from('notifications')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .order('created_at', ascending: false)
+        .map((rows) => rows
+            .cast<Map<String, dynamic>>()
+            .map(_toNotification)
+            .toList(growable: false));
   }
 
   @override
@@ -129,6 +151,9 @@ class NotificationsNoopDataSource implements NotificationsRemoteDataSource {
 
   @override
   Future<List<AppNotification>> getNotifications() async => const [];
+
+  @override
+  Stream<List<AppNotification>> watchNotifications() => const Stream.empty();
 
   @override
   Future<void> markAsRead(String id) async {}

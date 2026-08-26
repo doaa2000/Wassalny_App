@@ -78,7 +78,7 @@ class WassalnyApp extends StatelessWidget {
             curr.user != null && prev.user?.id != curr.user?.id,
         listener: (context, state) {
           PushNotificationsService.instance.registerDeviceToken(state.user!.id);
-          context.read<NotificationsBloc>().add(const NotificationsRequested());
+          context.read<NotificationsBloc>().add(const NotificationsSubscriptionRequested());
         },
         child: ValueListenableBuilder<Locale>(
           valueListenable: AppLocale.notifier,
