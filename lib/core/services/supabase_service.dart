@@ -36,6 +36,13 @@ class SupabaseService {
     return u != null && !u.isAnonymous;
   }
 
+  /// True when ANY session exists — real or anonymous. Anonymous still
+  /// counts here since the app deliberately lets a guest book a ride before
+  /// logging in; this just guards against there being no session at all
+  /// (e.g. a route reached before bootstrap finished, or with Supabase
+  /// unreachable).
+  bool get hasAnySession => _client?.auth.currentUser != null;
+
   /// Initializes the client and ensures a passenger session exists. Uses an
   /// anonymous sign-in so a rider can create trips without a full login flow
   /// (enable "Anonymous sign-ins" in Supabase → Authentication → Providers).

@@ -18,6 +18,7 @@ import '../../features/onboarding/presentation/pages/welcome_page.dart';
 import '../../features/places/presentation/pages/saved_places_page.dart';
 import '../../features/profile/presentation/pages/personal_info_page.dart';
 import '../../features/shell/presentation/main_shell.dart';
+import '../services/supabase_service.dart';
 import 'app_routes.dart';
 
 /// Maps route names to pages. A single generator keeps navigation declarative
@@ -25,9 +26,39 @@ import 'app_routes.dart';
 class AppRouter {
   AppRouter._();
 
+  /// Routes reachable with no session at all — everything else redirects to
+  /// [AppRoutes.welcome] if the app somehow has zero session (this should be
+  /// rare since bootstrap always establishes at least an anonymous one when
+  /// Supabase is configured, but guards against reaching a protected route
+  /// before that finishes, or with Supabase unreachable).
+  static const Set<String> _publicRoutes = {
+    AppRoutes.welcome,
+    AppRoutes.onboarding,
+    AppRoutes.location,
+    AppRoutes.login,
+    AppRoutes.signup,
+    AppRoutes.otp,
+    AppRoutes.forgot,
+    AppRoutes.newPassword,
+    AppRoutes.about,
+    AppRoutes.logs,
+  };
+
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    final builder = _builderFor(settings);
-    return MaterialPageRoute(builder: builder, settings: settings);
+    final String? name = settings.name;
+
+    // Guest checkout is intentional (an anonymous session still counts), so
+    // this only blocks the case of literally no session existing yet.
+    final bool needsGuard = name != null &&
+        !_publicRoutes.contains(name) &&
+        SupabaseService.instance.isConfigured &&
+        !SupabaseService.instance.hasAnySession;
+
+    final RouteSettings effectiveSettings =
+        needsGuard ? const RouteSettings(name: AppRoutes.welcome) : settings;
+
+    final builder = _builderFor(effectiveSettings);
+    return MaterialPageRoute(builder: builder, settings: effectiveSettings);
   }
 
   static WidgetBuilder _builderFor(RouteSettings settings) {
