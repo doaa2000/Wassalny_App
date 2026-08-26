@@ -19,4 +19,14 @@ abstract class AuthRepository {
   /// Updates the signed-in user's editable profile fields. Pass only the
   /// fields that changed — omitted ones are left as-is.
   Future<AppUser> updateProfile({String? fullName, String? phone});
+
+  /// Sends a 6-digit password-recovery code to [email].
+  Future<void> requestPasswordReset(String email);
+
+  /// Verifies the recovery code the rider received by email.
+  Future<void> verifyPasswordResetCode({required String email, required String code});
+
+  /// Sets a new password — call right after a successful
+  /// [verifyPasswordResetCode].
+  Future<void> setNewPassword(String newPassword);
 }

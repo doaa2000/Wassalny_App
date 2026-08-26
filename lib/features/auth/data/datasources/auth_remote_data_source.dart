@@ -99,4 +99,34 @@ class AuthRemoteDataSource {
       phone: phone ?? mapped.phone,
     );
   }
+
+  /// Sends a 6-digit recovery code to [email]. Requires the Supabase
+  /// project's "Reset Password" email template to include `{{ .Token }}`
+  /// (not just the magic-link URL) — see Authentication → Email Templates.
+  Future<void> requestPasswordReset(String email) async {
+    if (!_service.isConfigured) return;
+    await _service.client.auth.resetPasswordForEmail(email);
+  }
+
+  /// Verifies the recovery code the rider received by email. On success this
+  /// starts a recovery session, which [setNewPassword] then uses.
+  Future<void> verifyPasswordResetCode({
+    required String email,
+    required String code,
+  }) async {
+    if (!_service.isConfigured) return;
+    await _service.client.auth.verifyOTP(
+      type: OtpType.recovery,
+      email: email,
+      token: code,
+    );
+  }
+
+  /// Sets a new password for the rider — must be called right after a
+  /// successful [verifyPasswordResetCode], while the recovery session from
+  /// that step is still active.
+  Future<void> setNewPassword(String newPassword) async {
+    if (!_service.isConfigured) return;
+    await _service.client.auth.updateUser(UserAttributes(password: newPassword));
+  }
 }

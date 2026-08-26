@@ -10,6 +10,7 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String otp = '/otp';
   static const String forgot = '/forgot';
+  static const String newPassword = '/new-password';
 
   // Main tabbed shell (home / rides / wallet / alerts / profile).
   static const String main = '/main';

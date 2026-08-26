@@ -53,9 +53,16 @@ class AppStrings {
   // OTP
   static String get verifyNumberTitle => _t('verifyNumberTitle');
   static String get verifyNumberSubtitle => _t('verifyNumberSubtitle');
-  static String get demoPhone => _t('demoPhone');
+  static String get invalidCode => _t('invalidCode');
+  static String get newPasswordTitle => _t('newPasswordTitle');
+  static String get newPasswordSubtitle => _t('newPasswordSubtitle');
+  static String get newPassword => _t('newPassword');
+  static String get confirmNewPassword => _t('confirmNewPassword');
+  static String get passwordsDoNotMatch => _t('passwordsDoNotMatch');
+  static String get passwordTooShort => _t('passwordTooShort');
+  static String get passwordResetDone => _t('passwordResetDone');
   static String get didntGetCode => _t('didntGetCode');
-  static String get resendIn => _t('resendIn');
+  static String get resendCodeAction => _t('resendCodeAction');
   static String get verify => _t('verify');
 
   // Forgot

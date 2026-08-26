@@ -159,31 +159,66 @@ class AppTranslations {
       'es': '¿Ya tienes una cuenta? '
     },
 
-    // OTP
+    // OTP (password-reset email code)
     'verifyNumberTitle': {
-      'en': 'Verify your number',
-      'ar': 'تأكيد رقمك',
-      'es': 'Verifica tu número'
+      'en': 'Enter reset code',
+      'ar': 'أدخل رمز إعادة التعيين',
+      'es': 'Introduce el código de restablecimiento'
     },
     'verifyNumberSubtitle': {
-      'en': 'Enter the 4-digit code we sent to',
-      'ar': 'أدخل الرمز المكوّن من 4 أرقام الذي أرسلناه إلى',
-      'es': 'Introduce el código de 4 dígitos que enviamos a'
+      'en': 'Enter the 6-digit code we sent to',
+      'ar': 'أدخل الرمز المكوّن من 6 أرقام الذي أرسلناه إلى',
+      'es': 'Introduce el código de 6 dígitos que enviamos a'
     },
-    'demoPhone': {
-      'en': '+20 100 234 5678',
-      'ar': '+20 100 234 5678',
-      'es': '+20 100 234 5678'
+    'invalidCode': {
+      'en': 'Please enter the full 6-digit code',
+      'ar': 'يُرجى إدخال الرمز كاملًا المكوّن من 6 أرقام',
+      'es': 'Introduce el código completo de 6 dígitos'
+    },
+    'newPasswordTitle': {
+      'en': 'Set a new password',
+      'ar': 'اضبط كلمة مرور جديدة',
+      'es': 'Establece una nueva contraseña'
+    },
+    'newPasswordSubtitle': {
+      'en': 'Your new password must be different from your previous one.',
+      'ar': 'يجب أن تكون كلمة المرور الجديدة مختلفة عن السابقة.',
+      'es': 'Tu nueva contraseña debe ser diferente de la anterior.'
+    },
+    'newPassword': {
+      'en': 'New password',
+      'ar': 'كلمة المرور الجديدة',
+      'es': 'Nueva contraseña'
+    },
+    'confirmNewPassword': {
+      'en': 'Confirm new password',
+      'ar': 'تأكيد كلمة المرور الجديدة',
+      'es': 'Confirmar nueva contraseña'
+    },
+    'passwordsDoNotMatch': {
+      'en': 'Passwords do not match',
+      'ar': 'كلمتا المرور غير متطابقتين',
+      'es': 'Las contraseñas no coinciden'
+    },
+    'passwordTooShort': {
+      'en': 'Password must be at least 6 characters',
+      'ar': 'يجب ألا تقل كلمة المرور عن 6 أحرف',
+      'es': 'La contraseña debe tener al menos 6 caracteres'
+    },
+    'passwordResetDone': {
+      'en': 'Your password has been reset. Please log in.',
+      'ar': 'تم إعادة تعيين كلمة المرور بنجاح. يُرجى تسجيل الدخول.',
+      'es': 'Tu contraseña ha sido restablecida. Inicia sesión.'
     },
     'didntGetCode': {
       'en': "Didn't get a code? ",
       'ar': 'لم يصلك الرمز؟ ',
       'es': '¿No recibiste el código? '
     },
-    'resendIn': {
-      'en': 'Resend in 0:28',
-      'ar': 'إعادة الإرسال خلال 0:28',
-      'es': 'Reenviar en 0:28'
+    'resendCodeAction': {
+      'en': 'Resend',
+      'ar': 'إعادة الإرسال',
+      'es': 'Reenviar'
     },
     'verify': {'en': 'Verify', 'ar': 'تأكيد', 'es': 'Verificar'},
 

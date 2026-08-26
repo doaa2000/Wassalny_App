@@ -17,6 +17,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLoginRequested>(_onLogin);
     on<AuthLogoutRequested>(_onLogout);
     on<AuthProfileUpdateRequested>(_onProfileUpdate);
+    on<PasswordResetRequested>(_onPasswordResetRequested);
+    on<PasswordResetCodeVerified>(_onPasswordResetCodeVerified);
+    on<PasswordResetCompleted>(_onPasswordResetCompleted);
+    on<PasswordResetStateCleared>(_onPasswordResetStateCleared);
     add(const AuthStarted());
   }
 
@@ -75,5 +79,70 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         profileError: 'Could not update your profile. Please try again.',
       ));
     }
+  }
+
+  Future<void> _onPasswordResetRequested(
+      PasswordResetRequested e, Emitter<AuthState> emit) async {
+    emit(state.copyWith(passwordResetStatus: PasswordResetStatus.loading));
+    try {
+      await _repo.requestPasswordReset(e.email);
+      emit(state.copyWith(passwordResetStatus: PasswordResetStatus.codeSent));
+    } on AuthException catch (err) {
+      emit(state.copyWith(
+        passwordResetStatus: PasswordResetStatus.failure,
+        passwordResetError: err.message,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        passwordResetStatus: PasswordResetStatus.failure,
+        passwordResetError: 'Could not send the reset code. Please try again.',
+      ));
+    }
+  }
+
+  Future<void> _onPasswordResetCodeVerified(
+      PasswordResetCodeVerified e, Emitter<AuthState> emit) async {
+    emit(state.copyWith(passwordResetStatus: PasswordResetStatus.loading));
+    try {
+      await _repo.verifyPasswordResetCode(email: e.email, code: e.code);
+      emit(state.copyWith(passwordResetStatus: PasswordResetStatus.codeVerified));
+    } on AuthException catch (err) {
+      emit(state.copyWith(
+        passwordResetStatus: PasswordResetStatus.failure,
+        passwordResetError: err.message,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        passwordResetStatus: PasswordResetStatus.failure,
+        passwordResetError: 'That code is invalid or expired. Please try again.',
+      ));
+    }
+  }
+
+  Future<void> _onPasswordResetCompleted(
+      PasswordResetCompleted e, Emitter<AuthState> emit) async {
+    emit(state.copyWith(passwordResetStatus: PasswordResetStatus.loading));
+    try {
+      await _repo.setNewPassword(e.newPassword);
+      emit(state.copyWith(passwordResetStatus: PasswordResetStatus.done));
+    } on AuthException catch (err) {
+      emit(state.copyWith(
+        passwordResetStatus: PasswordResetStatus.failure,
+        passwordResetError: err.message,
+      ));
+    } catch (_) {
+      emit(state.copyWith(
+        passwordResetStatus: PasswordResetStatus.failure,
+        passwordResetError: 'Could not set your new password. Please try again.',
+      ));
+    }
+  }
+
+  void _onPasswordResetStateCleared(
+      PasswordResetStateCleared e, Emitter<AuthState> emit) {
+    emit(state.copyWith(
+      passwordResetStatus: PasswordResetStatus.idle,
+      passwordResetError: null,
+    ));
   }
 }

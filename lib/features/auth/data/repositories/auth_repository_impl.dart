@@ -28,4 +28,16 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<AppUser> updateProfile({String? fullName, String? phone}) =>
       _remote.updateProfile(fullName: fullName, phone: phone);
+
+  @override
+  Future<void> requestPasswordReset(String email) =>
+      _remote.requestPasswordReset(email);
+
+  @override
+  Future<void> verifyPasswordResetCode({required String email, required String code}) =>
+      _remote.verifyPasswordResetCode(email: email, code: code);
+
+  @override
+  Future<void> setNewPassword(String newPassword) =>
+      _remote.setNewPassword(newPassword);
 }

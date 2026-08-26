@@ -7,6 +7,11 @@ enum AuthStatus { unknown, loading, authenticated, unauthenticated, failure }
 /// screens' "authenticated"/"failure" navigation listeners.
 enum ProfileUpdateStatus { idle, loading, success, failure }
 
+/// Separate lifecycle for the "Forgot password" flow (request code → verify
+/// code → set new password) — kept apart from [AuthStatus] for the same
+/// reason as [ProfileUpdateStatus].
+enum PasswordResetStatus { idle, loading, codeSent, codeVerified, done, failure }
+
 class AuthState extends Equatable {
   const AuthState({
     this.status = AuthStatus.unknown,
@@ -14,6 +19,8 @@ class AuthState extends Equatable {
     this.error,
     this.profileUpdateStatus = ProfileUpdateStatus.idle,
     this.profileError,
+    this.passwordResetStatus = PasswordResetStatus.idle,
+    this.passwordResetError,
   });
 
   final AuthStatus status;
@@ -21,6 +28,8 @@ class AuthState extends Equatable {
   final String? error;
   final ProfileUpdateStatus profileUpdateStatus;
   final String? profileError;
+  final PasswordResetStatus passwordResetStatus;
+  final String? passwordResetError;
 
   bool get isLoading => status == AuthStatus.loading;
 
@@ -30,6 +39,8 @@ class AuthState extends Equatable {
     String? error,
     ProfileUpdateStatus? profileUpdateStatus,
     String? profileError,
+    PasswordResetStatus? passwordResetStatus,
+    String? passwordResetError,
   }) {
     return AuthState(
       status: status ?? this.status,
@@ -37,10 +48,19 @@ class AuthState extends Equatable {
       error: error,
       profileUpdateStatus: profileUpdateStatus ?? this.profileUpdateStatus,
       profileError: profileError,
+      passwordResetStatus: passwordResetStatus ?? this.passwordResetStatus,
+      passwordResetError: passwordResetError,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [status, user, error, profileUpdateStatus, profileError];
+  List<Object?> get props => [
+        status,
+        user,
+        error,
+        profileUpdateStatus,
+        profileError,
+        passwordResetStatus,
+        passwordResetError,
+      ];
 }

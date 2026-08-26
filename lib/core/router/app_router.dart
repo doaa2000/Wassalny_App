@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/new_password_page.dart';
 import '../../features/auth/presentation/pages/otp_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
 import '../../features/booking/presentation/pages/confirm_ride_page.dart';
@@ -25,12 +26,12 @@ class AppRouter {
   AppRouter._();
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    final builder = _builderFor(settings.name);
+    final builder = _builderFor(settings);
     return MaterialPageRoute(builder: builder, settings: settings);
   }
 
-  static WidgetBuilder _builderFor(String? name) {
-    switch (name) {
+  static WidgetBuilder _builderFor(RouteSettings settings) {
+    switch (settings.name) {
       case AppRoutes.onboarding:
         return (_) => const OnboardingIntroPage();
       case AppRoutes.location:
@@ -40,9 +41,12 @@ class AppRouter {
       case AppRoutes.signup:
         return (_) => const SignupPage();
       case AppRoutes.otp:
-        return (_) => const OtpPage();
+        final String email = (settings.arguments as String?) ?? '';
+        return (_) => OtpPage(email: email);
       case AppRoutes.forgot:
         return (_) => const ForgotPasswordPage();
+      case AppRoutes.newPassword:
+        return (_) => const NewPasswordPage();
       case AppRoutes.main:
         return (_) => const MainShell();
       case AppRoutes.search:
