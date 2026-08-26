@@ -14,6 +14,9 @@ class NotificationsState extends Equatable {
   final List<AppNotification> items;
   final String? error;
 
+  /// Count of unread items — drives the badge on the bottom-nav icon.
+  int get unreadCount => items.where((n) => n.unread).length;
+
   NotificationsState copyWith({
     NotificationsStatus? status,
     List<AppNotification>? items,
