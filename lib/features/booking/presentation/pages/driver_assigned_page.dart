@@ -18,6 +18,42 @@ import '../widgets/sheet_handle.dart';
 class DriverAssignedPage extends StatelessWidget {
   const DriverAssignedPage({super.key});
 
+  Future<void> _confirmAndCancel(BuildContext context) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(AppStrings.cancelRideConfirmTitle,
+            style: AppTextStyles.h1.copyWith(fontSize: 18)),
+        content: Text(AppStrings.cancelRideConfirmBody, style: AppTextStyles.body),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(AppStrings.keepRide),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(AppStrings.cancelRide,
+                style: const TextStyle(color: AppColors.danger)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final bool cancelled =
+        await context.read<BookingBloc>().cancelAssignedTrip();
+    if (!context.mounted) return;
+
+    if (cancelled) {
+      Navigator.popUntil(context, ModalRoute.withName(AppRoutes.main));
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(AppStrings.couldNotCancelRide)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<BookingBloc, BookingState>(
@@ -177,8 +213,7 @@ class DriverAssignedPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         GestureDetector(
-                          onTap: () => Navigator.popUntil(
-                              context, ModalRoute.withName(AppRoutes.main)),
+                          onTap: () => _confirmAndCancel(context),
                           child: SizedBox(
                             height: 46,
                             child: Center(

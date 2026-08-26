@@ -118,6 +118,10 @@ class AppStrings {
   // Assigned
   static String get trackYourRide => _t('trackYourRide');
   static String get cancelRide => _t('cancelRide');
+  static String get cancelRideConfirmTitle => _t('cancelRideConfirmTitle');
+  static String get cancelRideConfirmBody => _t('cancelRideConfirmBody');
+  static String get keepRide => _t('keepRide');
+  static String get couldNotCancelRide => _t('couldNotCancelRide');
   static String get tripInProgress => _t('tripInProgress');
   static String get call => _t('call');
   static String get chat => _t('chat');

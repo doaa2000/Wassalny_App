@@ -95,12 +95,13 @@ class BookingRepositoryImpl implements BookingRepository {
       _tripRemote.watchDriverLocation(tripId);
 
   @override
-  Future<void> cancelTrip(String tripId) async {
+  Future<bool> cancelTrip(String tripId) async {
     try {
-      await _tripRemote.cancelTrip(tripId);
+      return await _tripRemote.cancelTrip(tripId);
     } catch (e, s) {
       appLogger.logWarning('cancelTrip failed',
           feature: 'Booking', error: e, stackTrace: s);
+      return false;
     }
   }
 

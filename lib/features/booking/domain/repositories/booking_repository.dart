@@ -40,7 +40,9 @@ abstract class BookingRepository {
 
   /// Cancels a still-unassigned trip (rider gave up waiting, or the search
   /// timed out with no captain accepting).
-  Future<void> cancelTrip(String tripId);
+  /// Cancels a still-cancellable trip (requested/accepted/arrived). Returns
+  /// whether it actually took effect.
+  Future<bool> cancelTrip(String tripId);
 
   /// Records the rider's post-trip star rating (and optional review).
   Future<void> submitRating({

@@ -171,6 +171,29 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     }
   }
 
+  /// Cancels the currently assigned trip and reports whether it actually
+  /// took effect (`false` if the captain had already started driving).
+  /// Unlike [BookingTripCancelled] (fire-and-forget, used while still
+  /// searching), this is awaited directly by the driver-assigned screen so
+  /// it can show the rider an honest result instead of assuming success.
+  Future<bool> cancelAssignedTrip() async {
+    final String? id = state.tripId;
+    if (id == null) return true;
+    final bool cancelled = await _repository.cancelTrip(id);
+    if (cancelled) {
+      _tripSub?.cancel();
+      _tripSub = null;
+      _driverLocSub?.cancel();
+      _driverLocSub = null;
+      emit(state.copyWith(
+        requesting: false,
+        resetTrip: true,
+        resetAssignedDriver: true,
+      ));
+    }
+    return cancelled;
+  }
+
   static const Set<String> _assignedStatuses = {
     'accepted',
     'arrived',

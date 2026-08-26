@@ -29,10 +29,11 @@ abstract class TripRemoteDataSource {
   /// until the captain starts sharing). Drives the moving car on the map.
   Stream<LatLng?> watchDriverLocation(String tripId);
 
-  /// Marks a still-unassigned trip as cancelled by the rider — used when they
-  /// tap "Cancel" while waiting, or when the search times out with no captain
-  /// accepting. Without this the trip would stay `requested` forever.
-  Future<void> cancelTrip(String tripId);
+  /// Cancels the trip while it's still requested/accepted/arrived — i.e. any
+  /// time before the captain has actually started driving. Returns `true`
+  /// if the cancellation actually took effect, `false` if it was already
+  /// past that point (e.g. `in_progress`) and nothing changed.
+  Future<bool> cancelTrip(String tripId);
 
   /// Records the rider's post-trip star rating (1–5) and optional written
   /// review for [tripId]. One rating per trip — the `ratings` table enforces
@@ -125,15 +126,18 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
   }
 
   @override
-  Future<void> cancelTrip(String tripId) async {
-    // Only cancel while still `requested` — if a captain has already
-    // accepted in the meantime, leave the trip alone rather than yanking it
-    // out from under them.
-    await _service.client
+  Future<bool> cancelTrip(String tripId) async {
+    // Cancellable while requested/accepted/arrived — once the captain has
+    // actually started the trip (`in_progress`), it's too late to cancel
+    // from here. `.select()` lets us see whether a row actually matched and
+    // was updated, so we can honestly report success vs. "too late".
+    final List<dynamic> updated = await _service.client
         .from('trips')
         .update({'status': 'cancelled'})
         .eq('id', tripId)
-        .eq('status', 'requested');
+        .inFilter('status', ['requested', 'accepted', 'arrived'])
+        .select();
+    return updated.isNotEmpty;
   }
 
   @override
@@ -201,7 +205,7 @@ class TripNoopDataSource implements TripRemoteDataSource {
       const Stream<LatLng?>.empty();
 
   @override
-  Future<void> cancelTrip(String tripId) async {}
+  Future<bool> cancelTrip(String tripId) async => true;
 
   @override
   Future<void> submitRating({

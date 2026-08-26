@@ -385,6 +385,26 @@ class AppTranslations {
       'es': 'Sigue tu viaje'
     },
     'cancelRide': {'en': 'Cancel ride', 'ar': 'إلغاء الرحلة', 'es': 'Cancelar viaje'},
+    'cancelRideConfirmTitle': {
+      'en': 'Cancel this ride?',
+      'ar': 'هل تريدين إلغاء هذه الرحلة؟',
+      'es': '¿Cancelar este viaje?'
+    },
+    'cancelRideConfirmBody': {
+      'en': 'Your captain is already on the way. Are you sure you want to cancel?',
+      'ar': 'الكابتن في طريقه إليك بالفعل. هل أنتِ متأكدة من رغبتك في الإلغاء؟',
+      'es': 'Tu conductor ya está en camino. ¿Seguro que quieres cancelar?'
+    },
+    'keepRide': {
+      'en': 'Keep ride',
+      'ar': 'الاحتفاظ بالرحلة',
+      'es': 'Mantener viaje'
+    },
+    'couldNotCancelRide': {
+      'en': 'Could not cancel the ride. It may have already started.',
+      'ar': 'تعذّر إلغاء الرحلة. ربما تكون قد بدأت بالفعل.',
+      'es': 'No se pudo cancelar el viaje. Puede que ya haya comenzado.'
+    },
     'tripInProgress': {
       'en': 'Trip in progress',
       'ar': 'الرحلة جارية',
