@@ -257,11 +257,22 @@ class AppTranslations {
       'ar': 'Qusair Fort, El Qusair',
       'es': 'Qusair Fort, El Qusair'
     },
-    'greeting': {
-      'en': 'Good evening, Layla',
-      'ar': 'مساء الخير يا ليلى',
-      'es': 'Buenas noches, Layla'
+    'goodMorning': {
+      'en': 'Good morning',
+      'ar': 'صباح الخير',
+      'es': 'Buenos días'
     },
+    'goodAfternoon': {
+      'en': 'Good afternoon',
+      'ar': 'مساء الخير',
+      'es': 'Buenas tardes'
+    },
+    'goodEvening': {
+      'en': 'Good evening',
+      'ar': 'مساء الخير',
+      'es': 'Buenas noches'
+    },
+    'greetingConnector': {'en': ', ', 'ar': ' يا ', 'es': ', '},
     'whereTo': {
       'en': 'Where would you like to go?',
       'ar': 'إلى أين تريد الذهاب؟',

@@ -10,6 +10,8 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/app_shadows.dart';
 import '../../../../core/widgets/map/map_view.dart';
 import '../../../../core/widgets/round_icon_button.dart';
+import '../../../auth/domain/entities/app_user.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../booking/presentation/bloc/booking_bloc.dart';
 import '../../../places/domain/entities/saved_place.dart';
 import '../../../places/presentation/bloc/places_bloc.dart';
@@ -243,7 +245,7 @@ class _BookingSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text(AppStrings.greeting, style: AppTextStyles.title),
+            const _Greeting(),
             const SizedBox(height: 2),
             Text(AppStrings.whereTo,
                 style: AppTextStyles.body.copyWith(height: 1.2)),
@@ -321,6 +323,33 @@ class _SearchEntry extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// "Good evening, {name}" — built from the real signed-in user (falling
+/// back to their email, then a generic label) and the actual time of day,
+/// instead of a hardcoded name.
+class _Greeting extends StatelessWidget {
+  const _Greeting();
+
+  String _timeOfDayPrefix() {
+    final int hour = DateTime.now().hour;
+    if (hour < 12) return AppStrings.goodMorning;
+    if (hour < 18) return AppStrings.goodAfternoon;
+    return AppStrings.goodEvening;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AppUser? user = context.watch<AuthBloc>().state.user;
+    final String name = (user?.fullName?.trim().isNotEmpty ?? false)
+        ? user!.fullName!.trim()
+        : (user?.email.split('@').first ?? AppStrings.riderName);
+
+    return Text(
+      '${_timeOfDayPrefix()}${AppStrings.greetingConnector}$name',
+      style: AppTextStyles.title,
     );
   }
 }

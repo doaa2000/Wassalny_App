@@ -74,7 +74,10 @@ class AppStrings {
 
   // Home
   static String get currentLocation => _t('currentLocation');
-  static String get greeting => _t('greeting');
+  static String get goodMorning => _t('goodMorning');
+  static String get goodAfternoon => _t('goodAfternoon');
+  static String get goodEvening => _t('goodEvening');
+  static String get greetingConnector => _t('greetingConnector');
   static String get whereTo => _t('whereTo');
   static String get whereToShort => _t('whereToShort');
   static String get setOnMap => _t('setOnMap');
