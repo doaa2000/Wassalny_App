@@ -228,10 +228,18 @@ class _FindingDriverPageState extends State<FindingDriverPage>
         Text(AppStrings.findingDriver,
             style: AppTextStyles.h3.copyWith(color: Colors.white)),
         const SizedBox(height: 8),
-        Text(
-          AppStrings.findingSubtitle,
-          textAlign: TextAlign.center,
-          style: AppTextStyles.body.copyWith(color: Colors.white.withOpacity(0.85)),
+        BlocBuilder<BookingBloc, BookingState>(
+          buildWhen: (p, c) => p.destinationAddress != c.destinationAddress,
+          builder: (context, state) {
+            final String? dest = state.destinationAddress;
+            return Text(
+              (dest != null && dest.isNotEmpty)
+                  ? AppStrings.findingSubtitleFor(dest)
+                  : AppStrings.findingSubtitle,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body.copyWith(color: Colors.white.withOpacity(0.85)),
+            );
+          },
         ),
         const SizedBox(height: 22),
         _CountdownBadge(secondsLeft: _secondsLeft, totalSeconds: _searchTimeoutSeconds),

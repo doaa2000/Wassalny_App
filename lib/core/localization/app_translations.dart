@@ -310,21 +310,6 @@ class AppTranslations {
       'es': 'Fija tu destino'
     },
 
-    // Driver select
-    'chooseDriver': {
-      'en': 'Choose your driver',
-      'ar': 'اختر سائقك',
-      'es': 'Elige tu conductor'
-    },
-    'tripRoute': {
-      'en': 'Qusair Fort → Sirena Beach',
-      'ar': 'Qusair Fort → Sirena Beach',
-      'es': 'Qusair Fort → Sirena Beach'
-    },
-    'arrives': {'en': 'Arrives', 'ar': 'يصل خلال', 'es': 'Llega en'},
-    'plate': {'en': 'Plate', 'ar': 'اللوحة', 'es': 'Placa'},
-    'estFare': {'en': 'Est. fare', 'ar': 'الأجرة التقديرية', 'es': 'Tarifa est.'},
-
     // Confirm
     'confirmRide': {
       'en': 'Confirm your ride',
@@ -340,9 +325,9 @@ class AppTranslations {
     'pickup': {'en': 'PICKUP', 'ar': 'الانطلاق', 'es': 'RECOGIDA'},
     'dropoff': {'en': 'DROP-OFF', 'ar': 'الوجهة', 'es': 'DESTINO'},
     'dropoffPlace': {
-      'en': 'Sirena Beach',
-      'ar': 'Sirena Beach',
-      'es': 'Sirena Beach'
+      'en': 'Destination',
+      'ar': 'الوجهة',
+      'es': 'Destino'
     },
     'change': {'en': 'Change', 'ar': 'تغيير', 'es': 'Cambiar'},
     'paymentMethod': {
@@ -363,11 +348,14 @@ class AppTranslations {
       'es': 'Buscando tu conductor'
     },
     'findingSubtitle': {
-      'en':
-          'Matching you with the best nearby driver\nfor your trip to Sirena Beach',
-      'ar': 'نبحث لك عن أفضل سائق قريب\nلرحلتك إلى Sirena Beach',
-      'es':
-          'Buscando el mejor conductor cercano\npara tu viaje a Sirena Beach'
+      'en': 'Matching you with the best nearby driver',
+      'ar': 'نبحث لك عن أفضل سائق قريب',
+      'es': 'Buscando el mejor conductor cercano'
+    },
+    'findingSubtitleWithDestination': {
+      'en': 'Matching you with the best nearby driver\nfor your trip to %s',
+      'ar': 'نبحث لك عن أفضل سائق قريب\nلرحلتك إلى %s',
+      'es': 'Buscando el mejor conductor cercano\npara tu viaje a %s'
     },
     'cancel': {'en': 'Cancel', 'ar': 'إلغاء', 'es': 'Cancelar'},
     'noDriversFound': {

@@ -92,11 +92,6 @@ class AppStrings {
   static String get setDropoffFirst => _t('setDropoffFirst');
 
   // Driver select
-  static String get chooseDriver => _t('chooseDriver');
-  static String get tripRoute => _t('tripRoute');
-  static String get arrives => _t('arrives');
-  static String get plate => _t('plate');
-  static String get estFare => _t('estFare');
 
   // Confirm
   static String get confirmRide => _t('confirmRide');
@@ -112,6 +107,8 @@ class AppStrings {
   // Finding
   static String get findingDriver => _t('findingDriver');
   static String get findingSubtitle => _t('findingSubtitle');
+  static String findingSubtitleFor(String destination) =>
+      _t('findingSubtitleWithDestination').replaceAll('%s', destination);
   static String get cancel => _t('cancel');
   static String get noDriversFound => _t('noDriversFound');
   static String get noDriversFoundSubtitle => _t('noDriversFoundSubtitle');
