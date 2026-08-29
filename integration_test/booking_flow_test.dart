@@ -7,6 +7,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:wassalny/core/constants/app_strings.dart';
 import 'package:wassalny/core/navigation/app_navigator.dart';
 import 'package:wassalny/core/router/app_routes.dart';
+import 'package:wassalny/core/widgets/primary_button.dart';
 import 'package:wassalny/features/booking/presentation/bloc/booking_bloc.dart';
 
 import 'test_app.dart' as app;
@@ -66,13 +67,17 @@ void main() {
     await tester.pumpAndSettle();
 
     // "Find driver" is only enabled once a route exists.
-    expect(find.text(AppStrings.findDriver), findsOneWidget);
-    await tester.tap(find.text(AppStrings.findDriver));
+    final Finder findDriverBtn =
+        find.widgetWithText(PrimaryButton, AppStrings.findDriver);
+    expect(findDriverBtn, findsOneWidget);
+    await tester.tap(findDriverBtn);
     await tester.pumpAndSettle();
 
     // Confirm screen: price field is pre-filled with a suggested fare.
-    expect(find.text(AppStrings.requestRide), findsOneWidget);
-    await tester.tap(find.text(AppStrings.requestRide));
+    final Finder requestRideBtn =
+        find.widgetWithText(PrimaryButton, AppStrings.requestRide);
+    expect(requestRideBtn, findsOneWidget);
+    await tester.tap(requestRideBtn);
     await tester.pumpAndSettle();
 
     // Real network call to Supabase happens here (insert into `trips`).

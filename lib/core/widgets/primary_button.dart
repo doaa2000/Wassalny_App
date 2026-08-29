@@ -40,6 +40,7 @@ class PrimaryButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
+          width: double.infinity,
           height: height,
           decoration: BoxDecoration(
             color: color,
