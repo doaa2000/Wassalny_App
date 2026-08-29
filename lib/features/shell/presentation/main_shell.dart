@@ -38,7 +38,7 @@ class MainShell extends StatelessWidget {
             // the shell was reached: back first returns to the Home tab if
             // the rider is elsewhere, then exits the app on a second press.
             canPop: false,
-            onPopInvokedWithPop: (didPop, result) {
+            onPopInvoked: (didPop) {
               if (didPop) return;
               if (index != 0) {
                 context.read<NavBloc>().add(const NavTabSelected(0));
