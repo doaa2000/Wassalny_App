@@ -25,7 +25,8 @@ import 'test_app.dart' as app;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('guest session reaches main shell and all tabs render',
+  testWidgets(
+      'guest session: all tabs render, then search -> confirm -> request ride -> finding driver',
       (tester) async {
     await app.testMain();
     await tester.pumpAndSettle();
@@ -49,16 +50,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(label), findsOneWidget);
     }
-  });
-
-  testWidgets('search -> confirm -> request ride -> finding driver',
-      (tester) async {
-    await app.testMain();
-    await tester.pumpAndSettle();
-
-    navigatorKey.currentState
-        ?.pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
-    await tester.pumpAndSettle();
 
     // Home -> tap the search entry to open the Search page.
     expect(find.text(AppStrings.whereToShort), findsOneWidget);

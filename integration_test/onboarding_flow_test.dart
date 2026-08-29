@@ -12,16 +12,12 @@ import 'test_app.dart' as app;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('app launches without crashing', (tester) async {
+  testWidgets('app launches, then walks welcome -> onboarding -> location -> login',
+      (tester) async {
     await app.testMain();
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
-  });
-
-  testWidgets('welcome -> onboarding -> location -> login', (tester) async {
-    await app.testMain();
-    await tester.pumpAndSettle();
 
     // Welcome screen: primary CTA starts onboarding.
     expect(find.text(AppStrings.welcomeTitle), findsOneWidget);
