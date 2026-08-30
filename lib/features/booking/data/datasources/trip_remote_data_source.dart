@@ -161,7 +161,7 @@ class TripSupabaseDataSource implements TripRemoteDataSource {
       'passenger_id': passengerId,
       'driver_id': driverId,
       'rating': rating,
-      if (comment != null && comment.trim().isNotEmpty) 'comment': comment.trim(),
+      if (comment != null && comment.trim().isNotEmpty) 'review': comment.trim(),
     });
   }
 }
