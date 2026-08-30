@@ -12,6 +12,19 @@ import 'package:wassalny/features/booking/presentation/bloc/booking_bloc.dart';
 
 import 'test_app.dart' as app;
 
+/// Pumps a fixed number of frames instead of `pumpAndSettle()`. The Finding
+/// Driver screen (reached at the end of this flow) has a perpetually
+/// repeating radar animation, so "wait until fully idle" never resolves
+/// there — a bounded number of timed pumps gives transitions/network calls
+/// enough real time to complete without waiting on something that never
+/// settles. Applied consistently throughout for safety.
+Future<void> settle(WidgetTester tester,
+    {int times = 8, Duration step = const Duration(milliseconds: 300)}) async {
+  for (var i = 0; i < times; i++) {
+    await tester.pump(step);
+  }
+}
+
 /// Drives the real booking flow end to end, using the app's own anonymous
 /// "guest checkout" session (the same one a real guest gets automatically —
 /// no test account or password needed).
@@ -30,14 +43,14 @@ void main() {
       'guest session: all tabs render, then search -> confirm -> request ride -> finding driver',
       (tester) async {
     await app.testMain();
-    await tester.pumpAndSettle();
+    await settle(tester, times: 12); // extra time for Supabase/Firebase init
 
     // Jump straight to the main shell — legitimate because the app already
     // established an anonymous session during bootstrap (the same one that
     // lets a real guest book a ride before logging in).
     navigatorKey.currentState
         ?.pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     expect(find.text(AppStrings.navHome), findsOneWidget);
 
@@ -48,14 +61,14 @@ void main() {
       AppStrings.navHome,
     ]) {
       await tester.tap(find.text(label));
-      await tester.pumpAndSettle();
+      await settle(tester);
       expect(find.text(label), findsOneWidget);
     }
 
     // Home -> tap the search entry to open the Search page.
     expect(find.text(AppStrings.whereToShort), findsOneWidget);
     await tester.tap(find.text(AppStrings.whereToShort));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     // Set a real route (see file-level doc comment for why this bypasses
     // the map drag gesture specifically).
@@ -64,21 +77,21 @@ void main() {
     bookingBloc
       ..add(const BookingPickupSet(LatLng(26.1063, 34.2797), 'El Qusair Port'))
       ..add(const BookingDestinationSet(LatLng(26.1161, 34.3736), 'Sirena Beach'));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     // "Find driver" is only enabled once a route exists.
     final Finder findDriverBtn =
         find.widgetWithText(PrimaryButton, AppStrings.findDriver);
     expect(findDriverBtn, findsOneWidget);
     await tester.tap(findDriverBtn);
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     // Confirm screen: price field is pre-filled with a suggested fare.
     final Finder requestRideBtn =
         find.widgetWithText(PrimaryButton, AppStrings.requestRide);
     expect(requestRideBtn, findsOneWidget);
     await tester.tap(requestRideBtn);
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     // Real network call to Supabase happens here (insert into `trips`).
     // Whether or not it succeeds (e.g. no configured backend in this run),
